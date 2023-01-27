@@ -263,7 +263,7 @@ local function IsWater(tile)
 end
 
 local function IsValidSprinklerTile(tile)
-	return not IsWater(tile) and (tile ~= GROUND.INVALID) and (tile ~= GROUND.IMPASSIBLE)
+	return not IsWater(tile) and (tile ~= GROUND.INVALID) and (tile ~= GROUND.IMPASSABLE)
 end
 
 local function GetValidWaterPointNearby(pt)

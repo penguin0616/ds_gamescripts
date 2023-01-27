@@ -103,6 +103,9 @@ local actionhandlers =
     ActionHandler(ACTIONS.TOGGLEON, "give"),
     ActionHandler(ACTIONS.STORE, "doshortaction"),
 
+    ActionHandler(ACTIONS.BUNDLE, "bundle"),
+    ActionHandler(ACTIONS.UNWRAP, "dolongaction"),
+
     ActionHandler(ACTIONS.FISH,
         function(inst, action)
             if action.target.components.workable then
@@ -232,12 +235,14 @@ end
 local function DoAttackFn(inst, data)
     if not inst.components.health:IsDead() and not inst.sg:HasStateTag("attack") then
         local weapon = inst.components.combat and inst.components.combat:GetWeapon()
-        if weapon and weapon:HasTag("blowdart") then
+        if weapon and weapon:HasTag("goggles") then 
+            inst.sg:GoToState("goggleattack")                
+        elseif weapon and weapon:HasTag("blowdart") then
             inst.sg:GoToState("blowdart")
         elseif weapon and weapon:HasTag("thrown") then
             inst.sg:GoToState("throw")
         elseif weapon and weapon:HasTag("speargun") then 
-            inst.sg:GoToState("speargun")      
+            inst.sg:GoToState("speargun")
         else
             inst.sg:GoToState("attack")
         end
@@ -695,7 +700,6 @@ local states=
         onenter = function(inst)
             -- inst.components.driver:CombineWithVehicle()
             inst.SoundEmitter:PlaySound(inst.components.driver.vehicle.components.drivable.creaksound)
-            print("DLC0002 PLAYING dontstarve_DLC002/common/boat_paddle")
             inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/boat_paddle")
             -- print("CATEGORY VOLUME "..TheSim:GetSoundVolume("boat_paddle"))
             DoFoleySounds(inst)
@@ -1386,6 +1390,71 @@ local states=
         },
     },
 
+    State{
+        name = "goggleattack",
+        tags = {"attack", "notalking", "abouttoattack", "busy", "boating"},
+        
+        onenter = function(inst)
+            local weapon = inst.components.combat:GetWeapon()
+            local otherequipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+
+            inst.AnimState:PlayAnimation("goggle_fast")
+
+            if inst.components.combat.target then
+                inst.components.combat:BattleCry()
+                if inst.components.combat.target and inst.components.combat.target:IsValid() then
+                    inst:FacePoint(Point(inst.components.combat.target.Transform:GetWorldPosition()))
+                end
+            end
+
+            inst.sg.statemem.target = inst.components.combat.target
+            inst.components.combat:StartAttack()
+            inst.components.locomotor:Stop()
+            
+        end,
+        
+        timeline=
+        {            
+            TimeEvent(17*FRAMES, function(inst) 
+                inst.components.combat:DoAttack(inst.sg.statemem.target) 
+                inst.sg:RemoveStateTag("abouttoattack") 
+            end),
+            TimeEvent(20*FRAMES, function(inst)
+                inst.sg:RemoveStateTag("attack")
+                if inst.components.moisture and inst.components.moisture:GetMoisture() > 0 and not inst.components.inventory:IsInsulated() then
+                    inst.components.health:DoDelta(-TUNING.HEALING_MEDSMALL, false, "Shockwhenwet", nil, true)
+                    inst.sg:GoToState("electrocute")
+                end
+            end)           
+        },
+
+        ontimeout = function(inst)
+            inst.sg:RemoveStateTag("attack")
+            --inst.sg:AddStateTag("idle")
+        end,
+
+        events=
+        {
+            EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end ),
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("goggle_attack_post")
+            end ),
+        },
+    },    
+    
+    State{ name = "goggle_attack_post",
+        tags = {"investigating", "working", "boating"},
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("goggle_fast_pst")
+        end,
+        
+        events=
+        {
+            EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end ),
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+        },
+    },
+
      State{ name = "bugnet_start",
         tags = {"prenet", "working", "boating"},
         onenter = function(inst)
@@ -1815,9 +1884,13 @@ local states=
         tags = {"doing", "busy", "canrotate", "boating"},
 
         onenter = function(inst)
-            --inst.components.driver:SplitFromVehicle()
+            inst.components.playercontroller:Enable(false)
             inst.AnimState:PlayAnimation("atk")
             inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon")
+        end,
+
+        onexit = function(inst)
+            inst.components.playercontroller:Enable(true)
         end,
 
         timeline = 
@@ -1956,7 +2029,118 @@ local states=
             end),
             
         },
-    },    
+    },
+    
+    State{
+        name = "bundle",
+        tags = { "doing", "busy", "nodangle", "boating" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.SoundEmitter:PlaySound("dontstarve/wilson/make_trap", "make")
+            inst.AnimState:PlayAnimation("wrap_pre")
+            inst.AnimState:PushAnimation("wrap_loop", true)
+            inst.sg:SetTimeout(.7)
+        end,
+
+        timeline =
+        {
+            TimeEvent(7 * FRAMES, function(inst)
+                inst.sg:RemoveStateTag("busy")
+            end),
+            TimeEvent(9 * FRAMES, function(inst)
+                inst:PerformBufferedAction()
+            end),
+        },
+
+        ontimeout = function(inst)
+            inst.SoundEmitter:KillSound("make")
+            inst.AnimState:PlayAnimation("wrap_pst")
+        end,
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+
+        onexit = function(inst)
+            if not inst.sg.statemem.bundling then
+                inst.SoundEmitter:KillSound("make")
+            end
+        end,
+    },
+
+    State{
+        name = "bundling",
+        tags = { "doing", "nodangle", "boating" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            if not inst.SoundEmitter:PlayingSound("make") then
+                inst.SoundEmitter:PlaySound("dontstarve/wilson/make_trap", "make")
+            end
+            if not inst.AnimState:IsCurrentAnimation("wrap_loop") then
+                inst.AnimState:PlayAnimation("wrap_loop", true)
+            end
+        end,
+
+        onupdate = function(inst)
+            if not CanEntitySeeTarget(inst, inst) then
+                inst.AnimState:PlayAnimation("wrap_pst")
+                inst.sg:GoToState("idle", true)
+            end
+        end,
+
+        onexit = function(inst)
+            if not inst.sg.statemem.bundling then
+                inst.SoundEmitter:KillSound("make")
+                inst.components.bundler:StopBundling()
+            end
+        end,
+    },
+
+    State{
+        name = "bundle_pst",
+        tags = { "doing", "busy", "nodangle", "boating" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            if not inst.SoundEmitter:PlayingSound("make") then
+                inst.SoundEmitter:PlaySound("dontstarve/wilson/make_trap", "make")
+            end
+            if not inst.AnimState:IsCurrentAnimation("wrap_loop") then
+                inst.AnimState:PlayAnimation("wrap_loop", true)
+            end
+            inst.sg:SetTimeout(.7)
+        end,
+
+        ontimeout = function(inst)
+            inst.sg:RemoveStateTag("busy")
+            inst.AnimState:PlayAnimation("wrap_pst")
+            inst.sg.statemem.finished = true
+            inst.components.bundler:OnFinishBundling()
+        end,
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+
+        onexit = function(inst)
+            inst.SoundEmitter:KillSound("make")
+            if not inst.sg.statemem.finished then
+                inst.components.bundler:StopBundling()
+            end
+        end,
+    },
 
      State{
         name = "makeballoon",
@@ -2156,9 +2340,21 @@ local states=
                 inst.telbrellalight.Transform:SetPosition(x,y,z)
             end         
             inst.components.playercontroller:Enable(false)
-            inst.AnimState:PlayAnimation("teleport_out") 
-       
+            inst.AnimState:PlayAnimation("teleport_out")
+
+            inst.AnimState:SetBloomEffectHandle( "shaders/anim.ksh" )
+
+            inst.SoundEmitter:PlaySound("dontstarve_wagstaff/characters/wagstaff/teleumbrella_out")
             inst.components.locomotor:Stop()
+
+            local downvec = TheCamera:GetDownVec()
+            local facedown = -(math.atan2(downvec.z, downvec.x) * (180/math.pi))
+            local vehicle = inst.components.driver.vehicle
+            if vehicle then
+                inst.components.driver.combined = false
+                vehicle.Transform:SetRotation(facedown)
+                vehicle:Show()
+            end
         end,
 
         onexit = function(inst)
@@ -2192,7 +2388,8 @@ local states=
                     local x,y,z = inst.Transform:GetWorldPosition()
                     inst.telbrellalight.Transform:SetPosition(x,y,z)
                 end
-            end           
+            end
+            inst.DynamicShadow:Enable(false)
             inst.components.playercontroller:Enable(false)
             inst.AnimState:PlayAnimation("teleport_finish") 
        
@@ -2200,6 +2397,7 @@ local states=
         end,
 
         onexit = function(inst)
+            inst.DynamicShadow:Enable(true)
             inst.components.playercontroller:Enable(true)
         end,
 
@@ -2240,6 +2438,7 @@ local states=
 
         onexit = function(inst)
             inst.components.playercontroller:Enable(true)
+            inst.AnimState:SetBloomEffectHandle("")
         end,
 
         timeline = 
@@ -2624,10 +2823,14 @@ local states=
         tags = {"doing", "boating"},
         
         onenter = function(inst)
-           -- inst.components.driver:SplitFromVehicle()
             inst.components.locomotor:Stop()
+
+            local fan = inst:GetBufferedAction().invobject
+            if fan then
+                inst.AnimState:OverrideSymbol("fan01", fan.animinfo, "fan01")
+            end
+
             inst.AnimState:PlayAnimation("fan")
-            inst.AnimState:OverrideSymbol("fan01", "fan", "fan01") 
             inst.AnimState:Show("ARM_normal")
             if inst.components.inventory.activeitem and inst.components.inventory.activeitem.components.fan then
                 inst.components.inventory:ReturnActiveItem()
@@ -2643,9 +2846,9 @@ local states=
         
         timeline=
         {
-            TimeEvent(70*FRAMES, function(inst)
-                inst:PerformBufferedAction()
-            end),
+            TimeEvent(26*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/luxury_fan", "fan") end),
+            TimeEvent(70*FRAMES, function(inst) inst:PerformBufferedAction() end),
+            TimeEvent(90*FRAMES, function(inst) inst.SoundEmitter:KillSound("fan") end),
         },
         
         events=
@@ -3153,43 +3356,46 @@ local states=
         },
     },
 
-   State{
+    State{
         name = "talk",
         tags = {"idle", "talking"},
-
+        
         onenter = function(inst, noanim)
             inst.components.locomotor:Stop()
             if not noanim then
                 inst.AnimState:PlayAnimation("dial_loop", true)
             end
-
+            
             local sound_name = inst.soundsname or inst.prefab
             local path = inst.talker_path_override or "dontstarve/characters/"
             local equippedHat = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
 
             if equippedHat and equippedHat:HasTag("muffler") then
                 inst.SoundEmitter:PlaySound(path..sound_name.."/gasmask_talk", "talk")
-                
+
             elseif inst.talksoundoverride then
-                 inst.SoundEmitter:PlaySound(inst.talksoundoverride, "talk")
+                inst.SoundEmitter:PlaySound(inst.talksoundoverride, "talk")
             else
-                local sound_name = inst.soundsname or inst.prefab
-                local path = inst.talker_path_override or "dontstarve/characters/"
                 inst.SoundEmitter:PlaySound(path..sound_name.."/talk_LP", "talk")
             end
 
+            if inst:HasTag("hasvoiceintensity_health") then
+                local percent = inst.components.health:GetPercent()
+                inst.SoundEmitter:SetParameter( "talk", "intensity", percent )                
+            end
+            
             inst.sg:SetTimeout(1.5 + math.random()*.5)
         end,
-
+        
         ontimeout = function(inst)
             inst.SoundEmitter:KillSound("talk")
-            inst.sg:GoToState("idle")
+            inst.sg:GoToState("idle")              
         end,
-
+        
         onexit = function(inst)
-            inst.SoundEmitter:KillSound("talk")
+            inst.SoundEmitter:KillSound("talk")              
         end,
-
+        
         events=
         {
             EventHandler("donetalking", function(inst) inst.sg:GoToState("idle") end),

@@ -538,9 +538,9 @@ function PlayerController:GetToolAction(tool)
     		action = ACTIONS.RESETMINE    		
 		elseif notriding(self.inst) and pickup.components.activatable and pickup.components.activatable.inactive then
 			action = ACTIONS.ACTIVATE
-		elseif notriding(self.inst) and pickup.components.inventoryitem and pickup.components.inventoryitem.canbepickedup and (not pickup.components.mine or pickup.components.mine.inactive) then 
+		elseif pickup.components.inventoryitem and pickup.components.inventoryitem.canbepickedup and (not pickup.components.mine or pickup.components.mine.inactive) then 
 			action = ACTIONS.PICKUP
-		elseif notriding(self.inst) and pickup.components.pickable and pickup.components.pickable:CanBePicked() then 
+		elseif pickup.components.pickable and pickup.components.pickable:CanBePicked() then 
 			action = ACTIONS.PICK 
 		elseif notriding(self.inst) and pickup.components.harvestable and pickup.components.harvestable:CanBeHarvested() then
 			action = ACTIONS.HARVEST
@@ -603,12 +603,11 @@ end
 
 
 function PlayerController:DoActionButton()
-
 	--do the placement
 	if self.placer_recipe and self.placer then		
 		if self.placer.components.placer.can_build then
-			local pos = self.placer.components.placer.targetPos or TheInput:GetWorldPosition()
-			self.inst.components.builder:MakeRecipe(self.placer_recipe, Vector3(self.placer.Transform:GetWorldPosition()), self.placer:GetRotation())
+			local modifydata = self.placer.components.placer.modifyfn and self.placer.components.placer.modifyfn(self.placer) or nil
+			self.inst.components.builder:MakeRecipe(self.placer_recipe, Vector3(self.placer.Transform:GetWorldPosition()), self.placer:GetRotation(), nil, modifydata)
 			return true
 		end
 	else
@@ -1365,15 +1364,7 @@ end
 function PlayerController:OnRightClick(down)
 
     if not self:UsingMouse() then return end
---[[
-	if GetPlayer() then
-		if not down then
-			GetPlayer():PushEvent("rightbuttonup")
-		else
-			GetPlayer():PushEvent("rightbuttondown")
-		end
-	end
-]]
+
 	if not down then return end
 
     self.startdragtime = nil
@@ -1397,8 +1388,13 @@ function PlayerController:OnRightClick(down)
     end
     
     local action = self:GetRightMouseAction()
-    if action then
-		self:DoAction(action )
+
+	if action then
+		if self.deployplacer ~= nil and action.action == ACTIONS.DEPLOY then
+			action.rotation = self.deployplacer.Transform:GetRotation()
+		end
+
+		self:DoAction(action)
 	end
 end
 

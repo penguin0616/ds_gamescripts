@@ -262,7 +262,6 @@ local states=
         events=
         {
             EventHandler("animover", function(inst) 
-                inst.AnimState:PlayAnimation("idle_loop")
                 inst.AnimState:SetBank("hippo")
                 inst.sg:GoToState("idle")
             end),

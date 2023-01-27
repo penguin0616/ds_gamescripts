@@ -117,6 +117,7 @@ local function onopen(inst)
 		if inst.prefab == "luggagechest" then
 			inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/steamer_trunk/steamer_trunk_open")
 		elseif inst.prefab == "corkchest" then
+			inst.AnimState:PushAnimation("open_loop", true)
 			inst.SoundEmitter:PlaySound("dontstarve_DLC003/common/crafted/cork_chest/open")
 		elseif inst.prefab == "antchest" then
 			inst.SoundEmitter:PlaySound("dontstarve_DLC003/common/objects/honey_chest/open")
@@ -344,7 +345,7 @@ local function chest(style, aquatic)
 		if style == "root_chest" or style == "root_chest_child" then
 			inst.components.container:SetNumSlots(#root_slotpos, true)
 			inst.components.container.widgetslotpos = root_slotpos
-			inst.components.container.widgetpos = Vector3(75, 200, 0)
+			inst.components.container.widgetpos = Vector3(0, 200, 0)
 		    inst.components.container.widgetanimbank = "ui_chester_shadow_3x4"
 		    inst.components.container.widgetanimbuild = "ui_chester_shadow_3x4"			
 		end
@@ -364,14 +365,7 @@ local function chest(style, aquatic)
 			inst:AddTag("pogproof")
 		end
 
-		if style ~= "octopus_chest" then
-			inst:AddComponent("lootdropper")
-			inst:AddComponent("workable")
-			inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-			inst.components.workable:SetWorkLeft(2)
-			inst.components.workable:SetOnFinishCallback(onhammered)
-			inst.components.workable:SetOnWorkCallback(onhit)
-		else
+		if style == "octopus_chest" then
 			MakeInventoryPhysics(inst)
 			inst:AddComponent("inventoryitem")
 			inst.components.inventoryitem.canbepickedup = false
@@ -384,12 +378,20 @@ local function chest(style, aquatic)
 			inst.components.container.widgetpos = Vector3(75, 200, 0)
 		    inst.components.container.widgetanimbank = "ui_thatchpack_1x4"
 		    inst.components.container.widgetanimbuild = "ui_thatchpack_1x4"
+
+		elseif style ~= "root_chest" then
+			inst:AddComponent("lootdropper")
+			inst:AddComponent("workable")
+			inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
+			inst.components.workable:SetWorkLeft(2)
+			inst.components.workable:SetOnFinishCallback(onhammered)
+			inst.components.workable:SetOnWorkCallback(onhit)			
 		end
 
 		inst:ListenForEvent( "onbuilt", onbuilt)
 		MakeSnowCovered(inst, 0.01)	
 
-		if style ~= "water_chest" then
+		if style ~= "water_chest" and style ~= "root_chest" then
 			MakeSmallBurnable(inst, nil, nil, true)
 			MakeSmallPropagator(inst)
 		end

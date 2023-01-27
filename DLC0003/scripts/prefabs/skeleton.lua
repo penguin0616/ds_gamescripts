@@ -80,9 +80,11 @@ function SpawnPlayerSkeletonHidden(position)
 		return
 	end
 
-	skel.Transform:SetPosition(position.x, position.y, position.z)
-	skel.HiddenPlayerSkeleton = true
+	skel.Physics:SetActive(false)
 	skel:Hide()
+	skel.HiddenPlayerSkeleton = true
+
+	skel.Transform:SetPosition(position.x, position.y, position.z)
 end
 
 return Prefab("common/objects/skeleton", fn, assets, prefabs),

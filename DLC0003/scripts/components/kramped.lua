@@ -115,7 +115,7 @@ function Kramped:onkilledother(victim)
 			self:OnNaughtyAction(1) 			
 		elseif victim.prefab == "dungbeetle" then
 			self:OnNaughtyAction(3)
-		elseif victim:HasTag("shopkeep") then
+		elseif victim:HasTag("city_pig") then
 			self:OnNaughtyAction(6)	
 		elseif victim.prefab == "piko" then
 			self:OnNaughtyAction(1)	

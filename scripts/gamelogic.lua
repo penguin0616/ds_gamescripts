@@ -1194,6 +1194,12 @@ Morgue:Load( function(did_it_load)
 	--print("Morgue loaded....[",did_it_load,"]")
 end )
 
+--Now let's setup debugging!!!
+if DEBUGGER_ENABLED then
+    local startResult, breakerType = Debuggee.start()
+    print('Debuggee start ->', startResult, breakerType )
+end
+
 Print(VERBOSITY.DEBUG, "[Loading profile and save index]")
 Profile:Load( function() 
 	SaveGameIndex:Load( OnFilesLoaded )

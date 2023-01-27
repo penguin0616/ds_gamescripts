@@ -251,6 +251,7 @@ local states=
         
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
+            RemovePhysicsColliders(inst)
             inst.AnimState:PlayAnimation("death")
             inst.components.lootdropper:DropLoot()
         end,

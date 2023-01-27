@@ -1,6 +1,7 @@
 local assets =
 {
 	Asset("PKGREF", "sound/dontstarve.fev"),
+	Asset("SOUNDPACKAGE", "sound/dontstarve_wagstaff.fev"),
 	Asset("SOUNDPACKAGE", "sound/dontstarve_DLC002.fev"), --@bargle: To get the main menu music working for pax, should this be here? 
 	Asset("SOUNDPACKAGE", "sound/dontstarve_DLC001.fev"),
     Asset("ATLAS", "images/global.xml"),

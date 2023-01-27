@@ -171,12 +171,18 @@ local function onfar(inst)
     -- inst.components.locomotor.walkspeed = TUNING.SPIDER_MONKEY_SPEED
 end
 
-local function OnSave(inst, data)
+local function OnPooped(inst, poop)
+	local heading_angle = -(inst.Transform:GetRotation()) + 180
 
-end
+	local pos = Vector3(inst.Transform:GetWorldPosition())
+	pos.x = pos.x + (math.cos(heading_angle*DEGREES))
+	pos.y = pos.y + 0.3
+	pos.z = pos.z + (math.sin(heading_angle*DEGREES))
+	poop.Transform:SetPosition(pos.x, pos.y, pos.z)
 
-local function OnLoad(inst, data)
-
+	if poop.components.inventoryitem then
+		poop.components.inventoryitem:OnStartFalling()
+	end
 end
 
 local function fn()
@@ -231,6 +237,7 @@ local function fn()
     inst.components.periodicspawner:SetRandomTimes(200, 400)
     inst.components.periodicspawner:SetDensityInRange(20, 2)
     inst.components.periodicspawner:SetMinimumSpacing(15)
+    inst.components.periodicspawner:SetOnSpawnFn(OnPooped)
     inst.components.periodicspawner:Start()
 
     inst:AddComponent("lootdropper")
@@ -264,9 +271,6 @@ local function fn()
 
 	inst:ListenForEvent("onpickup", onpickup)
     inst:ListenForEvent("attacked", OnAttacked)
-
-    inst.OnSave = OnSave
-    inst.OnLoad = OnLoad
 
 	return inst
 end

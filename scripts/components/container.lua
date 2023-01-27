@@ -73,8 +73,8 @@ function Container:DropEverything()
     end
 end
 
-function Container:DropItem(itemtodrop)
-    local item = self:RemoveItem(itemtodrop)
+function Container:DropItem(itemtodrop, wholestack)
+    local item = self:RemoveItem(itemtodrop, wholestack)
     if item then 
         local pos = Vector3(self.inst.Transform:GetWorldPosition())
         item.Transform:SetPosition(pos:Get())

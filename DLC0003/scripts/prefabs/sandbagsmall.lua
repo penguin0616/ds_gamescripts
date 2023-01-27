@@ -148,7 +148,7 @@ end
 local function test_wall(inst, pt)
 	local map = GetWorld().Map
 	local tiletype = GetGroundTypeAtPosition(pt)
-	local ground_OK = tiletype ~= GROUND.IMPASSABLE and not map:IsWater(tiletype)
+	local ground_OK = tiletype ~= GROUND.IMPASSABLE and not map:IsWater(tiletype) and IsPointInInteriorBounds(pt, 2)
 	
 
 	
@@ -247,6 +247,10 @@ local function fn(Sim)
 		if inst.components.health.currenthealth > 0 then 
 			GetWorld():PushEvent("floodblockercreated",{blocker = inst})
 		end 
+	end, GetWorld())
+
+	inst:ListenForEvent("endinteriorcam", function()
+		inst.Transform:SetRotation(inst.Transform:GetRotation())
 	end, GetWorld())
 	
 	inst:DoTaskInTime(0, function() makeobstacle(inst) end)

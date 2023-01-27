@@ -9,7 +9,9 @@ local function Disappear(inst)
         inst.deathtask = nil
     end
     inst.AnimState:PlayAnimation("disappear")
-    inst:ListenForEvent("animover", function() inst:Remove() end)
+    inst.persists = false
+	inst:ListenForEvent("animover", inst.Remove)
+	inst:ListenForEvent("entitysleep", inst.Remove)
 end
 
 local function fn()

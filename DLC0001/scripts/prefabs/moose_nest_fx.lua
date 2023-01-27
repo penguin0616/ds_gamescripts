@@ -16,11 +16,12 @@ local function fn()
 	inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/moose/egg_electric")
 
 	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
-	inst.persists = false
 
 	inst:AddTag("fx")
 
-	inst:ListenForEvent("animover", function() inst:Remove() end)
+	inst.persists = false
+	inst:ListenForEvent("animover", inst.Remove)
+	inst:ListenForEvent("entitysleep", inst.Remove)
 
 	return inst
 end

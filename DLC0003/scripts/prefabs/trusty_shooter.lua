@@ -92,8 +92,17 @@ end
 
 local function CanTakeAmmo(inst, ammo, giver)
     return (ammo.components.inventoryitem ~= nil) and
-            inst.components.trader.enabled and ((inst.components.weapon.projectile == nil or inst.components.weapon.projectile == ammo.prefab))
-            and not ammo.components.health and not ammo:HasTag("irreplaceable")
+    inst.components.trader.enabled and
+    (
+        inst.components.weapon.projectile == nil or
+        (
+            inst.components.weapon.projectile == ammo.prefab and 
+            inst.components.inventory:GetItemInSlot(1).components.stackable and
+            not inst.components.inventory:GetItemInSlot(1).components.stackable:IsFull()
+        )
+    ) and
+    not ammo.components.health and
+    not ammo:HasTag("irreplaceable")
 end
 
 local function SetAmmoDamageAndRange(inst, ammo)
@@ -263,7 +272,7 @@ local function fn()
     inst.MiniMapEntity:SetIcon( "trusty_shooter.png" )    
 
     MakeInventoryPhysics(inst)
-    inst:AddTag("gun")
+
     inst:AddTag("hand_gun")
     inst:AddTag("irreplaceable")
 
@@ -337,7 +346,8 @@ local function fn()
         end
     end)
 
-    inst:DoTaskInTime(0, function() if not GetPlayer() or GetPlayer().prefab ~= "wheeler" then inst:Remove() end end)
+    inst:AddComponent("characterspecific")
+    inst.components.characterspecific:SetOwner("wheeler")
 
     return inst
 end

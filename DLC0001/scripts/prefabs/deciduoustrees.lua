@@ -852,33 +852,40 @@ local function OnEntitySleep(inst)
 end
 
 local function OnEntityWake(inst)
-
-    if not inst:HasTag("burnt") and not inst:HasTag("fire") and not inst:HasTag("stump") then
+    if not inst:HasTag("burnt") and not inst:HasTag("fire") then
         if not inst.components.burnable then
-            MakeLargeBurnable(inst)
-            inst.components.burnable:SetFXLevel(5)
-            inst.components.burnable:SetOnBurntFn(tree_burnt)
-            inst.components.burnable.extinguishimmediately = false
-            inst.components.burnable.onignite = function(inst) 
-                if inst.monster and not inst:HasTag("stump") then 
-                    inst.sg:GoToState("burning_pre") 
-                end 
-                if inst.components.deciduoustreeupdater then
-                    inst.components.deciduoustreeupdater:SpawnIgniteWave()
+            if inst:HasTag("stump") then
+                MakeSmallBurnable(inst)
+            else
+                MakeLargeBurnable(inst)
+                inst.components.burnable:SetFXLevel(5)
+                inst.components.burnable:SetOnBurntFn(tree_burnt)
+                inst.components.burnable.extinguishimmediately = false
+                inst.components.burnable.onignite = function(inst) 
+                    if inst.monster and not inst:HasTag("stump") then 
+                        inst.sg:GoToState("burning_pre") 
+                    end 
+                    if inst.components.deciduoustreeupdater then
+                        inst.components.deciduoustreeupdater:SpawnIgniteWave()
+                    end
                 end
-            end
-            inst.components.burnable.onextinguish = function(inst) 
-                if inst.monster and not inst:HasTag("stump") then
-                    inst.sg:GoToState("gnash_idle")
+                inst.components.burnable.onextinguish = function(inst) 
+                    if inst.monster and not inst:HasTag("stump") then
+                        inst.sg:GoToState("gnash_idle")
+                    end
                 end
             end
         end
-
+    
         if not inst.components.propagator then
-            MakeLargePropagator(inst)
+            if inst:HasTag("stump") then
+                MakeSmallPropagator(inst)
+            else
+                MakeLargePropagator(inst)
+            end
         end
 
-        if not inst.components.deciduoustreeupdater then
+        if not inst:HasTag("stump") and not inst.components.deciduoustreeupdater then
             inst:AddComponent("deciduoustreeupdater")
         end
     end

@@ -37,7 +37,7 @@ local adultloot = {'meat', 'drumstick', 'drumstick', 'doydoyfeather', 'doydoyfea
 
 local babyfoodprefs = {"SEEDS"}
 local teenfoodprefs = {"SEEDS", "VEGGIE"}
-local adultfoodprefs = {"MEAT", "VEGGIE", "SEEDS", "ELEMENTAL", "WOOD"}
+local adultfoodprefs = {"MEAT", "VEGGIE", "SEEDS", "ELEMENTAL", "WOOD", "ROUGHAGE"}
 
 local babysounds = 
 {
@@ -152,7 +152,7 @@ end
 local function OnEntityWake(inst)
 	inst:ClearBufferedAction()
 
-	if inst.needtogrowup then
+	if inst.needtogrowup and not (inst.components.inventoryitem and inst.components.inventoryitem.owner) then
 		local grown = SpawnPrefab("doydoy")
 		grown.Transform:SetPosition(inst.Transform:GetWorldPosition() )
 		grown.Transform:SetRotation(inst.Transform:GetRotation() )

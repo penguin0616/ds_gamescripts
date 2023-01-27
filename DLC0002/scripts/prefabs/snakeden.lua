@@ -31,20 +31,21 @@ local function startshaking(inst)
 end
 
 local function spawnsnake(inst, target)
+	if inst.components.hackable and inst.components.hackable:CanBeHacked() then
+		if math.random() < TUNING.SNAKE_POISON_CHANCE and GetClock():GetNumCycles() >= TUNING.SNAKE_POISON_START_DAY then
+			inst.components.childspawner.childname = "snake_poison"
+		else
+			inst.components.childspawner.childname = "snake"
+		end
 
-	if math.random() < TUNING.SNAKE_POISON_CHANCE and GetClock():GetNumCycles() >= TUNING.SNAKE_POISON_START_DAY then
-		inst.components.childspawner.childname = "snake_poison"
-	else
-		inst.components.childspawner.childname = "snake"
-	end
-
-	local snake = inst.components.childspawner:SpawnChild()
-	if snake then
-		local spawnpos = Vector3(inst.Transform:GetWorldPosition())
-		spawnpos = spawnpos + TheCamera:GetDownVec()
-		snake.Transform:SetPosition(spawnpos:Get())
-		if snake and target and snake.components.combat then
-			snake.components.combat:SetTarget(target)
+		local snake = inst.components.childspawner:SpawnChild()
+		if snake then
+			local spawnpos = Vector3(inst.Transform:GetWorldPosition())
+			spawnpos = spawnpos + TheCamera:GetDownVec()
+			snake.Transform:SetPosition(spawnpos:Get())
+			if snake and target and snake.components.combat then
+				snake.components.combat:SetTarget(target)
+			end
 		end
 	end
 end
@@ -72,6 +73,8 @@ local function onregenfn(inst)
 	inst.AnimState:PlayAnimation("grow")
 	inst.AnimState:PushAnimation("idle", true)
 	inst.Physics:SetCollides(true)
+
+	startshaking(inst)
 end
 
 local function makeemptyfn(inst)
@@ -82,6 +85,24 @@ local function makeemptyfn(inst)
 		inst.AnimState:PlayAnimation("hacked_idle")
 	end
 	inst.Physics:SetCollides(false)
+end
+
+local function startspawning(inst)
+	if inst.components.childspawner then
+		if
+			not GetClock():IsDay() and
+			inst.components.hackable and
+			inst.components.hackable:CanBeHacked()
+		then
+			inst.components.childspawner:StartSpawning()
+		end
+	end
+end
+
+local function stopspawning(inst)
+	if inst.components.childspawner then
+		inst.components.childspawner:StopSpawning()
+	end
 end
 
 local function makebarrenfn(inst)
@@ -96,16 +117,19 @@ local function makebarrenfn(inst)
 		inst.AnimState:PlayAnimation("idle_dead")
 	end
 	inst.Physics:SetCollides(true)
+
+	stopshaking(inst)
+	stopspawning(inst)
 end
 
 
 local function onhackedfn(inst, hacker, hacksleft)
+	
 	local fx = SpawnPrefab("hacking_fx")
 	local x, y, z= inst.Transform:GetWorldPosition()
 	fx.Transform:SetPosition(x,y + math.random()*2,z)
 
 	if(hacksleft <= 0) then
-
 		inst.AnimState:PlayAnimation("disappear")
 
 		if inst.components.hackable and inst.components.hackable:IsBarren() then
@@ -116,33 +140,20 @@ local function onhackedfn(inst, hacker, hacksleft)
 			inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/vine_drop")
 			inst.AnimState:PushAnimation("hacked_idle")
 		end
+
+		stopshaking(inst)
+		stopspawning(inst)
 	else
 		inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/vine_hack")
 		inst.AnimState:PlayAnimation("chop")
 		inst.AnimState:PushAnimation("idle")
-	end
 
-	spawnsnake(inst, hacker)
-end
-
-local function startspawning(inst)
-	if inst.components.childspawner then
-		local frozen = (inst.components.freezable and inst.components.freezable:IsFrozen())
-		if not frozen and not GetClock():IsDay() then
-			inst.components.childspawner:StartSpawning()
-		end
-	end
-end
-
-local function stopspawning(inst)
-	if inst.components.childspawner then
-		inst.components.childspawner:StopSpawning()
+		spawnsnake(inst, hacker)
 	end
 end
 
 onshake = function (inst)
-	if inst.components.hackable and inst.components.hackable.hacksleft > 0 then
-
+	if inst.components.hackable and inst.components.hackable:CanBeHacked() then
 		inst.SoundEmitter:PlaySound("dontstarve_DLC002/creatures/snake/snake_bush")
 		inst.AnimState:PlayAnimation("rustle_snake", false)
 		inst.AnimState:PushAnimation("idle", true)
@@ -152,7 +163,7 @@ onshake = function (inst)
 end
 
 local function onspawnsnake(inst)
-	if inst:IsValid() then
+	if inst:IsValid() and inst.components.hackable and inst.components.hackable:CanBeHacked() then
 		inst.SoundEmitter:PlaySound("dontstarve_DLC002/creatures/snake/snake_bush")
 		inst.AnimState:PlayAnimation("rustle", false)
 		inst.AnimState:PushAnimation("idle", true)

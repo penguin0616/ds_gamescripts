@@ -289,7 +289,7 @@ local function BecomeIronLord(inst,instant)
     player.ActionStringOverride = ironactionstring
     player:AddTag("ironlord")
     player:AddTag("has_gasmask")
-    
+    player:AddTag("fireimmune")
 
     player:SetStateGraph("SGironlord")
 
@@ -386,7 +386,8 @@ local function Revert(inst)
     player:RemoveTag("ironlord")
     player:RemoveTag("laser_immune")
     player:RemoveTag("mech")    
-    player:RemoveTag("has_gasmask")    
+    player:RemoveTag("has_gasmask")
+    player:RemoveTag("fireimmune")
 
     player:RemoveComponent("worker")
     player.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED

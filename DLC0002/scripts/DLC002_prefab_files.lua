@@ -279,7 +279,6 @@ local PREFABFILES = {
   "marsh_bush",
   "marsh_plant",
   "marsh_tree",
-  "maxwellthrone",
   "meatrack",
   "meats",
   "merm",

@@ -60,26 +60,19 @@ local function makebarrenfn(inst)
 	end
 end
 
---[[local function onguststart(inst, windspeed)
-	if inst.components.pickable and inst.components.pickable:CanBePicked() then
-		inst.AnimState:PlayAnimation("blown_pre", false)
-		inst.AnimState:PushAnimation("blown_loop", true)
+local function onblownpstdone(inst)
+	if inst.components.pickable and
+		inst.components.pickable:CanBePicked() and 
+		(
+			inst.AnimState:IsCurrentAnimation("blown_pst") or
+			inst.AnimState:IsCurrentAnimation("blown_loop") or
+			inst.AnimState:IsCurrentAnimation("blown_pre")
+		)
+	then
+		inst.AnimState:PlayAnimation("sway", true)
 	end
+	inst:RemoveEventCallback("animover", inst.onblownpstdone)
 end
-
-local function ongustend(inst, windspeed)
-	if inst.components.pickable and inst.components.pickable:CanBePicked() then
-		inst.AnimState:PushAnimation("blown_pst", false)
-		inst.AnimState:PushAnimation("sway", true)
-	end
-end
-
-local function ongustpickfn(inst)
-    if inst.components.pickable and inst.components.pickable:CanBePicked() then
-        inst.components.pickable:MakeEmpty()
-        inst.components.lootdropper:SpawnLootPrefab(inst.components.pickable.product)
-    end
-end]]
 
 local function fn(Sim)
 	local inst = CreateEntity()
@@ -119,14 +112,8 @@ local function fn(Sim)
     inst.components.workable:SetWorkLeft(1)
 
     MakePickableBlowInWindGust(inst, TUNING.SAPLING_WINDBLOWN_SPEED, TUNING.SAPLING_WINDBLOWN_FALL_CHANCE)
-    --[[inst:AddComponent("blowinwindgust")
-    inst.components.blowinwindgust:SetWindSpeedThreshold(TUNING.SAPLING_WINDBLOWN_SPEED)
-    inst.components.blowinwindgust:SetDestroyChance(TUNING.SAPLING_WINDBLOWN_FALL_CHANCE)
-    inst.components.blowinwindgust:SetGustStartFn(onguststart)
-    inst.components.blowinwindgust:SetGustEndFn(ongustend)
-    inst.components.blowinwindgust:SetDestroyFn(ongustpickfn)
-    inst.components.blowinwindgust:Start()]]
-
+	inst.components.blowinwindgust:SetGustEndFn(onblownpstdone)
+	inst.onblownpstdone = onblownpstdone -- Sway animation
     
     MakeMediumBurnable(inst)
     MakeSmallPropagator(inst)

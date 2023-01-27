@@ -227,13 +227,13 @@ end
 function Builder:OnSetProfile(profile)
 end
 
-function Builder:MakeRecipe(recipe, pt, onsuccess)
+function Builder:MakeRecipe(recipe, pt, rot, onsuccess)
     if recipe then
     	self.inst:PushEvent("makerecipe", {recipe = recipe})
 		pt = pt or Point(self.inst.Transform:GetWorldPosition())
 		if self:IsBuildBuffered(recipe.name) or self:CanBuild(recipe.name) then
 			self.inst.components.locomotor:Stop()
-			local buffaction = BufferedAction(self.inst, nil, ACTIONS.BUILD, nil, pt, recipe.name, 1)
+			local buffaction = BufferedAction(self.inst, nil, ACTIONS.BUILD, nil, pt, recipe.name, recipe.distance or 1, rot)
 			if onsuccess then
 				buffaction:AddSuccessAction(onsuccess)
 			end
@@ -246,11 +246,17 @@ function Builder:MakeRecipe(recipe, pt, onsuccess)
     return false
 end
 
-function Builder:DoBuild(recname, pt)
+function Builder:DoBuild(recname, pt, rotation)
     local recipe = GetRecipe(recname)
     local buffered = self:IsBuildBuffered(recname)
 
     if recipe and self:IsBuildBuffered(recname) or self:CanBuild(recname) then
+
+		if recipe.placer ~= nil and
+		self.inst.components.rider ~= nil and
+		self.inst.components.rider:IsRiding() then
+			return false, "MOUNTED"
+		end
 
 		if self.buffered_builds[recname] then
 			self.buffered_builds[recname] = nil
@@ -311,6 +317,7 @@ function Builder:DoBuild(recname, pt)
 
                 pt = pt or Point(self.inst.Transform:GetWorldPosition())
 				prod.Transform:SetPosition(pt.x,pt.y,pt.z)
+				prod.Transform:SetRotation(rotation or 0)
                 self.inst:PushEvent("buildstructure", {item=prod, recipe = recipe})
                 prod:PushEvent("onbuilt")
                 ProfileStatsAdd("build_"..prod.prefab)

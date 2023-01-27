@@ -316,7 +316,6 @@ local states=
             elseif should_run then
                 inst.components.locomotor:RunForward()
             end
-            print("now play jumpout",inst)
             inst.AnimState:PlayAnimation("jumpout")
         end,
 

@@ -152,7 +152,9 @@ local function fxfn()
     end
     inst.AnimState:Show("fx"..math.random(1,14))
 
-    inst:ListenForEvent("animover", function() inst:Remove() end) 
+    inst.persists = false
+	inst:ListenForEvent("animover", inst.Remove)
+	inst:ListenForEvent("entitysleep", inst.Remove)
 
     return inst
 end

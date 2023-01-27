@@ -106,7 +106,7 @@ local function fn(Sim)
     --inst.components.burnable:AddFXOffset(Vector3(0,1.5,-.01))
     
     -----------------------------------
-    inst:DoTaskInTime(0, function() if not GetPlayer() or GetPlayer().prefab ~= "willow" then inst:Remove() end end)
+
     return inst
 end
 

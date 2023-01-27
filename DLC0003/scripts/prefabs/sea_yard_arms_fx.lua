@@ -15,7 +15,8 @@ local function stopfx(inst, user)
     inst:ListenForEvent("animover", function() 
         inst.SoundEmitter:KillSound("fix")   
         delete(inst, user) 
-    end)   
+    end)
+    inst.persists = false
 end
 
 local function fn(Sim)

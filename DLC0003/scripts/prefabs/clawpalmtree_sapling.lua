@@ -31,7 +31,7 @@ local function stopgrowing(inst)
 end
 
 local function restartgrowing(inst)
-    if inst and not inst.growtask then
+    if inst and not inst.growtask and not inst.components.inventoryitem then -- It won't have inventoryitem component if it's already a sapling.
         local growtime = GetRandomWithVariance(TUNING.ACORN_GROWTIME.base, TUNING.ACORN_GROWTIME.random)
         inst.growtime = GetTime() + growtime
         inst.growtask = inst:DoTaskInTime(growtime, growtree)

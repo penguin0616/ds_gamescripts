@@ -70,13 +70,9 @@ local function ReturnChildren(inst)
     end
 end
 
-local function OnIgniteFn(inst)
-	inst.AnimState:PlayAnimation("shake", true)
-    inst.shake:Cancel()
-    inst.shake = nil
+local function OnIgnite(inst)
     if inst.components.childspawner then
         inst.components.childspawner:ReleaseAllChildren()
-        inst:RemoveComponent("childspawner")
     end
 end
 
@@ -143,7 +139,9 @@ local function fn()
 
     inst:ListenForEvent("onbuilt", onbuilt)
 
-    MakeLargeBurnable(inst)
+    MakeLargeBurnable(inst, nil, nil, true)
+    MakeLargePropagator(inst)
+    inst.components.burnable:SetOnIgniteFn(OnIgnite)
 
     inst.shake = inst:DoPeriodicTask(GetRandomWithVariance(10, 3), shake )
 	return inst

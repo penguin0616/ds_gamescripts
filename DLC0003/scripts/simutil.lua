@@ -444,7 +444,8 @@ function FindWaterOffset(position, start_angle, radius, attempts, check_los, ign
         local tile = GetVisualTileType(run_point.x, run_point.y, run_point.z)
 
         if tile ~= GROUND.OCEAN_SHALLOW and tile ~= GROUND.OCEAN_MEDIUM and tile ~= GROUND.OCEAN_DEEP and
-        tile ~= GROUND.OCEAN_CORAL and tile ~= GROUND.MANGROVE and tile ~= GROUND.OCEAN_SHIPGRAVEYARD then
+        tile ~= GROUND.OCEAN_CORAL and tile ~= GROUND.MANGROVE and tile ~= GROUND.OCEAN_SHIPGRAVEYARD and 
+        tile ~= GROUND.LILYPOND then
             return false
         end
         if check_los and not ground.Pathfinder:IsClear(position.x, position.y, position.z,
@@ -584,4 +585,28 @@ function ReplaceEntity(oldinst, newinst)
 			end
 		end
 	end
+end
+
+function IsPointInInteriorBounds(pt, distance)
+    local interiorSpawner = GetWorld().components.interiorspawner
+
+    if interiorSpawner.current_interior then
+        local width = interiorSpawner.current_interior.width
+        local depth = interiorSpawner.current_interior.depth
+        local originpt = interiorSpawner:getSpawnOrigin()
+
+        local dMax = originpt.x + depth/2
+        local dMin = originpt.x - depth/2
+
+        local wMax = originpt.z + width/2
+        local wMin = originpt.z - width/2 
+
+        local dist = distance or 0.5
+
+        if pt.x < dMin+dist or pt.x > dMax -dist or pt.z < wMin+dist or pt.z > wMax-dist then
+            return false
+        end 
+    end
+
+    return true
 end

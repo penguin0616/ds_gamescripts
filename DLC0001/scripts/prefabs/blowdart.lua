@@ -111,7 +111,7 @@ end
 -- end
 local function fireattack(inst, attacker, target)
     target.SoundEmitter:PlaySound("dontstarve/wilson/blowdart_impact_fire")
-    target:PushEvent("attacked", {attacker = attacker, damage = 0})
+    target:PushEvent("attacked", { attacker = attacker, damage = 0, weapon = inst })
     if target.components.burnable then
         target.components.burnable:Ignite()
     end

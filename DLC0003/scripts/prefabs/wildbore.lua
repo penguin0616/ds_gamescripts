@@ -529,6 +529,10 @@ local function common()
     
     inst.OnSave = function(inst, data)
         data.build = inst.build
+
+        if inst.daily_gift then
+            data.daily_gift = inst.daily_gift
+        end
     end        
     
     inst.OnLoad = function(inst, data)    
@@ -537,6 +541,10 @@ local function common()
 			if not inst.components.werebeast:IsInWereState() then
 				inst.AnimState:SetBuild(inst.build)
 			end
+
+            if data.daily_gift then
+                inst.daily_gift = data.daily_gift
+            end
 		end
     end           
     

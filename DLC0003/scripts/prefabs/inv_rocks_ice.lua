@@ -29,7 +29,9 @@ local function onperish(inst)
     else
         inst.components.inventoryitem.canbepickedup = false
         inst.AnimState:PlayAnimation("melt")
-        inst:ListenForEvent("animover", function(inst) inst:Remove() end)
+        inst.persists = false
+        inst:ListenForEvent("animover", inst.Remove)
+        inst:ListenForEvent("entitysleep", inst.Remove)
     end
 end
 
@@ -68,7 +70,9 @@ local function onhitground_haildrop(inst, onwater)
         if math.random() < TUNING.HURRICANE_HAIL_BREAK_CHANCE then
             inst.components.inventoryitem.canbepickedup = false
             inst.AnimState:PlayAnimation("break")
-            inst:ListenForEvent("animover", function(inst) inst:Remove() end)
+            inst.persists = false
+            inst:ListenForEvent("animover", inst.Remove)
+            inst:ListenForEvent("entitysleep", inst.Remove)
         else
             inst.components.blowinwind:Start()
             inst:RemoveEventCallback("onhitground", onhitground_haildrop)

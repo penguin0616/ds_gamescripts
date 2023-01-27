@@ -236,6 +236,8 @@ local function defaultfn()
     inst.components.cookable.product = "cookedmandrake"
     inst.components.cookable:SetOnCookedFn(OnCooked)
     
+    inst.OnBought = MakeItem
+    
     ------------------------------------------
     
     inst.OnSave = function(inst, data)

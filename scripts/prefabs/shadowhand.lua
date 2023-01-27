@@ -35,7 +35,9 @@ local function Dissipate(inst)
     if inst.arm then
         inst.arm.AnimState:PlayAnimation("arm_scare")
     end
-    inst:ListenForEvent("animover", function(inst) inst:Remove() end)
+    inst.persists = false
+	inst:ListenForEvent("animover", inst.Remove)
+	inst:ListenForEvent("entitysleep", inst.Remove)
 end
 
 local function Retract(inst)
@@ -49,7 +51,9 @@ local function Retract(inst)
     if inst.arm then
         inst.components.locomotor:GoToEntity(inst.arm)
     end
-    inst:ListenForEvent("animover", function(inst) inst:Remove() end)
+    inst.persists = false
+	inst:ListenForEvent("animover", inst.Remove)
+	inst:ListenForEvent("entitysleep", inst.Remove)
 end
 
 local function SeekFire(inst)
@@ -141,6 +145,10 @@ local function create_hand()
 
     if IsDLCEnabled(PORKLAND_DLC) then
         MakeSpecialGhostPhysics(inst, 10, .5)
+
+    elseif IsDLCEnabled(CAPY_DLC) then
+        MakeAmphibiousGhostPhysics(inst, 10, .5)
+        
     else
         MakeCharacterPhysics(inst, 10, .5)
     end

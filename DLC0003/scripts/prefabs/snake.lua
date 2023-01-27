@@ -25,7 +25,6 @@ local prefabs =
 	--"vomitfire_fx",
 	"firesplash_fx",
 	"firering_fx",
-	"dragonfly_fx",
 	"lavaspit",
 	"snakeoil",
 }
@@ -318,6 +317,7 @@ local function amphibiousfn(Sim)
 
 	local shadow = inst.entity:AddDynamicShadow()
 	inst:AddTag("amphibious")
+	inst:AddTag("snake_amphibious")
 	MakeAmphibiousCharacterPhysics(inst, 1, .5)
 	inst.AnimState:SetBuild("snake_scaly_build")
 

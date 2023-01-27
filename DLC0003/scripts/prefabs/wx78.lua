@@ -139,7 +139,7 @@ local function onlightingstrike(inst)
 	--			inst.overcharge_intensity_task = nil
 	--		end
 			inst.SoundEmitter:PlaySound("dontstarve/characters/wx78/charged", "overcharge_sound")			
-			inst.SoundEmitter:SetParameter( "overcharge_sound", "intensity", 1 )
+			--inst.SoundEmitter:SetParameter( "overcharge_sound", "intensity", 1 )
 	--		inst.overcharge_intensity_task = inst:DoTaskInTime(0.5,function()
 	--				inst.SoundEmitter:SetParameter( "overcharge_sound", "intensity", 0.5 )
 	--			end)

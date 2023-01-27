@@ -27,7 +27,7 @@ local function LightsOff(inst)
 end
 
 local function onfar(inst) 
-    if inst.components.spawner:IsOccupied() then
+    if inst.components.spawner and inst.components.spawner:IsOccupied() and not GetClock():IsDay() then
         LightsOn(inst)
     end
 end

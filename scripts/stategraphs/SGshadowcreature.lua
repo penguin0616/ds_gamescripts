@@ -75,8 +75,16 @@ local states=
         events=
         {
 			EventHandler("animover", function(inst)
-                if GetWorld().Map then
-                
+                if rawget(_G, "FindGroundOffset") then
+                    local offset = FindGroundOffset(inst:GetPosition(), 2*math.pi*math.random(), 10, 12)
+                    local pos = inst:GetPosition()
+    
+                    if offset then
+                        pos = pos + offset
+                        inst.Transform:SetPosition(pos:Get())
+                    end
+
+                elseif GetWorld().Map then
 					local max_tries = 4
 					for k = 1,max_tries do
 						local pos = Vector3(inst.Transform:GetWorldPosition())
@@ -91,7 +99,6 @@ local states=
                 end
 
 				inst.sg:GoToState("appear")
-                
 			end),
 			
         },

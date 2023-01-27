@@ -40,7 +40,7 @@ local RecipePopup = Class(Widget, function(self, horizontal)
     else
         self.name = self.contents:AddChild(Text(UIFONT, 42))
 	end
-    self.name:SetPosition(320, 142, 0)
+    self.name:SetPosition(325, 142, 0)
     if JapaneseOnPS4() then
         self.name:SetRegionSize(64*3+20,90)
         self.name:EnableWordWrap(true)
@@ -282,22 +282,16 @@ function RecipePopup:Refresh()
     end
     self.ing = {}
 
+    local center = 320
     local num = 0
-    --[[
-        (recipe.ingredients and #recipe.ingredients or 0) +
-        (recipe.character_ingredients and #recipe.character_ingredients or 0)
-        ]]
-
-    local center = 330
-    --local num = 0
     for k,v in pairs(recipe.ingredients) do num = num + 1 end
     for k,v in pairs(recipe.character_ingredients) do num = num + 1 end
     local w = 64
     local div = 10
-
+    local half_div = div * .5
     local offset = center
     if num > 1 then 
-        offset = offset - (w/2 + div)*(num-1)
+        offset = offset - (w/2 + half_div)*(num-1) 
     end
     
     for k,v in pairs(recipe.ingredients) do
@@ -320,7 +314,7 @@ function RecipePopup:Refresh()
 		local imageName = item_img ..".tex"
         local ing = self.contents:AddChild(IngredientUI(v:GetAtlas(imageName), imageName, v.amount, num_found, has, STRINGS.NAMES[string.upper(v.type)], owner))
         ing:SetPosition(Vector3(offset, 80, 0))
-        offset = offset + (w+ div)
+        offset = offset + (w+ half_div)
         self.ing[k] = ing
     end
 
@@ -329,8 +323,8 @@ function RecipePopup:Refresh()
         print("amount",amount)
         local imageName = v.type ..".tex"
         local ing = self.contents:AddChild(IngredientUI(v:GetAtlas(imageName), imageName, v.amount, amount, has, STRINGS.NAMES[string.upper(v.type)], owner, v.type))
-        ing:SetPosition(Vector3(offset, self.skins_spinner ~= nil and 110 or 80, 0))
-        offset = offset + (w+ div)       
+        ing:SetPosition(Vector3(offset, 80, 0))
+        offset = offset + (w+ half_div)
         self.ing[k] = ing
     end
 

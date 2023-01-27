@@ -570,20 +570,36 @@ function Combat:ForceAttack()
     end
 end
 
-
 function Combat:GetWeapon()
     if self.inst.components.inventory then
+        local weapon = nil
+
         local item = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+
         if item and item.components.weapon then
-            return item
-        end        
-        item = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
-        if item and item.components.weapon then
-            return item
-        end        
+            weapon = item
+        else        
+            item = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+            if item and item.components.weapon then
+                weapon = item
+            end
+        end       
+
+        if not (
+            self.inst.components.rider ~= nil and self.inst.components.rider:IsRiding()
+        )
+        or (
+            weapon and (
+                weapon:HasTag("rangedweapon")
+                or (weapon.components.weapon and weapon.components.weapon:CanRangedAttack())
+                or weapon.components.complexprojectile
+                or weapon.components.projectile
+            )
+        ) then
+            return weapon
+        end
     end
 end
-
 
 function Combat:CalcDamage(target, weapon, multiplier)
 
@@ -740,11 +756,6 @@ function Combat:DoAttack(target_override, weapon, projectile)
         if self.areahitrange then
             local epicentre = projectile or self.inst
             self:DoAreaAttack(epicentre, self.areahitrange, weapon)
-        end
-    end
-    if weapon and weapon:HasTag("Shockwhenwet") then
-        if GetSeasonManager():IsRaining() then
-            self:GetAttacked(nil, TUNING.HEALING_MEDSMALL, nil, "electric")
         end
     end
 end

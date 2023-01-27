@@ -1,8 +1,8 @@
 local assets =
 {
 	Asset("PKGREF", "sound/dontstarve.fev"),
+	Asset("SOUNDPACKAGE", "sound/dontstarve_wagstaff.fev"),
 	Asset("SOUNDPACKAGE", "sound/dontstarve_DLC001.fev"),
-	--Asset("PKGREF", "sound/dontstarve_DLC001.fev"),
 
     Asset("ATLAS", "images/global.xml"),
     Asset("IMAGE", "images/global.tex"),

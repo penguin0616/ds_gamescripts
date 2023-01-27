@@ -17,11 +17,11 @@ local Crop = Class(function(self, inst)
         self.wither_temp = math.random(TUNING.MIN_PLANT_WITHER_TEMP, TUNING.MAX_PLANT_WITHER_TEMP)
     end
     
-    self.inst:ListenForEvent("witherplants", function(it, data) 
+    self.witherHandler = function(world_or_self, data) 
         if self.witherable and not self.withered and not self.protected and data.temp > self.wither_temp then
             self:MakeWithered()
         end
-    end, GetWorld())
+    end
 end)
 
 function Crop:SetOnMatureFn(fn)
@@ -271,7 +271,7 @@ function Crop:Harvest(harvester)
         if product then
             self.inst:ApplyInheritedMoisture(product)
         end
-        harvester.components.inventory:GiveItem(product)
+        harvester.components.inventory:GiveItem(product, nil, Vector3(TheSim:GetScreenPos(self.inst.Transform:GetWorldPosition())))
         ProfileStatsAdd("grown_"..product.prefab) 
         
         self.matured = false
@@ -308,7 +308,16 @@ function Crop:CollectSceneActions(doer, actions)
     if (self:IsReadyForHarvest() or self:IsWithered()) and doer.components.inventory then
         table.insert(actions, ACTIONS.HARVEST)
     end
+end
 
+function Crop:OnEntitySleep()
+	self.inst:RemoveEventCallback("witherplants", self.witherHandler, GetWorld())
+end
+
+function Crop:OnEntityWake()
+	local data = {temp = GetSeasonManager():GetCurrentTemperature()}
+    self:witherHandler(data)
+    self.inst:ListenForEvent("witherplants", self.witherHandler, GetWorld())
 end
 
 function Crop:LongUpdate(dt)

@@ -45,7 +45,7 @@ local function LaunchProjectile(inst, targetpos)
 end
 
 local function OnFindFire(inst, firePos)
-	dumptable(firePos)
+	--dumptable(firePos)
 	inst:PushEvent("putoutfire", {firePos = firePos})
 end
 

@@ -48,7 +48,7 @@ local function MakeFx(name, bank, build, anim, sound, sounddelay, tint, tintalph
 
         inst:AddTag("FX")
         inst.persists = false
-        inst:ListenForEvent("animover", function() inst:Remove() end)
+        inst:ListenForEvent("animover", inst.Remove)
 
         return inst
     end

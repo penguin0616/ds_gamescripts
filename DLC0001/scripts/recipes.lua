@@ -206,3 +206,11 @@ Recipe("eyeturret_item", {Ingredient("deerclops_eyeball", 1), Ingredient("minota
 if ACCOMPLISHMENTS_ENABLED then
 	Recipe("accomplishment_shrine", {Ingredient("goldnugget", 10), Ingredient("cutstone", 1), Ingredient("gears", 6)}, RECIPETABS.SCIENCE, TECH.SCIENCE_TWO, "accomplishment_shrine_placer")
 end
+
+---- Deconstruction Recipes ----
+-- These recipes are for other characters' structures to drop their loot and for some things to be deconstructable.
+-- Character recipes here will be overwritten in the character file, so it's safe to register them without tests.
+
+DeconstructRecipe("telipad",  {Ingredient("gears", 1), Ingredient("transistor", 1), Ingredient("cutstone", 2)})
+DeconstructRecipe("thumper",  {Ingredient("gears", 1), Ingredient("flint"     , 6), Ingredient("hammer"  , 2)})
+DeconstructRecipe("minisign", {Ingredient("boards", 1)})

@@ -709,15 +709,18 @@ function LocoMotor:UpdateSpeedModifierTimers(dt)
 end
 
 function LocoMotor:OnSave()
-    return {
-        speed_modifiers_mult = self.speed_modifiers_mult,
-        speed_modifiers_mult_timer = self.speed_modifiers_mult_timer,
-        
-        speed_modifiers_add = self.speed_modifiers_add,
-        speed_modifiers_add_timer = self.speed_modifiers_add_timer,
+    if not self.noserial then
+        return {
+            speed_modifiers_mult = self.speed_modifiers_mult,
+            speed_modifiers_mult_timer = self.speed_modifiers_mult_timer,
+            
+            speed_modifiers_add = self.speed_modifiers_add,
+            speed_modifiers_add_timer = self.speed_modifiers_add_timer,
 
-        under_leaf_canopy = self.inst:HasTag("under_leaf_canopy")
-    }
+            under_leaf_canopy = self.inst:HasTag("under_leaf_canopy"),
+        }
+    end
+    self.noserial = false
 end
 
 function LocoMotor:OnLoad(data)
@@ -732,7 +735,6 @@ function LocoMotor:OnLoad(data)
             self.updating_mods_task = self.inst:DoPeriodicTask(SPEED_MOD_TIMER_DT, function() self:UpdateSpeedModifierTimers(SPEED_MOD_TIMER_DT) end)
         end
     end
-    
 
     if data.speed_modifiers_add then
         self.speed_modifiers_add = data.speed_modifiers_add
@@ -749,6 +751,12 @@ function LocoMotor:OnLoad(data)
     if data.under_leaf_canopy then
         self.inst:AddTag("under_leaf_canopy")
         GetWorld():PushEvent("onchangecanopyzone", {instant=true})
+    end
+end
+
+function LocoMotor:OnProgress()
+	if SaveGameIndex:GetCurrentMode(Settings.save_slot) ~= "adventure" then
+        self.noserial = true
     end
 end
 

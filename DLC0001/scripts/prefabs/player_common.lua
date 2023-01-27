@@ -71,6 +71,24 @@ local function giveupstring(combat, target)
     return str
 end
 
+local TALLER_TALKER_OFFSET = Vector3(0, -700, 0)
+local DEFAULT_TALKER_OFFSET = Vector3(0, -400, 0)
+local function GetTalkerOffset(inst)
+    local rider = inst.components.rider
+    return rider ~= nil and rider:IsRiding()
+        and TALLER_TALKER_OFFSET
+        or DEFAULT_TALKER_OFFSET
+end
+
+local TALLER_FROSTYBREATHER_OFFSET = Vector3(.3, 3.75, 0)
+local DEFAULT_FROSTYBREATHER_OFFSET = Vector3(.3, 1.15, 0)
+local function GetFrostyBreatherOffset(inst)
+    local rider = inst.components.rider
+    return rider ~= nil and rider:IsRiding()
+        and TALLER_FROSTYBREATHER_OFFSET
+        or DEFAULT_FROSTYBREATHER_OFFSET
+end
+
 local function MakePlayerCharacter(name, customprefabs, customassets, customfn, starting_inventory)
 
     local font = TALKINGFONT
@@ -124,6 +142,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
         Asset("ANIM", "anim/player_mount_idles_shiver.zip"),   
 
         Asset("ANIM", "anim/player_actions_unsaddle.zip"),
+
+        Asset("ANIM", "anim/player_wrap_bundle.zip"),
 
         Asset("ANIM", "anim/goo.zip"),     
 
@@ -228,6 +248,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
         anim:OverrideSymbol("fx_wipe", "wilson_fx", "fx_wipe")
         anim:OverrideSymbol("fx_liquid", "wilson_fx", "fx_liquid")
 		anim:OverrideSymbol("shadow_hands", "shadow_hands", "shadow_hands")
+
+        anim:AddOverrideBuild("player_wrap_bundle")
 		
         inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
         inst.components.locomotor:SetSlowMultiplier( 0.6 )
@@ -273,6 +295,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
         inst:AddComponent("kramped")
 
         inst:AddComponent("talker")
+        inst.components.talker:SetOffsetFn(GetTalkerOffset)
+
         -- Reset overrides just in case
         inst.hurtsoundoverride = nil
         inst.talker_path_override = nil
@@ -308,7 +332,10 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
         inst:AddComponent("eater")
         inst:AddComponent("playeractionpicker")
         inst:AddComponent("leader")
+
         inst:AddComponent("frostybreather")
+        inst.components.frostybreather:SetOffsetFn(GetFrostyBreatherOffset)
+
         inst:AddComponent("age")
         
         inst:AddComponent("grue")

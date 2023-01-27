@@ -216,7 +216,6 @@ end
 
 local function checkRemoveGlowfly(inst)
 	if not inst:HasTag("cocoonspawn") and inst:GetDistanceSqToInst(GetPlayer()) > 30*30 and not inst.components.inventoryitem:IsHeld() then
-		print("REMOVING GLOWFLY, TOO FAR AWAY")
 		inst:Remove()
 	end
 end

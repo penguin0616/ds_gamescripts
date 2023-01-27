@@ -101,6 +101,22 @@ local TUNING_OVERRIDES =
 							end
 						end,
 					},
+	["crocodog"] =	{
+						doit = 	function(difficulty)
+							local hounded = GetWorld().components.hounded
+							if hounded then
+								if difficulty == "never" then
+									hounded:SpawnModeNever()
+								elseif difficulty == "always" then
+									hounded:SpawnModeHeavy()
+								elseif difficulty == "often" then
+									hounded:SpawnModeMed()
+								elseif difficulty == "rare" then
+									hounded:SpawnModeLight()
+								end
+							end
+						end,
+					},
 	["deerclops"] = 	{
 							doit = 	function(difficulty)									
 								local basehassler = GetWorld().components.basehassler

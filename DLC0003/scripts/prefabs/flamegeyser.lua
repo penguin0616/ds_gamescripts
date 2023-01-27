@@ -7,6 +7,7 @@ local assets=
 
 local function StartBurning(inst)
     inst.Light:Enable(true)
+    inst.AnimState:SetBloomEffectHandle( "shaders/anim.ksh" )
     
     inst.components.geyserfx:Ignite()
 end

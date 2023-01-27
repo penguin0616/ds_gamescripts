@@ -33,8 +33,8 @@ function Breeder:OnSave()
         data.breedtasktime = GetTaskRemaining(self.breedTask)     
     end
 
-    if self.luretask then
-        data.luretasktime = GetTaskRemaining(self.luretask) 
+    if self.lureTask then
+        data.luretasktime = GetTaskRemaining(self.lureTask)
     end
 
     return data
@@ -53,7 +53,7 @@ function Breeder:OnLoad(data, newents)
     end
 
     if data.luretasktime then
-        self.lureTask = self.inst:DoTaskInTime(data.luretask,function() self:checkLure() end)
+        self.lureTask = self.inst:DoTaskInTime(data.luretasktime, function() self:checkLure() end)
     end
 
     self.inst:DoTaskInTime(0, function() self.inst:PushEvent("onVisChange", {}) end )

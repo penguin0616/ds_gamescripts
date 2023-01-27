@@ -11,7 +11,8 @@ local prefabs =
 
 local function OnFinished(inst)
     inst.AnimState:PlayAnimation("used")
-    inst:ListenForEvent("animover", function() inst:Remove() end)
+    inst.persists = false
+	inst:ListenForEvent("animover", inst.Remove)
 end
 
 local function OnEquip(inst, owner) 
@@ -22,6 +23,9 @@ end
 
 local function OnDropped(inst)
     inst.AnimState:PlayAnimation("idle")
+
+    inst.components.projectile:Stop()
+    inst.Physics:Stop()
 end
 
 local function OnUnequip(inst, owner) 
@@ -109,6 +113,7 @@ local function fn(Sim)
     
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(OnDropped)
     
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(OnEquip)

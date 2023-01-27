@@ -120,8 +120,8 @@ local function onsave(inst, data)
     if inst.spawntasks then
     	data.spawntasks= {}
     	for i,oldtask in pairs(inst.spawntasks)do
-            local test = inst:DoTaskInTime(5,function()end)
-            dumptable(test,1,1)
+            --local test = inst:DoTaskInTime(5,function()end)
+            --dumptable(test,1,1)
 
     		local newtask = {}
     		newtask.prefab = oldtask.prefab

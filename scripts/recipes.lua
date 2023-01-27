@@ -37,8 +37,8 @@ Recipe("turf_carpetfloor", {Ingredient("boards", 1), Ingredient("beefalowool", 1
 Recipe("pottedfern", {Ingredient("foliage", 5), Ingredient("slurtle_shellpieces",1 )}, RECIPETABS.TOWN, TECH.SCIENCE_TWO, "pottedfern_placer", 0.9)
 
 --FARM
-Recipe("slow_farmplot", {Ingredient("cutgrass", 8),Ingredient("poop", 4),Ingredient("log", 4)}, RECIPETABS.FARM,  TECH.SCIENCE_ONE, "farmplot_placer")
-Recipe("fast_farmplot", {Ingredient("cutgrass", 10),Ingredient("poop", 6),Ingredient("rocks", 4)}, RECIPETABS.FARM,  TECH.SCIENCE_TWO, "farmplot_placer")
+Recipe("slow_farmplot", {Ingredient("cutgrass", 8),Ingredient("poop", 4),Ingredient("log", 4)}, RECIPETABS.FARM,  TECH.SCIENCE_ONE, "slow_farmplot_placer")
+Recipe("fast_farmplot", {Ingredient("cutgrass", 10),Ingredient("poop", 6),Ingredient("rocks", 4)}, RECIPETABS.FARM,  TECH.SCIENCE_TWO, "fast_farmplot_placer")
 Recipe("beebox", {Ingredient("boards", 2),Ingredient("honeycomb", 1),Ingredient("bee", 4)}, RECIPETABS.FARM, TECH.SCIENCE_ONE, "beebox_placer")
 Recipe("meatrack", {Ingredient("twigs", 3),Ingredient("charcoal", 2), Ingredient("rope", 3)}, RECIPETABS.FARM, TECH.SCIENCE_ONE, "meatrack_placer")
 Recipe("cookpot", {Ingredient("cutstone", 3),Ingredient("charcoal", 6), Ingredient("twigs", 6)}, RECIPETABS.FARM,  TECH.SCIENCE_ONE, "cookpot_placer")
@@ -189,3 +189,11 @@ Recipe("eyeturret_item", {Ingredient("deerclops_eyeball", 1), Ingredient("minota
 if ACCOMPLISHMENTS_ENABLED then
 	Recipe("accomplishment_shrine", {Ingredient("goldnugget", 10), Ingredient("cutstone", 1), Ingredient("gears", 6)}, RECIPETABS.SCIENCE, TECH.SCIENCE_TWO, "accomplishment_shrine_placer")
 end
+
+---- Deconstruction Recipes ----
+-- These recipes are for other characters' structures to drop their loot and for some things to be deconstructable.
+-- Character recipes here will be overwritten in the character file, so it's safe to register them without tests.
+
+DeconstructRecipe("telipad",  {Ingredient("gears", 1), Ingredient("transistor", 1), Ingredient("cutstone", 2)})
+DeconstructRecipe("thumper",  {Ingredient("gears", 1), Ingredient("flint"     , 6), Ingredient("hammer"  , 2)})
+DeconstructRecipe("minisign", {Ingredient("boards", 1)})

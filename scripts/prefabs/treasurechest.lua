@@ -84,8 +84,8 @@ local function chest(style)
 		
 		minimap:SetIcon( style..".png" )
 
-
 		inst:AddTag("structure")
+		
 		inst.AnimState:SetBank(chests[style].bank)
 		inst.AnimState:SetBuild(chests[style].build)
 		inst.AnimState:PlayAnimation("closed")

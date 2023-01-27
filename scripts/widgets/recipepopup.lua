@@ -40,7 +40,7 @@ local RecipePopup = Class(Widget, function(self, horizontal)
     else
         self.name = self.contents:AddChild(Text(UIFONT, 42))
 	end
-    self.name:SetPosition(320, 142, 0)
+    self.name:SetPosition(325, 142, 0)
     if JapaneseOnPS4() then
         self.name:SetRegionSize(64*3+20,90)
         self.name:EnableWordWrap(true)
@@ -279,15 +279,15 @@ function RecipePopup:Refresh()
     end
     self.ing = {}
 
-    local center = 330
+    local center = 320
     local num = 0
     for k,v in pairs(recipe.ingredients) do num = num + 1 end
     local w = 64
     local div = 10
-    
+    local half_div = div * .5
     local offset = center
     if num > 1 then 
-        offset = offset - (w/2 + div)*(num-1)
+        offset = offset - (w/2 + half_div)*(num-1) 
     end
     
     for k,v in pairs(recipe.ingredients) do
@@ -301,7 +301,7 @@ function RecipePopup:Refresh()
 
         local ing = self.contents:AddChild(IngredientUI(v.atlas, item_img ..".tex", v.amount, num_found, has, STRINGS.NAMES[string.upper(v.type)], owner))
         ing:SetPosition(Vector3(offset, 80, 0))
-        offset = offset + (w+ div)
+        offset = offset + (w+ half_div)
         self.ing[k] = ing
     end
 end

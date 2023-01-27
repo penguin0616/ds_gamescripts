@@ -140,6 +140,8 @@ local function fn()
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetLoot(loot)
+    inst.components.lootdropper.alwaysinfront = true
+    inst.components.lootdropper.speed = 3
     
     inst:AddComponent("inspectable")
 

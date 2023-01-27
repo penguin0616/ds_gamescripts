@@ -20,7 +20,7 @@ local prefabs =
 local function onpickedfn(inst)
     inst.SoundEmitter:PlaySound("dontstarve/wilson/pickup_reeds")
     inst.AnimState:PlayAnimation("picking")
-    inst.AnimState:PushAnimation("picked")
+    inst.AnimState:PushAnimation("picked", true)
 end
 
 local function onregenfn(inst)
@@ -29,7 +29,7 @@ local function onregenfn(inst)
 end
 
 local function makeemptyfn(inst)
-	inst.AnimState:PlayAnimation("picked")
+	inst.AnimState:PlayAnimation("picked", true)
 end
 
 local function ongustpick(inst)

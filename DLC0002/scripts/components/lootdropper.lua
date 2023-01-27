@@ -13,6 +13,16 @@ local LootDropper = Class(function(self, inst)
 	self.speed = nil
 end)
 
+-- Translates prefabs to their cooked prefab for when they are not in default form (cookedXXX or XXX_cooked)
+local special_cooked_prefabs = {
+	["fish_raw"] = "fish_med_cooked",
+}
+
+-- For modders use:
+function AddSpecialCookedPrefab(prefab, cooked_prefab)
+	special_cooked_prefabs[prefab] = cooked_prefab
+end
+
 LootTables = {}
 function SetSharedLootTable(name, table)
 	LootTables[name] = table
@@ -195,18 +205,21 @@ end
 function LootDropper:CheckBurnable(prefabs)
 	-- check burnable
 	if not self.inst.components.fueled and self.inst.components.burnable and self.inst.components.burnable:IsBurning() then
-		for k,v in pairs(prefabs) do
-			local cookedAfter = v.."_cooked"
-			local cookedBefore = "cooked"..v
-			if PrefabExists(cookedAfter) then
-				prefabs[k] = cookedAfter
-			elseif PrefabExists(cookedBefore) then
-				prefabs[k] = cookedBefore
-			else
-				prefabs[k] = "ash"
-			end
-		end
-	end	
+        for k,v in pairs(prefabs) do
+            local cookedAfter = v.."_cooked"
+            local cookedBefore = "cooked"..v
+            
+            if special_cooked_prefabs[v] then
+                prefabs[k] = special_cooked_prefabs[v]
+            elseif PrefabExists(cookedAfter) then
+                prefabs[k] = cookedAfter
+            elseif PrefabExists(cookedBefore) then
+                prefabs[k] = cookedBefore 
+            else             
+                prefabs[k] = "ash"
+            end
+        end
+    end
 end
 
 function LootDropper:DropLoot(pt, loots)

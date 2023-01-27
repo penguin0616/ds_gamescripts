@@ -93,7 +93,7 @@ local function fn()
     inst:DoTaskInTime(1*FRAMES, function() inst.components.knownlocations:RememberLocation("home", inst:GetPosition(), true) end)
 
 	MakeTinyFreezableCharacter(inst)
-	MakeSmallBurnable(inst)
+	MakeSmallBurnableCharacter(inst, "flup_body")
 
 	inst:AddComponent("hiddendanger")
 

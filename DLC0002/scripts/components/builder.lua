@@ -444,6 +444,12 @@ function Builder:DoBuild(recname, pt, rotation)
 
     if recipe and self:IsBuildBuffered(recname) or self:CanBuild(recname) then
     	
+		if recipe.placer ~= nil and
+		self.inst.components.rider ~= nil and
+		self.inst.components.rider:IsRiding() then
+			return false, "MOUNTED"
+		end
+		
     	local wetLevel = 0
 		if self.buffered_builds[recname] then
 			wetLevel = self.buffered_builds[recname].wetLevel

@@ -130,7 +130,7 @@ function MakeWallType(data)
 		elseif isWaterWall(inst) then
 			ground_OK = ground_OK and (not map:IsWater(tiletype) or map:IsBuildableWater(tiletype))
 		else 
-			ground_OK = ground_OK and not map:IsWater(tiletype)
+			ground_OK = ground_OK and not map:IsWater(tiletype) and IsPointInInteriorBounds(pt, 1)
 		end
 	
 		if ground_OK then
@@ -404,7 +404,7 @@ function MakeWallType(data)
 
 		inst:ListenForEvent("endinteriorcam", function() 
                 inst.Transform:SetRotation(inst.Transform:GetRotation())
-            end, GetWorld())	    
+            end, GetWorld())
 		
 		MakeSnowCovered(inst)
 

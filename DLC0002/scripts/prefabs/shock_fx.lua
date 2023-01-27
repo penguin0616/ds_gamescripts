@@ -14,7 +14,11 @@ local function fn()
     anim:PlayAnimation("shock")
     snd:PlaySound("dontstarve_DLC001/common/shocked")
     inst:AddTag("fx")
-    inst:ListenForEvent( "animover", function(inst) inst:Remove() end )
+
+    inst.persists = false
+	inst:ListenForEvent("animover", inst.Remove)
+	inst:ListenForEvent("entitysleep", inst.Remove)
+    
     return inst
 end
 

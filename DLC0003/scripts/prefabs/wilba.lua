@@ -562,7 +562,6 @@ local fn = function(inst)
     inst:ListenForEvent("resurrect", function()
         inst.ready_to_transform = false
         inst.from_food = false
-        inst.were = false
         inst.monster_count = 0
         inst.monster_cooldown = 0
         inst.cooldown_schedule = 0
@@ -573,7 +572,11 @@ local fn = function(inst)
             inst.trans_task_info = nil
         end
 
-        inst.TransformToWilba(inst)
+        if inst.were then
+            inst.TransformToWilba(inst)
+        end
+
+        inst.were = false
     end)
     inst:ListenForEvent("death", function()
         if inst.breath_task then

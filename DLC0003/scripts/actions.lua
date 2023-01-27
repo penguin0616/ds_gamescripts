@@ -30,8 +30,8 @@ ACTIONS=
 	WHACK = Action({mount_enabled=true},2, true),
 	FORCEATTACK = Action({mount_enabled=true},2, true),
 	EAT = Action({mount_enabled=true}),
-	PICK = Action({}),
-	PICKUP = Action({},2),
+	PICK = Action({mount_enabled=true}),
+	PICKUP = Action({mount_enabled=true},2),
 	MINE = Action({}),
 	DIG = Action({},nil, nil, true),
 	GIVE = Action({mount_enabled=true}),
@@ -75,7 +75,7 @@ ACTIONS=
 	BUILD_ROOM = Action({}),
 	DEMOLISH_ROOM = Action({}),
 	BUILD_ROOM = Action({}),
-	SMOTHER = Action({}),
+	SMOTHER = Action({mount_enabled=true}),
 	MANUALEXTINGUISH = Action({}),
 	RANGEDSMOTHER = Action({},0, true),
 	RANGEDLIGHT = Action({mount_enabled=true},-4, true),
@@ -99,7 +99,7 @@ ACTIONS=
 	USEITEM = Action({},1, true),
 	TAKEITEM = Action({}),
 	MAKEBALLOON = Action({mount_enabled=true}),
-	CASTSPELL = Action({mount_enabled=true},-1, false, true, 20),
+	CASTSPELL = Action({mount_enabled=true},-1, false, true, 20, true),
 	BLINK = Action({mount_enabled=true},10, false, true, 36),
 	PEER = Action({mount_enabled=true},0, false, true, 40, true),
 	COMBINESTACK = Action({mount_enabled=true}),
@@ -162,7 +162,7 @@ ACTIONS=
 	BUNDLE = Action({},2, nil, true),
     BUNDLESTORE = Action({},nil, true ),
     WRAPBUNDLE = Action({},nil, true ),
-    UNWRAP = Action({},2, nil, true),
+    UNWRAP = Action({},3, nil, true),
     
     DRAW = Action({}),
     UNPIN = Action({}),	
@@ -810,7 +810,7 @@ ACTIONS.DEPLOY.fn = function(act)
 		local obj = (act.doer.components.inventory and act.doer.components.inventory:RemoveItem(act.invobject)) or 
 		(act.doer.components.container and act.doer.components.container:RemoveItem(act.invobject))
 		if obj then
-			if obj.components.deployable:Deploy(act.pos, act.doer) then
+			if obj.components.deployable:Deploy(act.pos, act.doer, act.rotation) then
 				return true
 			else
 				act.doer.components.inventory:GiveItem(obj)
@@ -820,41 +820,30 @@ ACTIONS.DEPLOY.fn = function(act)
 end
 
 ACTIONS.DEPLOY.strfn = function(act)
-	if act.invobject and act.invobject:HasTag("groundtile") then
-	return "GROUNDTILE"
-	elseif act.invobject and act.invobject:HasTag("wallbuilder") then
-		return "WALL"
-	elseif act.invobject and act.invobject:HasTag("eyeturret") then
-		return "TURRET"
-	elseif act.invobject and act.invobject:HasTag("boat") then
-		return "PLACE"
-	end
+	return act.invobject and (
+        (act.invobject:HasTag("eyeturret") and "TURRET") or
+        (act.invobject:HasTag("wallbuilder") and "WALL") or
+        (act.invobject:HasTag("groundtile") and "GROUNDTILE") or
+        (act.invobject:HasTag("gatebuilder") and "GATE") or 
+        (act.invobject:HasTag("fencebuilder") and "FENCE") or
+        (act.invobject:HasTag("portableitem") and "PLACE") or
+        (act.invobject:HasTag("boat") and "PLACE")
+	) or nil
 end
 
 ACTIONS.DEPLOY_AT_RANGE.fn = ACTIONS.DEPLOY.fn 
 
-
 ACTIONS.DEPLOY_AT_RANGE.strfn = ACTIONS.DEPLOY.strfn
 
+ACTIONS.TOGGLE_DEPLOY_MODE.strfn = ACTIONS.DEPLOY.strfn
 
-ACTIONS.TOGGLE_DEPLOY_MODE.strfn = function(act)
-	if act.invobject and act.invobject:HasTag("groundtile") then
-		return "GROUNDTILE"
-	elseif act.invobject and act.invobject:HasTag("wallbuilder") then
-		return "WALL"
-	elseif act.invobject and act.invobject:HasTag("eyeturret") then
-		return "TURRET"
-	elseif act.invobject and act.invobject:HasTag("boat") then
-		return "PLACE"
-	end
-end
 
 ACTIONS.LAUNCH.fn = function(act)
 	if act.invobject and act.invobject.components.deployable and act.invobject.components.deployable:CanDeploy(act.pos) then
 		local obj = (act.doer.components.inventory and act.doer.components.inventory:RemoveItem(act.invobject)) or 
 		(act.doer.components.container and act.doer.components.container:RemoveItem(act.invobject))
 		if obj then
-			if obj.components.deployable:Deploy(act.pos, act.doer) then
+			if obj.components.deployable:Deploy(act.pos, act.doer, act.rotation) then
 				return true
 			else
 				act.doer.components.inventory:GiveItem(obj)
@@ -1689,14 +1678,8 @@ end
 
 
 ACTIONS.BUILD.fn = function(act)
-	if act.doer.components.rider and act.doer.components.rider:IsRiding() then
-		return false, "MOUNTED"
-	else
-		if act.doer.components.builder then
-			if act.doer.components.builder:DoBuild(act.recipe, act.pos, act.rotation, act.modifydata) then
-				return true
-			end
-		end
+	if act.doer.components.builder then
+		return act.doer.components.builder:DoBuild(act.recipe, act.pos, act.rotation, act.modifydata)
 	end
 end
 

@@ -710,7 +710,14 @@ local states=
 		
 		events=
 		{   
-			EventHandler("onthaw", function(inst) inst.sg:GoToState("thaw") end ),        
+			EventHandler("onthaw", function(inst) inst.sg:GoToState("thaw") end ),
+			EventHandler("unfreeze", function(inst)
+                if inst.sg.sg.states.hit then
+                    inst.sg:GoToState("hit")
+                else
+                    inst.sg:GoToState("idle")
+                end
+            end),     
 		}
 	},
 
@@ -742,5 +749,5 @@ local states=
 
 }
   
-return StateGraph("rabbit", states, events, "idle", actionhandlers)
+return StateGraph("dungbeetle", states, events, "idle", actionhandlers)
 

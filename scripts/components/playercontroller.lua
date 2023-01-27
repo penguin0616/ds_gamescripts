@@ -137,7 +137,7 @@ function PlayerController:DoControllerAction()
 	self.time_direct_walking = 0
 	if self.placer then
 		if self.placer.components.placer.can_build then
-			self.inst.components.builder:MakeRecipe(self.placer_recipe, Vector3(self.placer.Transform:GetWorldPosition()))
+			self.inst.components.builder:MakeRecipe(self.placer_recipe, Vector3(self.placer.Transform:GetWorldPosition()), self.placer:GetRotation())
 			return true
 		end
 	elseif self.deployplacer then
@@ -344,13 +344,14 @@ function PlayerController:GetActionButtonAction()
 		local tool = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 
 		--bug catching (has to go before combat)
+		local notags = {"FX", "NOCLICK"}
 		if tool and tool.components.tool and tool.components.tool:CanDoAction(ACTIONS.NET) then
 			local target = FindEntity(self.inst, 5, 
 				function(guy) 
 					return  guy.components.health and not guy.components.health:IsDead() and 
 							guy.components.workable and
 							guy.components.workable.action == ACTIONS.NET
-				end)
+				end, nil, notags)
 			if target then
 			    return BufferedAction(self.inst, target, ACTIONS.NET, tool)
 			end
@@ -396,9 +397,9 @@ function PlayerController:GetActionButtonAction()
         		end				
 			elseif notriding(self.inst) and pickup.components.activatable and pickup.components.activatable.inactive then
 				action = ACTIONS.ACTIVATE
-			elseif notriding(self.inst) and pickup.components.inventoryitem and pickup.components.inventoryitem.canbepickedup then 
+			elseif pickup.components.inventoryitem and pickup.components.inventoryitem.canbepickedup then 
 				action = ACTIONS.PICKUP 
-			elseif notriding(self.inst) and pickup.components.pickable and pickup.components.pickable:CanBePicked() then 
+			elseif pickup.components.pickable and pickup.components.pickable:CanBePicked() then 
 				action = ACTIONS.PICK 
 			elseif notriding(self.inst) and pickup.components.harvestable and pickup.components.harvestable:CanBeHarvested() then
 				action = ACTIONS.HARVEST
@@ -424,7 +425,7 @@ function PlayerController:DoActionButton()
 	--do the placement
 	if self.placer then
 		if self.placer.components.placer.can_build then
-			self.inst.components.builder:MakeRecipe(self.placer_recipe, Vector3(self.placer.Transform:GetWorldPosition()))
+			self.inst.components.builder:MakeRecipe(self.placer_recipe, Vector3(self.placer.Transform:GetWorldPosition()), self.placer:GetRotation())
 			return true
 		end
 	else
@@ -1073,7 +1074,7 @@ function PlayerController:OnLeftClick(down)
 		--do the placement
 		if self.placer.components.placer.can_build then
 			local pos = self.placer.components.placer.targetPos or TheInput:GetWorldPosition()
-			self.inst.components.builder:MakeRecipe(self.placer_recipe, TheInput:GetWorldPosition())
+			self.inst.components.builder:MakeRecipe(self.placer_recipe, TheInput:GetWorldPosition(), self.placer:GetRotation())
 			
 			self:CancelPlacement()
 		end
@@ -1130,11 +1131,14 @@ function PlayerController:OnRightClick(down)
     end
     
     local action = self:GetRightMouseAction()
+
     if action then
-		self:DoAction(action )
+		if self.deployplacer ~= nil and action.action == ACTIONS.DEPLOY then
+			action.rotation = self.deployplacer.Transform:GetRotation()
+		end
+
+		self:DoAction(action)
 	end
-		
-    
 end
 
 function PlayerController:ShakeCamera(inst, shakeType, duration, speed, maxShake, maxDist)

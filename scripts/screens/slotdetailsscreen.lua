@@ -242,6 +242,7 @@ function SlotDetailsScreen:OnControl( control, down )
 	if SlotDetailsScreen._base.OnControl(self, control, down) then return true end
 	
 	if control == CONTROL_CANCEL and not down then
+		EnableAllDLC()
 		TheFrontEnd:PopScreen(self)
 		return true
 	end

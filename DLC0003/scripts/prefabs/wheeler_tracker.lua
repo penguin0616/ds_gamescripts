@@ -179,6 +179,8 @@ local function ActivateTracking(inst)
 end
 
 local function on_equip(inst, owner, force)
+    owner.AnimState:ClearOverrideSymbol("swap_object")
+    
     local function setspecialslot()
         CheckSpecialSlotStatus(inst, owner)
         owner.HUD.controls.inv:SetSpecialSlotActive("wheeler_tracker", true, inst)
@@ -291,7 +293,8 @@ local function fn(Sim)
     inst:ListenForEvent("exitinterior",  function() refreshoninterior() end, GetWorld())
     inst:ListenForEvent("enterinterior", function() refreshoninterior() end, GetWorld())
 
-    inst:DoTaskInTime(0, function() if not GetPlayer() or GetPlayer().prefab ~= "wheeler" then inst:Remove() end end)
+    inst:AddComponent("characterspecific")
+    inst.components.characterspecific:SetOwner("wheeler")
 
     return inst
 end

@@ -493,7 +493,9 @@ local function chop_down_burnt_tree(inst, chopper)
     inst.SoundEmitter:PlaySound("dontstarve/wilson/use_axe_tree")
     inst.AnimState:PlayAnimation(inst.anims.chop_burnt)
     RemovePhysicsColliders(inst)
-    inst:ListenForEvent("animover", function() inst:Remove() end)
+    inst.persists = false
+	inst:ListenForEvent("animover", inst.Remove)
+	inst:ListenForEvent("entitysleep", inst.Remove)
     inst.components.inventory:DropEverything(false, false)
     inst.components.lootdropper:SpawnLootPrefab("charcoal")
     inst.components.lootdropper:DropLoot()
@@ -707,27 +709,42 @@ local function OnEntitySleep(inst)
     end
 end
 
-local function OnEntityWake(inst)
 
-    if not inst:HasTag("burnt") and not inst:HasTag("fire") and not inst:HasTag("stump") then
+local function OnEntityWake(inst)
+    if not inst:HasTag("burnt") and not inst:HasTag("fire") then
         if not inst.components.burnable then
-            MakeLargeBurnable(inst)
-            inst.components.burnable:SetFXLevel(5)
-            inst.components.burnable:SetOnBurntFn(tree_burnt)
-            inst.components.burnable.extinguishimmediately = false
-            inst.components.burnable:SetOnIgniteFn(OnIgnite)
-            inst.components.burnable.onextinguish = function(inst)
-                if inst.monster and not inst:HasTag("stump") then
-                    inst.sg:GoToState("gnash_idle")
+            if inst:HasTag("stump") then
+                MakeSmallBurnable(inst)
+            else
+                MakeLargeBurnable(inst)
+                inst.components.burnable:SetFXLevel(5)
+                inst.components.burnable:SetOnBurntFn(tree_burnt)
+                inst.components.burnable.extinguishimmediately = false
+                inst.components.burnable.onignite = function(inst) 
+                    if inst.monster and not inst:HasTag("stump") then 
+                        inst.sg:GoToState("burning_pre") 
+                    end 
+                    if inst.components.deciduoustreeupdater then
+                        inst.components.deciduoustreeupdater:SpawnIgniteWave()
+                    end
+                end
+                inst.components.burnable.onextinguish = function(inst) 
+                    if inst.monster and not inst:HasTag("stump") then
+                        inst.sg:GoToState("gnash_idle")
+                    end
                 end
             end
         end
-
+    
         if not inst.components.propagator then
-            MakeLargePropagator(inst)
+            if inst:HasTag("stump") then
+                MakeSmallPropagator(inst)
+            else
+                MakeLargePropagator(inst)
+            end
         end
 
-        if not inst.components.deciduoustreeupdater then
+        if not inst:HasTag("stump") and not inst.components.deciduoustreeupdater then
             inst:AddComponent("deciduoustreeupdater")
         end
     end
@@ -963,6 +980,9 @@ local function OnGustStart(inst, windspeed)
         return
     end
     inst:DoTaskInTime(math.random()/2, function(inst)
+        if inst:HasTag("stump") or inst:HasTag("burnt") then
+			return
+		end
         if inst.spotemitter == nil then
             AddToNearSpotEmitter(inst, "treeherd", "tree_creak_emitter", TUNING.TREE_CREAK_RANGE)
         end

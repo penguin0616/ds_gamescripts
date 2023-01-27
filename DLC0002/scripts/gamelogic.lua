@@ -478,6 +478,16 @@ function PopulateWorld(savedata, profile, playercharacter, playersavedataoverrid
 			if savedata.ents["volcano"] then
 				spawn_ent = savedata.ents["volcano"][1]
 			end
+
+			-- Mount the boat used when we climbed the volcano.
+			if playerdata.driver and playerdata.driver.lastvehicle then
+				for k, ent in pairs(savedata.ents[playerdata.driver.lastvehicle_prefab]) do
+					if ent.id == playerdata.driver.lastvehicle then
+						-- The LoadPostPass of the drivable component will do the job.
+						ent.data.drivable.driver = savedata.playerinfo.id
+					end
+				end
+			end
 		end
 
 		if spawn_ent and spawn_ent.x and spawn_ent.z then
@@ -1469,6 +1479,12 @@ Print(VERBOSITY.DEBUG, "[Loading Morgue]")
 Morgue:Load( function(did_it_load) 
 	--print("Morgue loaded....[",did_it_load,"]")
 end )
+
+--Now let's setup debugging!!!
+if DEBUGGER_ENABLED then
+    local startResult, breakerType = Debuggee.start()
+    print('Debuggee start ->', startResult, breakerType )
+end
 
 Print(VERBOSITY.DEBUG, "[Loading profile and save index]")
 Profile:Load( function() 

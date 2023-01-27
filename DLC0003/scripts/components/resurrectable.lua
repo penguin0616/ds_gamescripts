@@ -162,6 +162,7 @@ local function TrySpawnSkeleton(inst)
 			ent.HiddenPlayerSkeleton = false
 			ent:DoTaskInTime(3, function(inst) 
 									inst:Show()
+									inst.Physics:SetActive(true)
 								end)
 		end
 	end

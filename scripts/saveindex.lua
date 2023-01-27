@@ -705,19 +705,21 @@ function SaveIndex:GetWorldEntranceForOtherWorld(playerevent, worldmode)
 					volcano = "shipwrecked",
 					porkland = "porkland",
 				   }
+	
+	local best_choice = nil
 
 	for k,v in pairs(self.data.slots[self.current_slot].worldentrances) do
-		if v == playerevent then
-			local file = string.split(k, ":")[1]
-			local mode = string.split(file, "_")[1]
-			if current_mode == origin_modes[mode] then
-				print("worldentrance in this world", k)
-				return k 
+		local file = string.split(k, ":")[1]
+		local mode = string.split(file, "_")[1]
+		if current_mode == origin_modes[mode] then
+			best_choice = k
+			if v == playerevent then
+				break
 			end
 		end
 	end
 
-	return nil
+	return best_choice
 end
 
 function SaveIndex:GetWorldEntranceForCurrentWorld(playerevent, worldmode)
@@ -813,9 +815,11 @@ function SaveIndex:GotoWorldEntrance(playerevent, cb)
 		file = string.split(entrance, ":")[1]
 		mode = string.split(file, "_")[1]
 
-		if v == playerevent and modes[current_mode][mode] then
+		if modes[current_mode][mode] then
 			foundslot = true
-			break
+			if v == playerevent then
+				break
+			end
 		end
 	end
 

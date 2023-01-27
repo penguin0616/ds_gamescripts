@@ -108,7 +108,7 @@ function MakeHedgeType(data)
 	local function test_wall(inst, pt)
 		local map = GetWorld().Map
 		local tiletype = GetGroundTypeAtPosition(pt)
-		local ground_OK = tiletype ~= GROUND.IMPASSABLE and not map:IsWater(tiletype)
+		local ground_OK = tiletype ~= GROUND.IMPASSABLE and not map:IsWater(tiletype) and IsPointInInteriorBounds(pt, 1)
 		
 
 		
@@ -374,9 +374,13 @@ function MakeHedgeType(data)
 
         inst:AddComponent("fixable")
         inst.components.fixable:AddRecinstructionStageData("broken","hedge","hedge"..data.hedgetype.."_build")
-        inst.components.fixable:SetPrefabName(data.name)
+        inst.components.fixable:SetPrefabName("hedge")
         inst.components.fixable.reconstructedanims ={play ="place", push = "growth1" }
         inst.components.fixable.reconstructionprefab = data.name
+
+		inst:ListenForEvent("endinteriorcam", function()
+			inst.Transform:SetRotation(inst.Transform:GetRotation())
+		end, GetWorld())
 
 		inst.OnSave = onsave
 	    inst.OnLoad = onload

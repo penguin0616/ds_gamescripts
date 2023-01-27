@@ -85,6 +85,14 @@ function Workable:OnLoad(data)
 end
 
 function Workable:WorkedBy(worker, numworks)
+
+    if -- Net and Fish Actions need an inventory!
+        table.contains({ACTIONS.NET, ACTIONS.FISH}, self:GetWorkAction())
+        and worker.components.inventory == nil
+    then
+        return
+    end
+
     numworks = numworks or 1
     self.workleft = self.workleft - numworks
     self.lastworktime = GetTime()

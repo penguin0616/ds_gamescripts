@@ -514,14 +514,13 @@ local function makefn()
 end
 
 local function placetestfn(inst)
-    local pt = inst:GetPosition()
-    local tile = GetWorld().Map:GetTileAtPoint(pt.x,pt.y,pt.z)
-    if tile == GROUND.INTERIOR then
-        return false
-    end
+    return not TheCamera.interior
+end
 
-    return true
+local function HideLayers(inst)
+    inst.AnimState:Hide("snow")
+    inst.AnimState:Hide("boards")
 end
 
 return Prefab( "common/objects/playerhouse_city", makefn(), assets, prefabs),
-       MakePlacer("common/playerhouse_city_placer", "pig_house_sale", "pig_house_sale", "idle",nil,nil,nil,0.75,nil,nil,nil,nil,nil, placetestfn)
+       MakePlacer("common/playerhouse_city_placer", "pig_house_sale", "pig_house_sale", "idle",nil,nil,nil,0.75,nil,nil,nil,nil,nil, placetestfn, nil, HideLayers)

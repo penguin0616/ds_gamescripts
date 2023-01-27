@@ -81,7 +81,6 @@ local prefabs =
     "deco_wood_beam",
     "deco_wood_cornerbeam",
     "wall_light1",
-    "swinging_light1",
     "swinging_light_floral_bloomer",
     "swinging_light_basic_metal",
     "swinging_light_chandalier_candles",
@@ -108,7 +107,6 @@ local prefabs =
     "deco_marble_beam",
     "deco_valence",
     "wall_light_hoofspa",
-    "wall_light_hoofspa_backwall",
 
     "wall_mirror",
 

@@ -12,6 +12,8 @@ local prefabs =
 	"stafflight",
     "staff_tornado",
     "cutgrass",
+    "sand_puff_large_front",
+    "sand_puff_large_back",
 }
 
 ---------RED STAFF---------
@@ -59,7 +61,7 @@ local function onattack_red(inst, attacker, target)
 
     attacker.SoundEmitter:PlaySound("dontstarve/wilson/fireball_explo")
 
-    target:PushEvent("attacked", { attacker = attacker, damage = 0 })
+    target:PushEvent("attacked", { attacker = attacker, damage = 0, weapon = inst})
 end
 
 local function onlight(inst, target)
@@ -92,7 +94,7 @@ local function onattack_blue(inst, attacker, target)
     end
 
     if target.sg ~= nil and not target.sg:HasStateTag("frozen") then
-        target:PushEvent("attacked", { attacker = attacker, damage = 0 })
+        target:PushEvent("attacked", { attacker = attacker, damage = 0, weapon = inst})
     end
 
     if target.components.freezable then
@@ -307,6 +309,10 @@ local function SpawnLootPrefab(inst, lootprefab)
                     pt = pt + Vector3(math.cos(angle), 0, math.sin(angle))*(loot.Physics:GetRadius() + inst.Physics:GetRadius())
                     loot.Transform:SetPosition(pt.x,pt.y,pt.z)
                 end
+
+                if loot.components.inventoryitem then
+                    loot.components.inventoryitem:OnLootDropped()
+                end
                 
                 loot:DoTaskInTime(1, 
                     function() 
@@ -438,7 +444,7 @@ local function cancreatelight(staff, caster, target, pos)
     local ground = GetWorld()
     if ground and pos then
         local tile = ground.Map:GetTileAtPoint(pos.x, pos.y, pos.z)
-        return tile ~= GROUND.IMPASSIBLE and tile < GROUND.UNDERGROUND
+        return tile ~= GROUND.IMPASSABLE and tile < GROUND.UNDERGROUND
     end
     return false
 end
@@ -630,6 +636,7 @@ local function red()
 
 
     inst:AddTag("firestaff")
+    inst:AddTag("projectile")
     inst:AddTag("rangedfireweapon")
 
     inst:AddComponent("weapon")
@@ -652,6 +659,7 @@ local function blue()
     local inst = commonfn("blue")
     
     inst:AddTag("icestaff")
+    inst:AddTag("projectile")
     inst:AddTag("extinguisher")
 
     inst:AddComponent("weapon")

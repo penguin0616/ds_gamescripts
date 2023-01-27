@@ -14,7 +14,9 @@ local function chop_down_burnt_tree(inst, chopper)
     inst.SoundEmitter:PlaySound("dontstarve/wilson/use_axe_tree")          
 	inst.AnimState:PlayAnimation("chop_burnt_tall")
     RemovePhysicsColliders(inst)
-	inst:ListenForEvent("animover", function() inst:Remove() end)
+	inst.persists = false
+	inst:ListenForEvent("animover", inst.Remove)
+	inst:ListenForEvent("entitysleep", inst.Remove)
     inst.components.lootdropper:SpawnLootPrefab("charcoal")
     inst.components.lootdropper:DropLoot()
 end

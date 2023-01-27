@@ -138,6 +138,10 @@ local function fn(Sim)
     inst:ListenForEvent( "daytime", function() updatedamage(inst) end , GetWorld())
     inst:ListenForEvent( "nighttime", function() updatedamage(inst) end , GetWorld())
     updatedamage(inst)
+
+    inst:AddComponent("characterspecific")
+    inst.components.characterspecific:SetOwner("wendy")
+
     return inst
 end
 

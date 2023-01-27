@@ -331,6 +331,8 @@ function MakeHat(name)
 	local function gasmask()
 		local inst = simple()
 		inst:AddTag("gasmask")
+		inst:AddTag("muffler")
+		
 		inst.components.equippable.dapperness = TUNING.CRAZINESS_SMALL
 		inst.components.equippable.poisongasblocker = true
 
@@ -1629,7 +1631,8 @@ function MakeHat(name)
 	end
 
 	local function woodlegs_spawntreasure(new_sec, old_sec, inst, isload)
-		if isload then
+		-- OnLoad and when repaired.
+		if isload or new_sec > old_sec then
 			return
 		end
 

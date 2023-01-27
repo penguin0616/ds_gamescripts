@@ -66,14 +66,12 @@ function Aporkalypse:OnSave()
 		inside_ruins = self.inside_ruins,
 		fiesta_active = self.fiesta_active,
 		fiesta_begin_date = self.fiesta_begin_date,
+		fiesta_elapsed = GetClock():GetTotalTime() - self.fiesta_begin_date,
 		first_time = self.first_time,
 	}
 end
 
 function Aporkalypse:OnLoad(data)
-
-	print ("LOADING APORKALYPSE")
-
 	if data.current_season then
 		self.current_season = data.current_season
 	end
@@ -98,25 +96,17 @@ function Aporkalypse:OnLoad(data)
 	end
 
 	if data.patched then
-		print ("NO PATCHING REQUIRED")
 		self.patched = data.patched
 	else
-		print ("PATCHING WITH APORKALYPSE ROOM")
 		self:PatchSave()
 	end
 
 	if data.fiesta_active then
-		-- TODO: should we push "beginfiesta" here?
-
 		self.fiesta_active = data.fiesta_active
 		self.fiesta_begin_date = data.fiesta_begin_date
 
-		local fiesta_elapsed = GetClock():GetTotalTime() - self.fiesta_begin_date
-
-		self.fiesta_task = self.inst:DoTaskInTime(self.fiesta_duration - fiesta_elapsed, function() 
-			self.fiesta_active = false
-			self.inst:PushEvent("endfiesta")
-		end)
+		local duration = self.fiesta_duration - math.max(data.fiesta_elapsed or 0, 0)
+		self.fiesta_task = self.inst:DoTaskInTime(duration, function() self:EndFiesta() end)
 	end
 
 	self.first_time = data.first_time
@@ -281,7 +271,15 @@ function Aporkalypse:BeginAporkalypse()
 		return
 	end
 
+	if self.fiesta_task then
+		self.fiesta_task:Cancel()
+		self.fiesta_task = nil
+
+		self:EndFiesta()
+	end
+
 	self.aporkalypse_active = true
+	self.begin_date = GetClock():GetTotalTime() -- To deal with the fiesta when the aporkalypse was forced by the clock.
 
 	local seasonmanager = GetSeasonManager()
 	self.current_season = seasonmanager:GetSeason()
@@ -349,6 +347,11 @@ end
 
 function Aporkalypse:SpawnBats()
 	local batted = GetWorld().components.batted
+
+	if batted.neverattack then
+		return
+	end
+
 	for i=1, self.bat_amount do
 		batted:AddBat()
 	end

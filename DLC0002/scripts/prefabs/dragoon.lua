@@ -14,7 +14,6 @@ local prefabs =
 	"firesplash_fx",
 	"firering_fx",
 	"dragoonfire",
-	"dragonfly_fx",
 	"dragoonspit",
 	"dragoonheart",
 	"dragoon_charge_fx",

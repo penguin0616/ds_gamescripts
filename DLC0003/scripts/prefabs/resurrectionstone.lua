@@ -59,7 +59,28 @@ local function doresurrect(inst, dude)
 		if dude.components.driver:GetIsDriving() then 
 			dude.components.driver:OnDismount()
 		end 
-	end 
+	end
+
+	TheCamera:Snap()
+        
+	GetPlayer():DoTaskInTime(0, function()
+		if TheCamera.interior or inst.interior then
+			GetPlayer().Transform:SetRotation(0)
+			local interiorSpawner = GetWorld().components.interiorspawner
+			interiorSpawner:PlayTransition(GetPlayer(), nil, inst.interior, inst)			
+		else		
+			GetPlayer().Transform:SetRotation(inst.Transform:GetRotation())
+		end
+
+		if not inst.interior then
+			if TheCamera.interior then
+				local interiorSpawner = GetWorld().components.interiorspawner
+				interiorSpawner.exteriorCamera:SetDistance(12)
+			else
+				TheCamera:SetDistance(12)	
+			end
+		end
+	end)
 	
     scheduler:ExecuteInTime(3, function()
         dude:Show()

@@ -75,6 +75,10 @@ local function testlocation(inst, pt)
 		return false
 	end
 
+	if not inst:IsPosSurroundedByLand(pt.x, pt.y, pt.z, 3) then
+		return false
+	end
+
 	local result = true
 	local ents = TheSim:FindEntities(pt.x,pt.y,pt.z,1,{"blocker"})	
 	local brambleblocked = false
@@ -207,19 +211,21 @@ local function OnSave(inst, data)
 	end	
 
 	data.children = {}
-    if inst.core then
-    	table.insert(data.children,inst.core.GUID)
+    if inst.core and inst.core:IsValid() then
+    	table.insert(data.children, inst.core.GUID)
     	data.core = #data.children
     end
     
-    if inst.parenthedge then
-    	table.insert(data.children,inst.parenthedge.GUID)
+    if inst.parenthedge and inst.parenthedge:IsValid() then
+    	table.insert(data.children, inst.parenthedge.GUID)
     	data.parenthedge = #data.children
     end
    
-    if inst.childhedge then    	
-    	for i, child in ipairs(inst.childhedge)do
-    		table.insert(data.children,child.GUID)
+    if inst.childhedge then
+    	for i, child in ipairs(inst.childhedge) do
+			if child:IsValid() then
+    			table.insert(data.children, child.GUID)
+			end
     	end
     end
 

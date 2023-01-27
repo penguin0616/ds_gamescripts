@@ -666,3 +666,14 @@ RecipeCategory("reno_tab_rugs", 					RENO_RECIPETABS.RUGS,			RECIPETABS.HOME, TE
 RecipeCategory("reno_tab_lamps", 					RENO_RECIPETABS.LAMPS,			RECIPETABS.HOME, TECH.HOME_TWO, cityRecipeGameTypes)
 RecipeCategory("reno_tab_tables", 					RENO_RECIPETABS.TABLES,			RECIPETABS.HOME, TECH.HOME_TWO, cityRecipeGameTypes)
 RecipeCategory("reno_tab_ornaments", 				RENO_RECIPETABS.ORNAMENTS,		RECIPETABS.HOME, TECH.HOME_TWO, cityRecipeGameTypes)
+
+---- Deconstruction Recipes ----
+-- These recipes are for other characters' structures to drop their loot and for some things to be deconstructable.
+-- Character recipes here will be overwritten in the character file, so it's safe to register them without tests.
+
+DeconstructRecipe("woodlegsboat", {Ingredient("boatcannon", 1), Ingredient("boards", 4), Ingredient("dubloon", 4)})
+DeconstructRecipe("surfboard", {Ingredient("boards", 1), Ingredient("seashell", 2)})
+
+DeconstructRecipe("telipad",  {Ingredient("gears", 1), Ingredient("transistor", 1), Ingredient("cutstone", 2)})
+DeconstructRecipe("thumper",  {Ingredient("gears", 1), Ingredient("flint"     , 6), Ingredient("hammer"  , 2)})
+DeconstructRecipe("minisign", {Ingredient("boards", 1)})

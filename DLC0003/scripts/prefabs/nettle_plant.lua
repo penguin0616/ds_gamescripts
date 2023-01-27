@@ -105,7 +105,7 @@ local function ontransplantfn(inst)
 	testForGrowth(inst)
 end
 
-local function onsave(inst,data)	
+--[[ local function onsave(inst,data)	
 	data.loaded = true
 	if inst.components.pickable.targettime then
 		data.targettime = inst.components.pickable.targettime - GetTime()
@@ -128,22 +128,20 @@ local function onloadpostpass(inst,newents,data)
 				end)
 		end
 	end
-end
+end ]]
+
 local function canbepickedfn(inst)
-	--print("Testing", inst.moist)
 	if inst.wet then
 		return true
 	end
 end
 
 local function makefn(stage)
-
 	local function dig_up(inst, digger)
 		if inst.components.pickable and inst.components.pickable:CanBePicked() then
 			inst.components.lootdropper:SpawnLootPrefab("cutnettle")
 		end		
 		local bush = inst.components.lootdropper:SpawnLootPrefab("dug_nettle")
-		print(inst.prefab)
 		inst:Remove()
 	end
 
@@ -175,7 +173,7 @@ local function makefn(stage)
 	    inst.components.pickable.makeemptyfn = makeemptyfn
 		inst.components.pickable.makebarrenfn = makebarrenfn
 		inst.components.pickable.ontransplantfn = ontransplantfn
-		inst.components.pickable:Pause()
+		--inst.components.pickable:Pause()
 		inst.components.pickable.dontunpauseafterwinter = true
 
 		inst.components.pickable.pickydirt = valid_tiles
@@ -251,9 +249,11 @@ local function makefn(stage)
 			end)
 		inst.AnimState:AddOverrideBuild("nettle_bulb_build")
 
+		--[[
 		inst.OnLoadPostPass = onloadpostpass
 		inst.OnSave = onsave
 		inst.OnLoad = onload
+		]]
 
 		inst.AnimState:Hide("Layer 3")
 

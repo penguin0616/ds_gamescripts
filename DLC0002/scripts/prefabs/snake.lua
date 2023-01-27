@@ -23,7 +23,6 @@ local prefabs =
 	--"vomitfire_fx",
 	"firesplash_fx",
 	"firering_fx",
-	"dragonfly_fx",
 	"lavaspit",
 	"snakeoil",
 }

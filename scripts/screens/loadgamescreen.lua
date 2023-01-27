@@ -97,6 +97,7 @@ end
 function LoadGameScreen:OnControl(control, down)
     if Screen.OnControl(self, control, down) then return true end
     if not down and control == CONTROL_CANCEL then
+        EnableAllDLC()
         TheFrontEnd:PopScreen(self)
         return true
     end

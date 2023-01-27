@@ -450,9 +450,9 @@ function PlayerController:GetActionButtonAction()
         		end				
 			elseif notriding(self.inst) and  pickup.components.activatable and pickup.components.activatable.inactive then
 				action = ACTIONS.ACTIVATE
-			elseif notriding(self.inst) and pickup.components.inventoryitem and pickup.components.inventoryitem.canbepickedup then 
+			elseif pickup.components.inventoryitem and pickup.components.inventoryitem.canbepickedup then 
 				action = ACTIONS.PICKUP 
-			elseif notriding(self.inst) and pickup.components.pickable and pickup.components.pickable:CanBePicked() then 
+			elseif pickup.components.pickable and pickup.components.pickable:CanBePicked() then 
 				action = ACTIONS.PICK 
 			elseif notriding(self.inst) and pickup.components.harvestable and pickup.components.harvestable:CanBeHarvested() then
 				action = ACTIONS.HARVEST
@@ -1208,11 +1208,14 @@ function PlayerController:OnRightClick(down)
     end
     
     local action = self:GetRightMouseAction()
+
     if action then
-		self:DoAction(action )
+		if self.deployplacer ~= nil and action.action == ACTIONS.DEPLOY then
+			action.rotation = self.deployplacer.Transform:GetRotation()
+		end
+
+		self:DoAction(action)
 	end
-		
-    
 end
 
 function PlayerController:ShakeCamera(inst, shakeType, duration, speed, maxShake, maxDist)

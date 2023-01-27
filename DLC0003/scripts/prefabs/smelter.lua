@@ -23,7 +23,13 @@ local function onhammered(inst, worker)
 	if not inst:HasTag("burnt") and inst.components.melter and inst.components.melter.product and inst.components.melter.done then
 		inst.components.lootdropper:AddChanceLoot(inst.components.melter.product, 1)
 	end
+
+	if inst.components.container ~= nil then
+		inst.components.container:DropEverything()
+	end
+
 	inst.components.lootdropper:DropLoot()
+
 	SpawnPrefab("collapse_small").Transform:SetPosition(inst.Transform:GetWorldPosition())
 	inst.SoundEmitter:PlaySound("dontstarve/common/destroy_metal")
 	inst:Remove()
@@ -260,6 +266,14 @@ local function onFloodedEnd(inst)
 	end 
 end 
 
+local function returntointeriorscene(inst)
+	if inst.components.melter and inst.components.melter.cooking then
+		inst.Light:Enable(true)
+	else
+		inst.Light:Enable(false)
+	end
+end
+
 local function fn(Sim)
 	local inst = CreateEntity()
 	inst.entity:AddTransform()
@@ -332,6 +346,8 @@ local function fn(Sim)
 
 	MakeMediumBurnable(inst, nil, nil, true)
 	MakeSmallPropagator(inst)
+
+	inst.returntointeriorscene = returntointeriorscene
 
 	inst.OnSave = onsave 
    	inst.OnLoad = onload

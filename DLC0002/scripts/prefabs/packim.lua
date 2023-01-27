@@ -419,6 +419,7 @@ local function create_packim()
 	inst:AddTag("notraptrigger")
 	inst:AddTag("cattoy")
     inst:AddTag("amphibious")
+	inst:AddTag("flying")
 
 	inst.entity:AddTransform()
 
@@ -446,6 +447,7 @@ local function create_packim()
 
 	inst:AddComponent("combat")
 	inst.components.combat.hiteffectsymbol = "chester_body"
+	inst.components.combat.notags = {"player"}
 	inst.components.combat:SetDefaultDamage(TUNING.PIG_DAMAGE)
 	inst.components.combat:SetAttackPeriod(TUNING.PIG_ATTACK_PERIOD)
 	inst.components.combat:SetKeepTargetFunction(KeepTargetFn)
@@ -464,7 +466,9 @@ local function create_packim()
 
 	inst:AddComponent("locomotor")
 	inst.components.locomotor.walkspeed = 10
-	--inst.components.locomotor.runspeed = 7
+    inst.components.locomotor:EnableGroundSpeedMultiplier(false)
+    inst.components.locomotor:SetTriggersCreep(false)
+    inst.components.locomotor.pathcaps = {ignorecreep = true}
 
 	inst:AddComponent("follower")
 	inst:ListenForEvent("stopfollowing", OnStopFollowing)

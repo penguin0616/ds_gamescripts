@@ -102,8 +102,8 @@ local function fn(Sim)
 	local minimap = inst.entity:AddMiniMapEntity()
 	inst.entity:AddSoundEmitter()
 
-
-	inst:AddTag("bush")
+	inst:AddTag("fire_proof")
+	
 	minimap:SetIcon( "limpetRock.png" )
 
 	MakeObstaclePhysics(inst, 1)

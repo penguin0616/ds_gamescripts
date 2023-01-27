@@ -106,10 +106,9 @@ local function OnSave(inst, data)
         data.build = inst.saveartdata.build
         data.anim = inst.saveartdata.anim
         if inst.saveartdata.scale then
-            print("SCALE-X SAVE",inst.saveartdata.scale[1])
             data.scaleX = inst.saveartdata.scale[1]
             data.scaleY = inst.saveartdata.scale[2]
-            data.scaleX = inst.saveartdata.scale[3]
+            data.scaleZ = inst.saveartdata.scale[3]
         end
 
     end
@@ -118,9 +117,14 @@ local function OnSave(inst, data)
     data.construction_prefab = inst.construction_prefab 
     data.reconstructedanims = inst.reconstructedanims
 
+    if inst.nameoverride then
+        data.nameoverride = inst.nameoverride
+    end
+
     if inst.cityID then
         data.cityID = inst.cityID
     end
+
     if inst.interiorID then
         data.interiorID = inst.interiorID
     end
@@ -138,23 +142,32 @@ end
 
 local function OnLoad(inst, data)
     if data then
-        if data.bank then
-            inst.AnimState:SetBank(data.bank)
+        inst.saveartdata = {
+            bank = data.bank,
+            build = data.build,
+            anim = data.anim,
+        }
+
+        if inst.saveartdata.bank then
+            inst.AnimState:SetBank(inst.saveartdata.bank)
             inst:Show()
         end
-        if data.build then
-            inst.AnimState:SetBuild(data.build)
+
+        if inst.saveartdata.build then
+            inst.AnimState:SetBuild(inst.saveartdata.build)
             inst:Show()
         end
-        if data.anim then
-            inst.AnimState:PlayAnimation(data.anim,true)
+        
+        if inst.saveartdata.anim then
+            inst.AnimState:PlayAnimation(inst.saveartdata.anim, true)
             inst:Show()
-        end  
+        end
+
         if data.scaleX then
-            print("HAD SCALE-X",data.scaleX)
-            inst.AnimState:SetScale(data.scaleX,data.scaleY,data.scaleZ)
+            inst.saveartdata.scale = {data.scaleX, data.scaleY, data.scaleZ}
+            inst.AnimState:SetScale(data.scaleX, data.scaleY, data.scaleZ)
             inst:Show()
-        end  
+        end 
 
         if data.cityID then
             inst.cityID = data.cityID
@@ -168,6 +181,10 @@ local function OnLoad(inst, data)
         inst.reconstruction_stages = data.reconstruction_stages  
         inst.construction_prefab = data.construction_prefab 
         inst.reconstructedanims = data.reconstructedanims
+
+        if data.nameoverride then
+            inst:SetPrefabNameOverride(data.nameoverride)
+        end
 
         if data.childname then
             inst.spawnerdata = {
@@ -267,6 +284,12 @@ local function OnRemove(inst)
     inst.task = nil
 end
 
+local function DisplayNameFn(inst)
+    if inst.nameoverride then return end
+
+    return STRINGS.NAMES[string.upper(inst.construction_prefab)]
+end
+
 local function fn(Sim)
     local inst = CreateEntity()
     local trans = inst.entity:AddTransform()
@@ -294,6 +317,8 @@ local function fn(Sim)
     
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatus
+
+    inst.displaynamefn = DisplayNameFn
    
     inst.reconstruction_stage = 1
     inst.reconstruction_stages = {}

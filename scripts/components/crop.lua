@@ -135,7 +135,7 @@ function Crop:Harvest(harvester)
     
     if self.matured then
 		local product = SpawnPrefab(self.product_prefab)
-        harvester.components.inventory:GiveItem(product)
+        harvester.components.inventory:GiveItem(product, nil, Vector3(TheSim:GetScreenPos(self.inst.Transform:GetWorldPosition())))
         ProfileStatsAdd("grown_"..product.prefab) 
         
         self.matured = false

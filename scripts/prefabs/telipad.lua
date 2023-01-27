@@ -6,6 +6,8 @@ local assets =
 	Asset("ANIM", "anim/teleport_pad.zip"),
 	Asset("ANIM", "anim/teleport_pad_beacon.zip"),
 	Asset("MINIMAP_IMAGE", "telipad"),
+
+	Asset("SOUND", "sound/dontstarve_wagstaff.fsb"),
 }
 
 local prefabs = 
@@ -139,6 +141,8 @@ local function base()
 				end
 			end
 		end
+
+		inst.highlightchildren = inst.decor
         
 		if not GetWorld().telipads then
 			GetWorld().telipads = {}

@@ -2,7 +2,7 @@ local Workable = Class(function(self, inst)
     self.inst = inst
     self.onwork = nil
     self.onfinish = nil
-    self.canbeworkedbyfn = nil
+    self.canbeworkedby = nil
     self.action = ACTIONS.CHOP
     self.workleft = 10
     self.maxwork = -1
@@ -104,6 +104,13 @@ end
 function Workable:WorkedBy(worker, numworks)
 
     if self.canbeworkedby and not self.canbeworkedby(worker, numworks) then
+        return
+    end
+
+    if -- Net and Fish Actions need an inventory!
+        table.contains({ACTIONS.NET, ACTIONS.FISH}, self:GetWorkAction())
+        and worker.components.inventory == nil
+    then
         return
     end
 

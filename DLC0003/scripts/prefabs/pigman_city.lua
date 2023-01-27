@@ -884,6 +884,10 @@ local function makefn(name, build, fixer, guard_pig, shopkeeper, tags, sex, econ
                 data.paytax = true 
             end
 
+            if inst.daily_gift then
+                data.daily_gift = inst.daily_gift
+            end
+
             if data.children and #data.children > 0 then
                 return data.children
             end    
@@ -912,13 +916,19 @@ local function makefn(name, build, fixer, guard_pig, shopkeeper, tags, sex, econ
 
                 if data.angryatplayer then
                     inst:AddTag("angry_at_player") 
-                end 
+                end
+
                 if data.recieved_trinket then
                     inst:AddTag("recieved_trinket")
-                end  
+                end
+
                 if data.paytax then
                     inst:AddTag("paytax")
-                end              
+                end
+
+                if data.daily_gift then
+                    inst.daily_gift = data.daily_gift
+                end
     		end
         end           
         

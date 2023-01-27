@@ -37,7 +37,6 @@ local prefabs =
     "deco_ruins_crack_roots2",
     "deco_ruins_crack_roots3",
     "deco_ruins_crack_roots4",
-    "deco_ruins_crack_roots5",
 
     "deco_ruins_pigqueen_relief",
     "deco_ruins_pigking_relief",

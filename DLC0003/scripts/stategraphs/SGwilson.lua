@@ -326,7 +326,7 @@ local actionhandlers =
         function(inst, action)
             if action.target.components.pickable then
                 if action.target.components.pickable.quickpick then
-                    return "doshortaction"
+                    return inst.components.rider:IsRiding() and "domediumaction" or "doshortaction"
                 else
                     return "dolongaction"
                 end
@@ -368,7 +368,7 @@ local actionhandlers =
                     return "dolongaction"
                 end
             end
-            return "doshortaction"
+            return inst.components.rider:IsRiding() and "domediumaction" or "doshortaction"
         end),
 
     ActionHandler(ACTIONS.CHECKTRAP, "doshortaction"),
@@ -1541,7 +1541,39 @@ local states=
         
     },
     
-    
+    State{
+        name = "mounted_funnyidle",
+        tags = {"idle", "canrotate"},
+
+        onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
+
+            if inst.wantstosneeze then
+                inst.sg:GoToState("sneeze")
+            elseif inst.components.poisonable and inst.components.poisonable:IsPoisoned() then
+                inst.AnimState:PlayAnimation("idle_poison_pre")
+                inst.AnimState:PushAnimation("idle_poison_loop")
+                inst.AnimState:PushAnimation("idle_poison_pst", false)
+            elseif inst.components.temperature:GetCurrent() < 10 then
+                inst.AnimState:PlayAnimation("idle_shiver_pre")
+                inst.AnimState:PushAnimation("idle_shiver_loop")
+                inst.AnimState:PushAnimation("idle_shiver_pst", false)
+            end
+        end,
+
+        onexit = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
+        end,
+
+        events = {
+            EventHandler("animqueueover", function(inst) inst.sg:GoToState("idle") end)
+        },
+    },
+
     State{ name = "chop_start",
         tags = {"prechop", "chopping", "working"},
         onenter = function(inst)
@@ -1860,12 +1892,22 @@ local states=
 
     },
     
-    State{ name = "investigate_start",
+    State{
+        name = "investigate_start",
         tags = {"preinvestigate", "investigating", "working"},
+
         onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
             inst.components.locomotor:Stop()
             inst.sg:GoToState("investigate")
-            --inst.AnimState:PlayAnimation("chop_pre")
+        end,
+
+        onexit = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
         end,
         
         events=
@@ -1875,11 +1917,22 @@ local states=
         },
     },
 
-    State { name = "investigate",
+    State {
+        name = "investigate",
         tags = {"preinvestigate", "investigating", "working"},
+
         onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
             inst.sg.statemem.action = inst:GetBufferedAction()
             inst.AnimState:PlayAnimation("lens")
+        end,
+
+        onexit = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
         end,
         
         timeline=
@@ -1908,10 +1961,21 @@ local states=
         },
     },
 
-    State{ name = "investigate_post",
+    State{
+        name = "investigate_post",
         tags = {"investigating", "working"},
+
         onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
             inst.AnimState:PlayAnimation("lens_pst")
+        end,
+
+        onexit = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
         end,
         
         events=
@@ -1921,12 +1985,24 @@ local states=
         },
     },
 
-    State { name = "goggle",
+    State {
+        name = "goggle",
         tags = {"preinvestigate", "investigating", "working"},
+
         onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
             inst.sg.statemem.action = inst:GetBufferedAction()
             inst.AnimState:PlayAnimation("goggle")
         end,
+
+        onexit= function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
+            inst.SoundEmitter:KillSound("goggle")                
+        end, 
         
         timeline=
         {
@@ -1954,16 +2030,24 @@ local states=
             EventHandler("animover", function(inst)
                 inst.sg:GoToState("goggle_post")
             end ),
-        },
-        onexit= function(inst)
-            inst.SoundEmitter:KillSound("goggle")                
-        end,        
+        },       
     },
 
-    State{ name = "goggle_post",
+    State{
+        name = "goggle_post",
         tags = {"investigating", "working"},
+
         onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
             inst.AnimState:PlayAnimation("goggle_pst")
+        end,
+
+        onexit = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
         end,
         
         events=
@@ -2347,9 +2431,11 @@ local states=
 				end
 --]]                
                 inst:PerformBufferedAction() 
-                inst.sg:RemoveStateTag("predig") 
-                inst.SoundEmitter:PlaySound("dontstarve/wilson/dig")
-                
+                inst.sg:RemoveStateTag("predig")
+
+                if not inst.were then
+                    inst.SoundEmitter:PlaySound("dontstarve/wilson/dig")
+                end
             end),
             
             TimeEvent(35*FRAMES, function(inst)
@@ -2912,6 +2998,14 @@ local states=
     },
 
     State{
+        name = "domediumaction",
+        
+        onenter = function(inst)
+            inst.sg:GoToState("dolongaction", .5)
+        end,
+    },
+
+    State{
         name = "form_log",
         tags = {"doing", "busy"},
         
@@ -3002,52 +3096,66 @@ local states=
         },        
     },
     
-
-
     State{
         name = "bundle",
-        tags = {"doing", "busy"},
-        
-        timeline=
-        {
-            TimeEvent(4*FRAMES, function( inst )
-                inst.sg:RemoveStateTag("busy")
-            end),
-        },
-        
-        onenter = function(inst, timeout)
+        tags = { "doing", "busy", "nodangle" },
+
+        onenter = function(inst)
             inst.components.locomotor:Stop()
             inst.SoundEmitter:PlaySound("dontstarve/wilson/make_trap", "make")
-            
-            inst.AnimState:PlayAnimation("build_pre")
-            inst.AnimState:PushAnimation("build_loop", true)
-
-            inst:PerformBufferedAction()
+            inst.AnimState:PlayAnimation("wrap_pre")
+            inst.AnimState:PushAnimation("wrap_loop", true)
+            inst.sg:SetTimeout(.7)
         end,
-        
-        onexit= function(inst)
+
+        timeline =
+        {
+            TimeEvent(7 * FRAMES, function(inst)
+                inst.sg:RemoveStateTag("busy")
+            end),
+            TimeEvent(9 * FRAMES, function(inst)
+                inst:PerformBufferedAction()
+            end),
+        },
+
+        ontimeout = function(inst)
             inst.SoundEmitter:KillSound("make")
+            inst.AnimState:PlayAnimation("wrap_pst")
+        end,
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+
+        onexit = function(inst)
+            if not inst.sg.statemem.bundling then
+                inst.SoundEmitter:KillSound("make")
+            end
         end,
     },
 
-    State
-    {
+    State{
         name = "bundling",
         tags = { "doing", "nodangle" },
 
         onenter = function(inst)
-          inst.components.locomotor:Stop()
+            inst.components.locomotor:Stop()
             if not inst.SoundEmitter:PlayingSound("make") then
                 inst.SoundEmitter:PlaySound("dontstarve/wilson/make_trap", "make")
             end
-            if not inst.AnimState:IsCurrentAnimation("build_loop") then
-                inst.AnimState:PlayAnimation("build_loop", true)
+            if not inst.AnimState:IsCurrentAnimation("wrap_loop") then
+                inst.AnimState:PlayAnimation("wrap_loop", true)
             end
         end,
 
         onupdate = function(inst)
             if not CanEntitySeeTarget(inst, inst) then
-                inst.AnimState:PlayAnimation("build_pst")
+                inst.AnimState:PlayAnimation("wrap_pst")
                 inst.sg:GoToState("idle", true)
             end
         end,
@@ -3060,8 +3168,7 @@ local states=
         end,
     },
 
-    State
-    {
+    State{
         name = "bundle_pst",
         tags = { "doing", "busy", "nodangle" },
 
@@ -3070,15 +3177,15 @@ local states=
             if not inst.SoundEmitter:PlayingSound("make") then
                 inst.SoundEmitter:PlaySound("dontstarve/wilson/make_trap", "make")
             end
-            if not inst.AnimState:IsCurrentAnimation("build_loop") then
-                inst.AnimState:PlayAnimation("build_loop", true)
+            if not inst.AnimState:IsCurrentAnimation("wrap_loop") then
+                inst.AnimState:PlayAnimation("wrap_loop", true)
             end
             inst.sg:SetTimeout(.7)
         end,
 
         ontimeout = function(inst)
             inst.sg:RemoveStateTag("busy")
-            inst.AnimState:PlayAnimation("build_pst")
+            inst.AnimState:PlayAnimation("wrap_pst")
             inst.sg.statemem.finished = true
             inst.components.bundler:OnFinishBundling()
         end,
@@ -3099,9 +3206,7 @@ local states=
             end
         end,
     },
-
-
-
+    
     State{
         name = "tap",
         tags = {"doing", "busy"},
@@ -3327,7 +3432,7 @@ local states=
         
         onexit = function(inst)
             inst.SoundEmitter:KillSound("flute")
-            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) then
+            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) and not inst.were then
                 inst.AnimState:Show("ARM_carry") 
                 inst.AnimState:Hide("ARM_normal")
             end
@@ -3379,7 +3484,7 @@ local states=
         end,
         
         onexit = function(inst)
-            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) then
+            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) and not inst.were then
                 inst.AnimState:Show("ARM_carry") 
                 inst.AnimState:Hide("ARM_normal")
             end
@@ -3424,7 +3529,7 @@ local states=
         end,
         
         onexit = function(inst)
-            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) then
+            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) and not inst.were then
                 inst.AnimState:Show("ARM_carry") 
                 inst.AnimState:Hide("ARM_normal")
             end
@@ -3532,7 +3637,7 @@ local states=
         end,
         
         onexit = function(inst)
-            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) then
+            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) and not inst.were then
                 inst.AnimState:Show("ARM_carry") 
                 inst.AnimState:Hide("ARM_normal")
             end
@@ -3603,6 +3708,9 @@ local states=
         tags = {"attack", "notalking", "abouttoattack"},
         
         onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
 			local target = inst.components.combat.target
             inst.sg.statemem.target = target
             inst.sg.statemem.target_position = target and Vector3(inst.components.combat.target.Transform:GetWorldPosition())
@@ -3615,6 +3723,12 @@ local states=
                     inst:FacePoint(Point(inst.components.combat.target.Transform:GetWorldPosition()))
                 end
 			end
+        end,
+
+        onexit = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
         end,
         
         timeline=
@@ -3639,7 +3753,8 @@ local states=
                     local DIST = 1.5
                     local offset = Vector3(DIST * math.cos( angle+(PI/2) ), 0, -DIST * math.sin( angle+(PI/2) ))
 
-                    cloud.Transform:SetPosition(pt.x+offset.x,2,pt.z+offset.z)
+                    local y = inst.components.rider:IsRiding() and 4.5 or 2
+                    cloud.Transform:SetPosition(pt.x + offset.x, y, pt.z + offset.z)
                 else
                     inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/use_speargun")
                 end
@@ -3745,6 +3860,9 @@ local states=
         tags = {"attack", "notalking", "abouttoattack", "busy"},
         
         onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
             local weapon = inst.components.combat:GetWeapon()
             local otherequipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
             if (weapon and weapon:HasTag("hand_gun")) or (otherequipped and otherequipped:HasTag("hand_gun")) then
@@ -3761,7 +3879,13 @@ local states=
             end
             inst.sg.statemem.target = inst.components.combat.target
             inst.components.combat:StartAttack()
-            inst.components.locomotor:Stop()            
+            inst.components.locomotor:Stop()
+        end,
+
+        onexit = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
         end,
         
         timeline=
@@ -3772,8 +3896,7 @@ local states=
             end),            
             TimeEvent(20*FRAMES, function(inst)
                     inst.sg:RemoveStateTag("attack")
-            end),           
-            
+            end),                       
         },
         
         events=
@@ -3782,13 +3905,17 @@ local states=
                 inst.sg:GoToState("idle")
             end ),
         },
-    },    
+    },
 
     State{
         name = "goggleattack",
         tags = {"attack", "notalking", "abouttoattack", "busy"},
         
         onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
+
             local weapon = inst.components.combat:GetWeapon()
             local otherequipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 
@@ -3804,17 +3931,27 @@ local states=
             inst.sg.statemem.target = inst.components.combat.target
             inst.components.combat:StartAttack()
             inst.components.locomotor:Stop()
-            
+        end,
+
+        onexit = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
         end,
         
         timeline=
         {            
-            TimeEvent(11*FRAMES, function(inst)
-                inst.sg:RemoveStateTag("busy")
-                inst.sg:RemoveStateTag("attack")
+            TimeEvent(17*FRAMES, function(inst) 
+                inst.components.combat:DoAttack(inst.sg.statemem.target) 
                 inst.sg:RemoveStateTag("abouttoattack") 
-                inst.components.combat:DoAttack(inst.sg.statemem.target)          
-            end),            
+            end),
+            TimeEvent(20*FRAMES, function(inst)
+                inst.sg:RemoveStateTag("attack")
+                if inst.components.moisture and inst.components.moisture:GetMoisture() > 0 and not inst.components.inventory:IsInsulated() then
+                    inst.components.health:DoDelta(-TUNING.HEALING_MEDSMALL, false, "Shockwhenwet", nil, true)
+                    inst.sg:GoToState("electrocute")
+                end
+            end)           
         },
 
         ontimeout = function(inst)
@@ -3831,10 +3968,22 @@ local states=
         },
     },    
     
-    State{ name = "goggle_attack_post",
+    State{
+        name = "goggle_attack_post",
         tags = {"investigating", "working"},
+
         onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
+
             inst.AnimState:PlayAnimation("goggle_fast_pst")
+        end,
+
+        onexit = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
         end,
         
         events=
@@ -3984,7 +4133,7 @@ local states=
         tags = {"busy", "evade","no_stun","canrotate"},
 
         onenter = function(inst)
-            dumptable(inst:GetBufferedAction(),1,1,1)
+            --dumptable(inst:GetBufferedAction(),1,1,1)
             local ba = inst:GetBufferedAction()
             if ba and ba.pos then
                 inst:ForceFacePoint(ba.pos)
@@ -4466,6 +4615,9 @@ local states=
         tags = {"busy","sneeze"},
         
         onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
             inst.wantstosneeze = false
             inst.SoundEmitter:PlaySound("dontstarve/wilson/hit",nil,.02)
             inst.AnimState:PlayAnimation("sneeze")
@@ -4475,17 +4627,19 @@ local states=
             if inst.prefab ~= "wes" then
                 local sound_name = inst.soundsname or inst.prefab
                 local path = inst.talker_path_override or "dontstarve/characters/"
-                --local equippedHat = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
-                --if equippedHat and equippedHat:HasTag("muffler") then
-                    --inst.SoundEmitter:PlaySound(path..sound_name.."/gasmask_hurt")
-                --else
-                    local sound_event = path..sound_name.."/hurt"
-                    inst.SoundEmitter:PlaySound(inst.hurtsoundoverride or sound_event)
-                --end
+
+                local sound_event = path..sound_name.."/hurt"
+                inst.SoundEmitter:PlaySound(inst.hurtsoundoverride or sound_event)
             end
             inst.components.locomotor:Stop()  
 
             inst.components.talker:Say(GetString(inst.prefab, "ANNOUNCE_SNEEZE"))        
+        end,
+
+        onexit = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
         end,
         
         events=
@@ -4572,7 +4726,7 @@ local states=
 		        inst.components.inventory:Equip(sameTool)
 		    end
 
-            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) then
+            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) and not inst.were then
                 inst.AnimState:Show("ARM_carry") 
                 inst.AnimState:Hide("ARM_normal")
             end
@@ -4803,8 +4957,10 @@ local states=
                 inst.telbrellalight.Transform:SetPosition(x,y,z)
             end
             inst.components.playercontroller:Enable(false)
-            inst.AnimState:PlayAnimation("teleport_out") 
-            inst.AnimState:SetBloomEffectHandle( "shaders/anim.ksh" )   
+            inst.AnimState:PlayAnimation("teleport_out")
+
+            inst.AnimState:SetBloomEffectHandle( "shaders/anim.ksh" ) 
+
             inst.components.locomotor:Stop()
             inst.SoundEmitter:PlaySound("dontstarve_wagstaff/characters/wagstaff/teleumbrella_out")
         end,
@@ -4841,6 +4997,7 @@ local states=
                     inst.telbrellalight.Transform:SetPosition(x,y,z)
                 end
             end
+            inst.DynamicShadow:Enable(false)
             inst.components.playercontroller:Enable(false)
             inst.AnimState:PlayAnimation("teleport_finish") 
             inst.AnimState:SetBloomEffectHandle( "shaders/anim.ksh" )   
@@ -4849,8 +5006,8 @@ local states=
         end,
 
         onexit = function(inst)
+            inst.DynamicShadow:Enable(true)
             inst.components.playercontroller:Enable(true)
-            inst.telbrellalight = nil
 
             if inst.components.rider and inst.components.rider:GetMount() then
                 inst.components.rider:ActualDismount()
@@ -4983,6 +5140,10 @@ local states=
         tags = {"doing", "busy", "canrotate"},
 
         onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
+
             inst.sg.statemem.action = inst:GetBufferedAction()
             local act = inst:GetBufferedAction()
 
@@ -5000,6 +5161,9 @@ local states=
         },
 
         onexit = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
             inst.components.playercontroller:Enable(true)
         end,
 
@@ -5008,15 +5172,7 @@ local states=
                 inst:PerformBufferedAction()
             end ),
             EventHandler("animqueueover", function(inst)
-                
-                local telescope = inst.sg.statemem.action.invobject or inst.sg.statemem.action.doer.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-                if telescope and telescope.components.finiteuses then
-                    -- this is here because the telescope still needs to exist while playing the put away animation
-                    --telescope.components.finiteuses:Use()
-                end
-
                 inst.sg:GoToState("idle")
-
             end ),
         },
     },
@@ -5317,8 +5473,14 @@ local states=
         tags = {"doing", "busy", "canrotate"},
 
         onenter = function(inst)
-            inst.AnimState:PlayAnimation("atk")
+            inst.components.playercontroller:Enable(false)
+            local anim = inst.components.rider:IsRiding() and "player_atk" or "atk"
+            inst.AnimState:PlayAnimation(anim)
             inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon")
+        end,
+
+        onexit = function(inst)
+            inst.components.playercontroller:Enable(true)
         end,
 
         timeline = 
@@ -5356,7 +5518,14 @@ local states=
         
         events=
         {   
-            EventHandler("onthaw", function(inst) inst.sg:GoToState("thaw") end ),        
+            EventHandler("onthaw", function(inst) inst.sg:GoToState("thaw") end ),
+            EventHandler("unfreeze", function(inst)
+                if inst.sg.sg.states.hit then
+                    inst.sg:GoToState("hit")
+                else
+                    inst.sg:GoToState("idle")
+                end
+            end),  
         },
     },
 
@@ -5415,7 +5584,7 @@ local states=
         
         onexit = function(inst)
             inst.SoundEmitter:KillSound("fan")
-            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) then
+            if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) and not inst.were then
                 inst.AnimState:Show("ARM_carry") 
                 inst.AnimState:Hide("ARM_normal")
             end
@@ -5541,7 +5710,8 @@ local states=
 
         onenter = function(inst)
             inst.components.playercontroller:Enable(false)
-            inst.AnimState:PlayAnimation("atk") 
+            local anim = inst.components.rider:IsRiding() and "player_atk" or "atk"
+            inst.AnimState:PlayAnimation(anim)
             inst.components.locomotor:Stop()
             --Spawn an effect on the player's location
         end,
@@ -5716,6 +5886,13 @@ local states=
             if equippedArmor ~= nil and equippedArmor:HasTag("band") then
                 inst.sg:GoToState("enter_onemanband", pushanim)
                 return
+            end
+
+            if inst.wantstosneeze
+            or (inst.components.poisonable and inst.components.poisonable:IsPoisoned())
+            or inst.components.temperature:GetCurrent() < 10 then
+                inst.sg:GoToState("mounted_funnyidle")
+                return true
             end
 
             if pushanim then
@@ -5931,9 +6108,10 @@ State{
 
     State{
         name = "bucked",
-        tags = { "busy", "pausepredict", "nomorph", "dismounting" },
+        tags = { "busy", "pausepredict", "nomorph", "dismounting", "doing" },
 
         onenter = function(inst)
+            inst.components.playercontroller:Enable(false)
             inst.components.locomotor:Stop()
             inst:ClearBufferedAction()
 
@@ -5959,18 +6137,23 @@ State{
         },
 
         onexit = function(inst)
-            print("EXITING")
+            inst.components.playercontroller:Enable(true)
             inst.components.rider:ActualDismount()
         end,
     },
 
     State{
         name = "bucked_post",
-        tags = { "busy", "pausepredict", "nomorph", "nodangle" },
+        tags = { "busy", "pausepredict", "nomorph", "nodangle", "doing" },
 
         onenter = function(inst)
+            inst.components.playercontroller:Enable(false)
             inst.AnimState:PlayAnimation("bucked")
             inst.AnimState:PushAnimation("buck_pst", false)
+        end,
+
+        onexit = function(inst)
+            inst.components.playercontroller:Enable(true)
         end,
 
         timeline =

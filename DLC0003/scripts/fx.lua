@@ -812,7 +812,42 @@ local FX =
         build = "living_suit_explode_fx", 
         anim = "idle",
         dlc = true,        
-    },        
+    },
+	{
+        name = "bundle_unwrap",
+        bank = "bundle",
+        build = "bundle",
+        anim = "unwrap",
+    },
+	{
+        name = "sand_puff_large_front",
+        bank = "sand_puff",
+        build = "sand_puff",
+        anim = "forage_out",
+        sound = "dontstarve/common/deathpoof",
+        transform = Vector3(1.5, 1.5, 1.5),
+        fn = function(inst)
+            inst.AnimState:SetFinalOffset(2)
+            inst.AnimState:Hide("back")
+        end,
+    },
+    {
+        name = "sand_puff_large_back",
+        bank = "sand_puff",
+        build = "sand_puff",
+        anim = "forage_out",
+        transform = Vector3(1.5, 1.5, 1.5),
+        fn = function(inst)
+            inst.AnimState:Hide("front")
+        end,
+    },
+    {
+        name = "sand_puff",
+        bank = "sand_puff",
+        build = "sand_puff",
+        anim = "forage_out",
+        sound = "dontstarve/common/deathpoof",
+    },    
 }
 
 return FX

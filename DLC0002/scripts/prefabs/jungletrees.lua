@@ -91,7 +91,9 @@ local function chop_down_burnt_tree(inst, chopper)
 	inst.SoundEmitter:PlaySound("dontstarve/wilson/use_axe_tree")
 	inst.AnimState:PlayAnimation(inst.anims.chop_burnt)
 	RemovePhysicsColliders(inst)
-	inst:ListenForEvent("animover", function() inst:Remove() end)
+	inst.persists = false
+	inst:ListenForEvent("animover", inst.Remove)
+	inst:ListenForEvent("entitysleep", inst.Remove)
 	inst.components.lootdropper:SpawnLootPrefab("charcoal")
 	inst.components.lootdropper:DropLoot()
 	if inst.pineconetask then
@@ -506,6 +508,9 @@ local function OnGustStart(inst, windspeed)
 		return
 	end
 	inst:DoTaskInTime(math.random()/2, function(inst)
+		if inst:HasTag("stump") or inst:HasTag("burnt") then
+			return
+		end
 		if inst.spotemitter == nil then
 			AddToNearSpotEmitter(inst, "treeherd", "tree_creak_emitter", TUNING.TREE_CREAK_RANGE)
 		end

@@ -664,8 +664,8 @@ RECIPETABS=
     REFINE = {str = "REFINE", sort=8, icon = "tab_refine.tex"},
     MAGIC = {str = "MAGIC", sort=9, icon = "tab_arcane.tex"},
     DRESS = {str = "DRESS", sort=10, icon = "tab_dress.tex"},
-    ANCIENT = {str = "ANCIENT", sort = 10, icon = "tab_crafting_table.tex"},
-    OBSIDIAN = {str = "OBSIDIAN", sort = 11, icon = "tab_obsidian.tex"}   
+    ANCIENT = {str = "ANCIENT", sort = 11, icon = "tab_crafting_table.tex"},
+    OBSIDIAN = {str = "OBSIDIAN", sort = 12, icon = "tab_obsidian.tex"}   
 }
 
 
