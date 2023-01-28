@@ -409,7 +409,7 @@ Recipe("pig_shop_antiquities", {Ingredient("boards", 4), Ingredient("ballpein_ha
 Recipe("pig_shop_arcane", {Ingredient("boards", 4), Ingredient("nightmarefuel", 1), Ingredient("pigskin", 4)}, RECIPETABS.CITY, TECH.CITY, cityRecipeGameTypes, "pig_shop_arcane_placer", nil, true)
 Recipe("pig_shop_weapons", {Ingredient("boards", 4), Ingredient("spear", 3), Ingredient("pigskin", 4)}, RECIPETABS.CITY, TECH.CITY, cityRecipeGameTypes, "pig_shop_weapons_placer", nil, true)
 Recipe("pig_shop_hatshop", {Ingredient("boards", 4), Ingredient("tophat", 2), Ingredient("pigskin", 4)}, RECIPETABS.CITY, TECH.CITY, cityRecipeGameTypes, "pig_shop_hatshop_placer", nil, true)
-Recipe("pig_shop_bank", {Ingredient("cutstone", 4), Ingredient("goldnugget", 2), Ingredient("pigskin", 4)}, RECIPETABS.CITY, TECH.CITY, cityRecipeGameTypes, "pig_shop_bank_placer", nil, true)
+Recipe("pig_shop_bank", {Ingredient("cutstone", 4), Ingredient("oinc", 100), Ingredient("pigskin", 4)}, RECIPETABS.CITY, TECH.CITY, cityRecipeGameTypes, "pig_shop_bank_placer", nil, true)
 
 Recipe("pig_shop_tinker", {Ingredient("magnifying_glass", 2), Ingredient("pigskin", 4)}, RECIPETABS.CITY, TECH.CITY, cityRecipeGameTypes, "pig_shop_tinker_placer", nil, true)
 

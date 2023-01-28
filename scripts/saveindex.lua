@@ -1717,6 +1717,8 @@ end
 --call when you have finished a survival or adventure level to increment the world number and save off the continue information
 function SaveIndex:CompleteLevel(cb)
 	local adventuremode = self.data.slots[self.current_slot].current_mode == "adventure"
+	local is_survival = self.data.slots[self.current_slot].current_mode == "survival"
+	local is_shipwrecked = self.data.slots[self.current_slot].current_mode == "shipwrecked"
 
     local playerdata = {}
     local player = GetPlayer()
@@ -1744,11 +1746,13 @@ function SaveIndex:CompleteLevel(cb)
    	local function onerased()
    		if adventuremode then
    			self:Save(cb)
-   		else
+
+		elseif is_survival then
    			self:EraseCaves(cb)
+			
+		elseif is_shipwrecked then
    			self:EraseVolcano(cb)
    		end
-   		--self:Save(cb)
    	end
 
 	self.data.slots[self.current_slot].continue_pending = true

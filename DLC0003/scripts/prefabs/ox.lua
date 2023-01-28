@@ -94,7 +94,7 @@ local function KeepTarget(inst, target)
 		end
 	end
 
-    return not table.constains({GROUND.OCEAN_SHALLOW, GROUND.OCEAN_MEDIUM, GROUND.OCEAN_DEEP}, inst.components.tiletracker.tile)
+    return not table.contains({GROUND.OCEAN_SHALLOW, GROUND.OCEAN_MEDIUM, GROUND.OCEAN_DEEP}, inst.components.tiletracker.tile)
 end
 
 local function OnNewTarget(inst, data)

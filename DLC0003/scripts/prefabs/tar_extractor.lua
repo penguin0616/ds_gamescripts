@@ -174,8 +174,8 @@ local function TurnOff(inst)
 		inst.task_tar = nil
 	end
 	inst.components.fueled:StopConsuming()
-	inst.AnimState:PlayAnimation("idle")
-	inst.SoundEmitter:KillSound("suck")  
+	inst.AnimState:PlayAnimation("idle", true)
+	inst.SoundEmitter:KillSound("suck")
 end
 
 local function TurnOn(inst, instant)
@@ -226,7 +226,7 @@ local function fn(Sim)
     
 	anim:SetBank("tar_extractor")
 	anim:SetBuild("tar_extractor")
-	anim:PlayAnimation("idle",true)
+	anim:PlayAnimation("idle", true)
    
 	inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatus

@@ -162,8 +162,9 @@ function Resurrectable:DoResurrect(res, cause)
 		self.inst.sg:GoToState("amulet_rebirth")
 		if self.inst.components.poisonable and self.inst.components.poisonable:IsPoisoned() then 
 			self.inst.components.poisonable:Cure()
-		end 
-		TrySpawnSkeleton(self.inst)
+		end
+		self.inst.last_death_position = nil
+		--TrySpawnSkeleton(self.inst)
 	else
 		--External/Statue/Stone/etc
 		res.components.resurrector:Resurrect(self.inst)

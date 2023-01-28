@@ -170,6 +170,16 @@ local function TrySpawnSkeleton(inst)
 	inst.last_death_position = nil
 end
 
+local function RemoveHiddenSkeleton(inst)
+	for i,ent in pairs(Ents) do
+		if ent.HiddenPlayerSkeleton then
+			ent:Remove()
+		end
+	end
+	-- something else may rely on this
+	inst.last_death_position = nil
+end
+
 function Resurrectable:DoResurrect(res, cause)
     self.inst:PushEvent("resurrect")
 
@@ -186,8 +196,9 @@ function Resurrectable:DoResurrect(res, cause)
 		self.inst.sg:GoToState("amulet_rebirth")
 		if self.inst.components.poisonable and self.inst.components.poisonable:IsPoisoned() then 
 			self.inst.components.poisonable:Cure()
-		end 
-		TrySpawnSkeleton(self.inst)
+		end
+		RemoveHiddenSkeleton(self.inst)
+		--TrySpawnSkeleton(self.inst)
 	else
 		--External/Statue/Stone/etc
 		res.components.resurrector:Resurrect(self.inst)
