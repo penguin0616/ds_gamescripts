@@ -415,37 +415,35 @@ function CheckLOSFromPoint(pos, target_pos)
     local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, dist, {"blocker"})
 
     for k,v in pairs(ents) do
-        local blocker_pos = v:GetPosition()
-        local blocker_vec = (blocker_pos - pos):GetNormalized()
-        local blocker_perp = Vector3(-blocker_vec.z, 0, blocker_vec.x)
-        local blocker_radius = v.Physics:GetRadius()
-        blocker_radius = math.max(0.75, blocker_radius)
+        if v.Physics:IsActive() then
+            local blocker_pos = v:GetPosition()
+            local blocker_vec = (blocker_pos - pos):GetNormalized()
+            local blocker_perp = Vector3(-blocker_vec.z, 0, blocker_vec.x)
+            local blocker_radius = v.Physics:GetRadius()
+            blocker_radius = math.max(0.75, blocker_radius)
 
-        local blocker_edge1 = blocker_pos + Vector3(blocker_perp.x * blocker_radius, 0, blocker_perp.z * blocker_radius)
-        local blocker_edge2 = blocker_pos - Vector3(blocker_perp.x * blocker_radius, 0, blocker_perp.z * blocker_radius)
+            local blocker_edge1 = blocker_pos + Vector3(blocker_perp.x * blocker_radius, 0, blocker_perp.z * blocker_radius)
+            local blocker_edge2 = blocker_pos - Vector3(blocker_perp.x * blocker_radius, 0, blocker_perp.z * blocker_radius)
 
-        local blocker_vec1 = (blocker_edge1 - pos):GetNormalized()
-        local blocker_vec2 = (blocker_edge2 - pos):GetNormalized()
+            local blocker_vec1 = (blocker_edge1 - pos):GetNormalized()
+            local blocker_vec2 = (blocker_edge2 - pos):GetNormalized()
 
-        --[[
-        print("Checking LoS With:", v)
-        local colourstr = "00000"..v.GUID
-        local r = tonumber(colourstr:sub(-6, -5), 16) / 255
-        local g = tonumber(colourstr:sub(-4, -3), 16) / 255
-        local b = tonumber(colourstr:sub(-2), 16) / 255
-        --Note : world must have debugger component and be debug selected for this to display.
-        GetWorld().components.debugger:SetAll(v.GUID.."_angle1", {x=pos.x, y=pos.z}, {x=pos.x + (blocker_vec1.x * dist*2), y= pos.z + (blocker_vec1.z * dist*2)}, {r=r,g=g,b=b,a=1})
-        GetWorld().components.debugger:SetAll(v.GUID.."_angle2", {x=pos.x, y=pos.z}, {x=pos.x + (blocker_vec2.x * dist*2), y= pos.z + (blocker_vec2.z * dist*2)}, {r=r,g=g,b=b,a=1})
-        --]]
+            --[[
+            print("Checking LoS With:", v)
+            local colourstr = "00000"..v.GUID
+            local r = tonumber(colourstr:sub(-6, -5), 16) / 255
+            local g = tonumber(colourstr:sub(-4, -3), 16) / 255
+            local b = tonumber(colourstr:sub(-2), 16) / 255
+            --Note : world must have debugger component and be debug selected for this to display.
+            GetWorld().components.debugger:SetAll(v.GUID.."_angle1", {x=pos.x, y=pos.z}, {x=pos.x + (blocker_vec1.x * dist*2), y= pos.z + (blocker_vec1.z * dist*2)}, {r=r,g=g,b=b,a=1})
+            GetWorld().components.debugger:SetAll(v.GUID.."_angle2", {x=pos.x, y=pos.z}, {x=pos.x + (blocker_vec2.x * dist*2), y= pos.z + (blocker_vec2.z * dist*2)}, {r=r,g=g,b=b,a=1})
+            --]]
 
-        if isbetween(vec, blocker_vec1, blocker_vec2) then
-            -- print(v, "blocks LoS.")
-            -- print("-----------")
-            return false
+            if isbetween(vec, blocker_vec1, blocker_vec2) then
+                return false
+            end
         end
     end
-    -- print("Nothing blocked LoS.")
-    -- print("-----------")
 
     return true
 end

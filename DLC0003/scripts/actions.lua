@@ -61,7 +61,7 @@ ACTIONS=
 	STORE = Action({}),
 	RUMMAGE = Action({mount_enabled=true},1,nil,true,2),
 	DEPLOY = Action({},0),
-	DEPLOY_AT_RANGE = Action({},0, nil, nil, 1),
+	DEPLOY_AT_RANGE = Action({},0, nil, nil, 1), --DEPLOY_AT_RANGE is deprecated, ACTIONS.DEPLOY now has deploy distance = 1
 	LAUNCH = Action({},nil, nil, nil, 3, true),
 	RETRIEVE = Action({},1, nil, nil, 3, true),
 	PLAY = Action({mount_enabled=true}),
@@ -1078,101 +1078,22 @@ end
 
 ACTIONS.DEMOLISH_ROOM.fn = function(act)
 	if act.invobject.components.roomdemolisher and act.target:HasTag("house_door") and act.target:HasTag("interior_door") then
-		
-
 		local interior_spawner = GetInteriorSpawner()
 		local target_interior = interior_spawner:GetInteriorByName(act.target.components.door.target_interior)
 		local index_x, index_y = interior_spawner:GetPlayerRoomIndex(target_interior.dungeon_name, target_interior.unique_name)
-		
-		-- inst.doorcanberemoved
-		-- inst.roomcanberemoved
 
 		if act.target.doorcanberemoved and act.target.roomcanberemoved and not (index_x == 0 and index_y == 0) then
-			local total_loot = {}
-
-			if target_interior.visited then
-				for _, object in pairs(target_interior.object_list) do
-				 	if object.components.inventoryitem then
-				 		
-				 		object:ReturnToScene()
-				 		object.components.inventoryitem:ClearOwner()
-					    object.components.inventoryitem:WakeLivingItem()
-					    object:RemoveTag("INTERIOR_LIMBO")
-
-				 		table.insert(total_loot, object)
-
-				 	else
-					 	if object.components.container then
-					 		local container_objs = object.components.container:RemoveAllItems()
-					 		for i,obj in ipairs(container_objs) do
-					 			table.insert(total_loot, obj)
-					 		end
-					 	end
-
-					 	if object.components.lootdropper then
-					 		local smash_loot = object.components.lootdropper:GenerateLoot()
-					 		for i,obj in ipairs(smash_loot) do
-					 			table.insert(total_loot, SpawnPrefab(obj))
-					 		end
-					 	end
-				 	end
-				end
-
-				-- Removes the found loot from the interior so it doesn't get deleted by the next for
-				for _, loot in ipairs(total_loot) do
-					print ("Removing ", loot.prefab)
-					interior_spawner:removeprefab(loot, target_interior.unique_name)
-				end
-
-				-- Deletes all of the interior with a reverse for
-				local obj_count = #target_interior.object_list
-				for i = obj_count, 1, -1 do
-
-					local current_obj = target_interior.object_list[i]
-					if current_obj and current_obj.prefab ~= "generic_wall_back" and current_obj.prefab ~= "generic_wall_side" then
-						
-						if current_obj:HasTag("house_door") then
-							local connected_door = interior_spawner:GetDoorInst(current_obj.components.door.target_door_id)
-							if connected_door and connected_door ~= act.target then
-								connected_door.DeactivateSelf(connected_door)
-							end
-						end
-
-						current_obj:Remove()
-					end
-				end
-			else
-				table.insert(total_loot, SpawnPrefab("oinc"))
-				if act.target.components.lootdropper then
-					local smash_loot = act.target.components.lootdropper:GenerateLoot()
-					for i,obj in ipairs(smash_loot) do
-			 			table.insert(total_loot, SpawnPrefab(obj))
-			 		end
-				end
-			end
-
-			for _, loot in ipairs(total_loot) do
-				local pos = Vector3(act.target.Transform:GetWorldPosition())
-				loot.Transform:SetPosition(pos:Get())
-				if loot.components.inventoryitem then
-					loot.components.inventoryitem:OnDropped(true)
-				end
-			end
-
-			act.target:DeactivateSelf(act.target)
-			interior_spawner:RemoveInterior(target_interior.unique_name)
-			interior_spawner:RemovePlayerRoom(target_interior.dungeon_name, target_interior.unique_name)
+			interior_spawner:DestroyInteriorByDoor(act.target)
 
 			SpawnPrefab("collapse_small").Transform:SetPosition(act.target.Transform:GetWorldPosition())
+
 		    if act.target.SoundEmitter then
 		        act.target.SoundEmitter:PlaySound("dontstarve/common/destroy_wood")
 		    end
 
-			GetWorld():PushEvent("roomremoved")
 			act.invobject:Remove()
-
 		else
-			GetPlayer().components.talker:Say(GetString(GetPlayer().prefab, "ANNOUNCE_ROOM_STUCK"))
+			act.doer.components.talker:Say(GetString(act.doer.prefab, "ANNOUNCE_ROOM_STUCK"))
 		end
 
 		return true

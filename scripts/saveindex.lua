@@ -529,10 +529,18 @@ function SaveIndex:LoadSavedFollowers(doer)
 		        local angle = TheCamera.headingtarget + math.random()*10*DEGREES-5*DEGREES
 		        x = x + .5*math.cos(angle)
 		        z = z + .5*math.sin(angle)
+
 		 		ent.Transform:SetPosition(x,y,z)
+
 		 		if ent.MakeFollowerFn then
 		 			ent.MakeFollowerFn(ent, doer)
 		 		end
+
+				-- These locations are from another map, get rid of them!
+				if ent.components.knownlocations then
+					ent.components.knownlocations.locations = {}
+				end
+
 		 		ent.components.follower:SetLeader(doer)
 			end
 		end
@@ -786,7 +794,7 @@ function SaveIndex:GetResurrector()
 	return nil
 end
 
-function SaveIndex:GotoWorldEntrance(playerevent, cb)
+function SaveIndex:GotoWorldEntrance(playerevent, entrance, cb)
 	print ("SaveIndex:GotoWorldEntrance()", playerevent, self.data.slots[self.current_slot].current_mode)
 
 	if self.data.slots[self.current_slot].current_mode == "adventure" then
@@ -799,44 +807,18 @@ function SaveIndex:GotoWorldEntrance(playerevent, cb)
 		return
 	end
 
-	local current_mode = self.data.slots[self.current_slot].current_mode
+	local file = string.split(entrance, ":")[1]
+	local mode = string.split(file, "_")[1]
 
-	local modes = { 
-					survival = {survival = true, cave=true },
-					shipwrecked = {shipwrecked = true, volcano = true },
-					porkland = {porkland=true}
-				   }
-				
-
-	local file, mode
-	local foundslot = false
-	for i,v in pairs(self.data.slots[self.current_slot].worldentrances) do
-		local entrance = i
-		file = string.split(entrance, ":")[1]
-		mode = string.split(file, "_")[1]
-
-		if modes[current_mode][mode] then
-			foundslot = true
-			if v == playerevent then
-				break
-			end
-		end
-	end
-
-
-	if foundslot then
-		if mode == "cave" then
-			local cavenum, level = string.match(file, "cave_(%d+)_(%d+)")
-			cavenum = tonumber(cavenum)
-			level = tonumber(level)
-			print(string.format("SaveIndex:GotoWorldEntrance() File: %s Mode: %s Cave: %s Level: %s", tostring(file), tostring(mode), tostring(cavenum), tostring(level)))
-			self:EnterWorld("cave", cb, self.current_slot, cavenum, level)
-		else
-			print(string.format("SaveIndex:GotoWorldEntrance() File: %s Mode: %s", tostring(file), tostring(mode)))
-			self:EnterWorld(mode, cb, self.current_slot)
-		end
+	if mode == "cave" then
+		local cavenum, level = string.match(file, "cave_(%d+)_(%d+)")
+		cavenum = tonumber(cavenum)
+		level = tonumber(level)
+		print(string.format("SaveIndex:GotoWorldEntrance() File: %s Mode: %s Cave: %s Level: %s", tostring(file), tostring(mode), tostring(cavenum), tostring(level)))
+		self:EnterWorld("cave", cb, self.current_slot, cavenum, level)
 	else
-		print ("SaveIndex:GotoWorldEntrance() - could not find entry")
+		print(string.format("SaveIndex:GotoWorldEntrance() File: %s Mode: %s", tostring(file), tostring(mode)))
+		self:EnterWorld(mode, cb, self.current_slot)
 	end
 
 	print ("SaveIndex:GotoWorldEntrance() done")
@@ -1716,7 +1698,6 @@ end
 
 --call when you have finished a survival or adventure level to increment the world number and save off the continue information
 function SaveIndex:CompleteLevel(cb)
-	local adventuremode = self.data.slots[self.current_slot].current_mode == "adventure"
 	local is_survival = self.data.slots[self.current_slot].current_mode == "survival"
 	local is_shipwrecked = self.data.slots[self.current_slot].current_mode == "shipwrecked"
 
@@ -1744,14 +1725,12 @@ function SaveIndex:CompleteLevel(cb)
    	 end   
 
    	local function onerased()
-   		if adventuremode then
-   			self:Save(cb)
-
-		elseif is_survival then
+		if is_survival then
    			self:EraseCaves(cb)
-			
 		elseif is_shipwrecked then
    			self:EraseVolcano(cb)
+		else
+			self:Save(cb)
    		end
    	end
 

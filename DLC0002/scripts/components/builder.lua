@@ -355,11 +355,14 @@ function Builder:AddRecipe(rec)
     end
 end
 
+function Builder:CanLearnRecipe(recipe)
+	return recipe ~= nil and not recipe.nounlock and not self.brainjellyhat
+end
+
 function Builder:UnlockRecipe(recname)
 	local recipe = GetRecipe(recname)
 
-	if recipe ~= nil and  not recipe.nounlock and not self.brainjellyhat then
-	--print("Unlocking: ", recname)
+	if self:CanLearnRecipe(recipe) then
 		if self.inst.components.sanity then
 			self.inst.components.sanity:DoDelta(TUNING.SANITY_MED)
 		end

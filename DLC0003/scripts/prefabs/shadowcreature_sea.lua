@@ -95,6 +95,7 @@ local function MakeShadowCreature(data)
         inst:AddTag("monster")
 	    inst:AddTag("hostile")
         inst:AddTag("shadow")
+        inst:AddTag("windspeedimmune")
         inst:AddTag("notraptrigger")
 
         local brain = require "brains/shadowcreaturebrain"
@@ -104,6 +105,8 @@ local function MakeShadowCreature(data)
 	    inst.components.sanityaura.aurafn = CalcSanityAura
         
         inst:AddComponent("transparentonsanity")
+        inst.components.transparentonsanity:ForceUpdate()
+
         inst:AddComponent("health")
         inst.components.health:SetMaxHealth(data.health)
         

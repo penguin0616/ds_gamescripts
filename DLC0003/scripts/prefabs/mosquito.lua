@@ -202,11 +202,10 @@ local function commonfn(Sim)
 	inst:AddComponent("tiletracker")
 	inst.components.tiletracker:SetOnWaterChangeFn(OnWaterChange)
 
+	inst:AddComponent("stackable")
 
 	inst:AddComponent("inventoryitem")
-	inst:AddComponent("stackable")
-	--inst.components.inventoryitem:SetOnDroppedFn(OnDropped) Done in MakeFeedablePet
-	--inst.components.inventoryitem:SetOnPutInInventoryFn(OnPickedUp)
+	inst.components.inventoryitem.nosink = true
 	inst.components.inventoryitem.canbepickedup = false
 
 	---------------------

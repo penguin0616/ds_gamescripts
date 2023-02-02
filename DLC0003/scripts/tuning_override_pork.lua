@@ -14,40 +14,6 @@ local function ResetTuningVariables()
 	end
 end
 
-local function GetSeasonLengthHarsh(difficulty, default)
-	local length = 0
-	if difficulty == "random" then
-		local rand = math.random()
-		if rand <= 1/6 then
-			difficulty = "noseason"
-		elseif rand <= 2/6 then
-			difficulty = "veryshortseason"
-		elseif rand <= 3/6 then
-			difficulty = "shortseason"
-		elseif rand <= 4/6 then
-			difficulty = "longseason"
-		elseif rand <= 5/6 then
-			difficulty = "verylongseason"
-		else
-			difficulty = "default"
-		end
-	end
-	if difficulty == "noseason" then
-		length = 0
-	elseif difficulty == "veryshortseason" then
-		length = TUNING.SEASON_LENGTH_HARSH_VERYSHORT
-	elseif difficulty == "shortseason" then
-		length = TUNING.SEASON_LENGTH_HARSH_SHORT
-	elseif difficulty == "longseason" then
-		length = TUNING.SEASON_LENGTH_HARSH_LONG
-	elseif difficulty == "verylongseason" then
-		length = TUNING.SEASON_LENGTH_HARSH_VERYLONG
-	else
-		length = default
-	end
-	return length
-end
-
 local function GetSeasonLengthFriendly(difficulty, default)
 	local length = 0
 	if difficulty == "random" then
@@ -69,13 +35,13 @@ local function GetSeasonLengthFriendly(difficulty, default)
 	if difficulty == "noseason" then
 		length = 0
 	elseif difficulty == "veryshortseason" then
-		length = TUNING.SEASON_LENGTH_FRIENDLY_VERYSHORT
+		length = TUNING.PLATEAU_SEASON_LENGTH_VERYSHORT
 	elseif difficulty == "shortseason" then
-		length = TUNING.SEASON_LENGTH_FRIENDLY_SHORT
+		length = TUNING.PLATEAU_SEASON_LENGTH_SHORT
 	elseif difficulty == "longseason" then
-		length = TUNING.SEASON_LENGTH_FRIENDLY_LONG
+		length = TUNING.PLATEAU_SEASON_LENGTH_LONG
 	elseif difficulty == "verylongseason" then
-		length = TUNING.SEASON_LENGTH_FRIENDLY_VERYLONG
+		length = TUNING.PLATEAU_SEASON_LENGTH_VERYLONG
 	else
 		length = default
 	end
@@ -770,7 +736,7 @@ local TUNING_OVERRIDES =
 						if type(difficulty) == "number" then
 							sm:SetTemperateLength(difficulty)
 						else
-							local length = GetSeasonLengthFriendly(difficulty, TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT)
+							local length = GetSeasonLengthFriendly(difficulty, TUNING.PLATEAU_SEASON_LENGTH_DEFAULT)
 							sm:SetTemperateLength(length)
 						end
 					end
@@ -782,7 +748,7 @@ local TUNING_OVERRIDES =
 						if type(difficulty) == "number" then
 							sm:SetHumidLength(difficulty)
 						else
-							local length = GetSeasonLengthHarsh(difficulty, TUNING.SEASON_LENGTH_HARSH_DEFAULT)
+							local length = GetSeasonLengthFriendly(difficulty, TUNING.PLATEAU_SEASON_LENGTH_DEFAULT)
 							sm:SetHumidLength(length)
 						end
 					end
@@ -794,7 +760,7 @@ local TUNING_OVERRIDES =
 						if type(difficulty) == "number" then
 							sm:SetLushLength(difficulty)
 						else
-							local length = GetSeasonLengthFriendly(difficulty, TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT)
+							local length = GetSeasonLengthFriendly(difficulty, TUNING.PLATEAU_SEASON_LENGTH_DEFAULT)
 							sm:SetLushLength(length)
 						end
 					end
@@ -1180,7 +1146,7 @@ local TUNING_OVERRIDES =
 										if data == "off" then
 											local ground = GetWorld()
 											if ground.WaveComponent then
-    											ground.WaveComponent:SetWaveSize(0, 0)
+    											ground.WaveComponent:SetMultColour(0,0,0,0)
 											end
 										end
 									end,

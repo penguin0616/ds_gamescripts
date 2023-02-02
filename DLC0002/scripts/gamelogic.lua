@@ -1257,7 +1257,7 @@ function DoInitGame(playercharacter, savedata, profile, next_world_playerdata, f
 	end
 end
 
-function TravelBetweenWorlds(playerevent, waittime, dropitems, customoptions, mergefromslot)
+function TravelBetweenWorlds(playerevent, waittime, dropitems_tag, customoptions, mergefromslot)
 	local targetmode = SaveGameIndex:IsModeShipwrecked() and "survival" or "shipwrecked"
 	local traveldir = SaveGameIndex:IsModeShipwrecked() and "sailhome" or "shipwrecked"
 
@@ -1280,15 +1280,12 @@ function TravelBetweenWorlds(playerevent, waittime, dropitems, customoptions, me
 
 	SetPause(false)
 
-	if dropitems ~= nil then
-		for i,item in ipairs(dropitems) do
-			local itemlist = GetPlayer().components.inventory:GetItemByName(item, 1)
-			if itemlist and next(itemlist) then
-				local actualitem = next(itemlist)
-				local owner = actualitem.components.inventoryitem:GetContainer()
-				if owner then
-					owner:DropItem(actualitem)
-				end
+	if dropitems_tag ~= nil and type(dropitems_tag) == "string" then
+		local itemlist = GetPlayer().components.inventory:GetItems(function(i, item) return item:HasTag(dropitems_tag) end)
+		for i, item in pairs(itemlist) do
+			local owner = item.components.inventoryitem:GetContainer()
+			if owner then
+				owner:DropItem(item)
 			end
 		end
 	end

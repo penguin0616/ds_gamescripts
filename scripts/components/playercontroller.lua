@@ -289,7 +289,7 @@ function PlayerController:GetAttackTarget(force_attack)
 	if not self.directwalking then rad = rad + 6 end --for autowalking
 	
 	--To deal with entity collision boxes we need to pad the radius.
-	local nearby_ents = TheSim:FindEntities(x,y,z, rad + 5)
+	local nearby_ents = TheSim:FindEntities(x,y,z, rad + 5, nil, {"falling", "FX", "NOCLICK", "DECOR", "INLIMBO"})
 	local tool = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 	local has_weapon = tool and tool.components.weapon 
 	
@@ -303,6 +303,7 @@ function PlayerController:GetAttackTarget(force_attack)
 		   not (guy.sg and guy.sg:HasStateTag("invisible")) and
 		   guy.components.health and not guy.components.health:IsDead() and 
 		   guy.components.combat and guy.components.combat:CanBeAttacked(self.inst) and
+		   not (self.inst.components.combat:IsAlly(guy) and self.inst.sg.statemem.target ~= guy) and
 		   not (guy.components.follower and guy.components.follower.leader == self.inst) and
 		   --Now we ensure the target is in range.
 		   distsq(guy:GetPosition(), self.inst:GetPosition()) <= math.pow(rad + playerRad + guy.Physics:GetRadius() + 0.1 , 2) then

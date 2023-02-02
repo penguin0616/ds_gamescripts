@@ -190,17 +190,7 @@ function c_mat(recname)
     end
 end
 
-function c_mats(recname)
-    c_mat(recname)
-end
-
-function c_material(recname)
-    c_mat(recname)
-end
-
-function c_materials(recname)
-    c_mat(recname)
-end
+c_mats, c_material, c_materials = c_mat, c_mat, c_mat
 
 function c_pos(inst)
     return inst and Point(inst.Transform:GetWorldPosition())
@@ -226,6 +216,7 @@ function c_goto(dest, inst)
     inst = inst or GetPlayer()
     if dest then
         inst.Transform:SetPosition(dest.Transform:GetWorldPosition())
+        TheCamera:Snap()
     end
     SuUsed("c_goto", true)
 end
@@ -1161,4 +1152,59 @@ end
 function c_reload()
     c_save()
     GetPlayer():DoTaskInTime(3, c_reset)
+end
+
+function c_freecrafting()
+    GetPlayer().components.builder:GiveAllRecipes()
+end
+
+function c_domesticatedbeefalo(tendency)
+    tendency = tendency or TENDENCY.RIDER
+
+    local saddle = c_spawn("saddle_race")
+    local beef = c_spawn("beefalo")
+
+    beef.components.hunger:DoDelta(400);
+    beef.components.domesticatable:DeltaTendency(tendency, 1)
+    beef:SetTendency()
+
+    beef.components.domesticatable.domestication = 1
+    beef.components.domesticatable:BecomeDomesticated()
+
+    beef.components.rideable:SetSaddleable(true)
+    beef.components.rideable:SetSaddle(GetPlayer(), saddle)
+end
+
+function c_swapcharacter(character, no_reload)
+    if table.contains(GetActiveCharacterList(), character) then
+        GetPlayer().prefab = character
+
+        if not no_reload then
+            c_reload()
+        end
+    else
+        nolineprint(string.format('>> Character "%s" isn\'t valid...', character))
+    end
+end
+
+local modes = { 
+    shipwrecked = "_sw",
+    volcano = "_sw",
+}
+
+function c_testteleportato()
+    local current_mode = SaveGameIndex.data.slots[SaveGameIndex.current_slot].current_mode
+
+    local base
+    if current_mode == "adventure" then 
+        c_give("diviningrod")
+        
+        base = c_findnext("teleportato_base")
+        c_goto(base)
+    else
+        local type = modes[current_mode] or ""
+        base = c_spawn("teleportato"..type.."_base")
+    end
+
+    base:OnLoad({makecomplete=1})
 end

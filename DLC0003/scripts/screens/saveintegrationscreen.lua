@@ -351,7 +351,7 @@ function SaveIntegrationScreen:OnClickTile(slotnum)
 
 	TheFrontEnd:PopScreen()
 	
-	TravelBetweenWorlds(self.target_mode, self.portal_event, 7.5, {"chester_eyebone", "packim_fishbone", "ro_bin_gizzard_stone", "roc_robin_egg"}, nil, slotnum)
+	TravelBetweenWorlds(self.target_mode, self.portal_event, 7.5, "dropontravel", nil, slotnum)
 end
 
 function SaveIntegrationScreen:GetHelpText()

@@ -2519,6 +2519,10 @@ function SeasonManager:IsLushSeason()
 	return false
 end
 
+function SeasonManager:IsAporkalypse()
+	return false
+end
+
 function SeasonManager:GetSnowPercent()
     return self.ground_snow_level
 end

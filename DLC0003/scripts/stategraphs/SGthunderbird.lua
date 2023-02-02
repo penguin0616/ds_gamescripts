@@ -264,5 +264,11 @@ CommonStates.AddRunStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
-    
+
+CommonStates.AddSleepStates(states, {
+    starttimeline = {
+        TimeEvent(0, function(inst) if inst.fx then inst.fx.AnimState:PlayAnimation("idle") end end),
+    },
+})
+
 return StateGraph("thunder", states, events, "idle", actionhandlers)

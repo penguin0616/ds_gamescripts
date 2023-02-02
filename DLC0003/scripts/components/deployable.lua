@@ -88,6 +88,7 @@ function Deployable:CollectPointActions(doer, pos, actions, right)
     	if self.inst:HasTag("boat") then
         	table.insert(actions, ACTIONS.LAUNCH)
         else
+            --DEPLOY_AT_RANGE is deprecated, ACTIONS.DEPLOY now has deploy distance = 1
             if self.deployatrange then
                 table.insert(actions, ACTIONS.DEPLOY_AT_RANGE)
             else

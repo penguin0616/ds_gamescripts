@@ -422,6 +422,7 @@ local function commonfn(Sim)
 	inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
 	inst.components.inventoryitem:SetOnPutInInventoryFn(OnPickedUp)
 	inst.components.inventoryitem.canbepickedup = false
+	inst.components.inventoryitem.nosink = true
 	inst.components.inventoryitem:ChangeImageName("lantern_fly")
 
 	---------------------

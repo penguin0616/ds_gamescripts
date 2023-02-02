@@ -1799,14 +1799,7 @@ local states=
     State{
         name = "dolongaction",
         tags = {"doing", "busy"},
-        
-        timeline=
-        {
-            TimeEvent(4*FRAMES, function( inst )
-                inst.sg:RemoveStateTag("busy")
-            end),
-        },
-        
+
         onenter = function(inst, timeout)
             inst.sg:SetTimeout(timeout or 1)
             inst.components.locomotor:Stop()
@@ -1816,16 +1809,31 @@ local states=
             inst.AnimState:PushAnimation("build_loop", true)
         end,
         
-        ontimeout= function(inst)
+        timeline =
+        {
+            TimeEvent(4 * FRAMES, function(inst)
+                inst.sg:RemoveStateTag("busy")
+            end),
+        },
+
+        ontimeout = function(inst)
+            inst.SoundEmitter:KillSound("make")
             inst.AnimState:PlayAnimation("build_pst")
-            inst.sg:GoToState("idle", false)
             inst:PerformBufferedAction()
         end,
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
         
         onexit= function(inst)
             inst.SoundEmitter:KillSound("make")
         end,
-        
     },
 
     State{

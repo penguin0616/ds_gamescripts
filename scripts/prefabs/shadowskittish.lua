@@ -29,7 +29,10 @@ local function fn()
     inst:AddComponent("playerprox")
     inst.components.playerprox:SetDist(5,8)
     inst.components.playerprox:SetOnPlayerNear(Disappear)
+    
     inst:AddComponent("transparentonsanity")
+    inst.components.transparentonsanity:ForceUpdate()
+
 
 return inst
 end

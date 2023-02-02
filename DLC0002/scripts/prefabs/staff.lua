@@ -105,11 +105,11 @@ end
 
 ---------PURPLE STAFF---------
 
-local function getrandomposition(inst, caster)
+local function getrandomposition(inst, target)
     local ground = GetWorld()
     local centers = {}
 
-    if caster:HasTag("aquatic") then
+    if target:GetIsOnWater() or target:HasTag("aquatic") then
         for i,node in ipairs(ground.topology.nodes) do
             if inst:GetIsOnWater(node.x, 0, node.y) then
                 table.insert(centers, {x = node.x, z = node.y})
@@ -146,7 +146,7 @@ local function teleport_thread(inst, caster, teletarget, loctarget)
     if loctarget then
         t_loc = loctarget:GetPosition()
     else
-        t_loc = getrandomposition(inst, caster)
+        t_loc = getrandomposition(inst, teletarget)
     end
 
     local teleportee = teletarget

@@ -429,6 +429,7 @@ function PlayerController:GetAttackTarget(force_attack)
 		   not (guy.sg and guy.sg:HasStateTag("invisible")) and
 		   guy.components.health and not guy.components.health:IsDead() and 
 		   guy.components.combat and guy.components.combat:CanBeAttacked(self.inst) and
+		   not (self.inst.components.combat:IsAlly(guy) and self.inst.sg.statemem.target ~= guy) and
 		   not (guy.components.follower and guy.components.follower.leader == self.inst) and
 		   --Now we ensure the target is in range.
 		   distsq(guy:GetPosition(), self.inst:GetPosition()) <= math.pow(rad + playerRad + guyradius + 0.1 , 2) then
@@ -539,7 +540,11 @@ function PlayerController:GetToolAction(tool)
 		elseif notriding(self.inst) and pickup.components.activatable and pickup.components.activatable.inactive then
 			action = ACTIONS.ACTIVATE
 		elseif pickup.components.inventoryitem and pickup.components.inventoryitem.canbepickedup and (not pickup.components.mine or pickup.components.mine.inactive) then 
-			action = ACTIONS.PICKUP
+			if pickup:HasTag("aquatic") and not (self.inst.components.driver and self.inst.components.driver:GetIsDriving()) then
+				action = ACTIONS.RETRIEVE
+			else
+				action = ACTIONS.PICKUP
+			end
 		elseif pickup.components.pickable and pickup.components.pickable:CanBePicked() then 
 			action = ACTIONS.PICK 
 		elseif notriding(self.inst) and pickup.components.harvestable and pickup.components.harvestable:CanBeHarvested() then

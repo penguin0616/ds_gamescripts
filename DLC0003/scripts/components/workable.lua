@@ -125,6 +125,8 @@ function Workable:WorkedBy(worker, numworks)
         self.onwork(self.inst, worker, self.workleft)
     end
 
+    local was_fixable = self.inst.components.fixable ~= nil
+
     if self.workleft <= 0 then        
         if worker and worker.components.inventory and worker.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) then
             local tool = worker.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) 
@@ -132,6 +134,10 @@ function Workable:WorkedBy(worker, numworks)
 
                 self.inst:RemoveComponent("fixable")
             end
+        end
+
+        if self.inst.components.door and was_fixable and not self.inst.components.fixable then
+            GetInteriorSpawner():DestroyInteriorByDoor(self.inst)
         end
 
         if self.onfinish then self.onfinish(self.inst, worker) end        
@@ -152,7 +158,7 @@ function Workable:WorkedBy(worker, numworks)
                         GetPlayer().killedplantfn(GetPlayer(),-TUNING.SANITY_SUPERTINY*2)
                     end
                 end
-            end        
+            end
         end
     end
 end

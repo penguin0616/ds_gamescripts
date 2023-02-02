@@ -110,10 +110,10 @@ local SeasonManager = Class(function(self, inst)
 	self.greenlength = TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT
 	self.drylength = TUNING.SEASON_LENGTH_HARSH_DEFAULT
 
-	self.temperatelength = TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT/2
-	self.humidlength = TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT/2
-	self.lushlength = TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT/2
-	self.aporkalypse_length = TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT/2
+	self.temperatelength = TUNING.PLATEAU_SEASON_LENGTH_DEFAULT
+	self.humidlength = TUNING.PLATEAU_SEASON_LENGTH_DEFAULT
+	self.lushlength = TUNING.PLATEAU_SEASON_LENGTH_DEFAULT
+	self.aporkalypse_length = TUNING.PLATEAU_SEASON_LENGTH_DEFAULT
 
 
 	self.incaves = false

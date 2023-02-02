@@ -346,7 +346,7 @@ function SaveIntegrationScreen:OnClickTile(slotnum)
 
 	TheFrontEnd:PopScreen()
 	
-	TravelBetweenWorlds("shipwrecked_portal", 7.5, {"chester_eyebone", "packim_fishbone"}, nil, slotnum)
+	TravelBetweenWorlds("shipwrecked_portal", 7.5, "dropontravel", nil, slotnum)
 end
 
 function SaveIntegrationScreen:GetHelpText()

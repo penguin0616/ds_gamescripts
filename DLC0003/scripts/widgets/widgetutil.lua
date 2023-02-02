@@ -43,16 +43,11 @@ function DoRecipeClick(owner, recipe)
                 end
             elseif can_build then
                 -- Learn "non-learnable" recipes from the current DLC so you can craft them in other DLCs. Especially useful for Wickerbottom.
-                if not table.contains(owner.components.builder.recipes, recipe.name) and
-                    recipe.game_type ~= RECIPE_GAME_TYPE.COMMON and
-                    not recipe.nounlock and
-                    not owner.components.builder.brainjellyhat
-                then
+                if owner.components.builder:CanLearnRecipe(recipe) then
                     owner.components.builder:AddRecipe(recipe.name)
                 end
-                --TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")           
+
                 if recipe.placer then
-                    --owner.HUD.controls.crafttabs.tabs:DeselectAll()
                     owner.components.builder:BufferBuild(recipe.name)
                     owner.components.playercontroller:StartBuildPlacementMode(recipe, function(pt) return owner.components.builder:CanBuildAtPoint(pt, recipe) end)
                 else
@@ -67,13 +62,12 @@ function DoRecipeClick(owner, recipe)
             
             if can_build and CanPrototypeRecipe(recipe.level, tech_level) then
                 owner.SoundEmitter:PlaySound("dontstarve/HUD/research_unlock")
-                
-                
+
                 local onsuccess = function()
                     owner.components.builder:ActivateCurrentResearchMachine()
                     owner.components.builder:UnlockRecipe(recipe.name)
-                end                 
-                
+                end
+
                 if recipe.placer then
                     owner.components.builder:BufferBuild(recipe.name)
                     owner.components.playercontroller:StartBuildPlacementMode(recipe, function(pt) return owner.components.builder:CanBuildAtPoint(pt, recipe) end)

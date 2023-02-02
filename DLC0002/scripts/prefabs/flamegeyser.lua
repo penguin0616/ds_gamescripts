@@ -120,7 +120,7 @@ local function fn(Sim)
     inst.components.floodable.onStopFlooded = onFloodedEnd
 
     inst.components.fueled:SetUpdateFn( function()
-        if not inst.components.fueled:IsEmpty() then
+        if not inst.components.fueled:IsEmpty() and not inst:IsAsleep() then
             inst.components.geyserfx:SetPercent(inst.components.fueled:GetPercent())
         end
     end)

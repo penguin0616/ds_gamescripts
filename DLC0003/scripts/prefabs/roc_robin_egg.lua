@@ -154,6 +154,7 @@ local function commonfn()
     inst.components.inventoryitem:ChangeImageName("roc_egg")
     
     inst:AddTag("irreplaceable")
+    inst:AddTag("dropontravel")
 
     MakeInventoryFloatable(inst, "idle_water", "idle")
 

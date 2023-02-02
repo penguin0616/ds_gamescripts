@@ -56,7 +56,7 @@ ACTIONS=
 	STORE = Action({}),
 	RUMMAGE = Action({mount_enabled=true},1,nil,true,2),
 	DEPLOY = Action({},0),
-	DEPLOY_AT_RANGE = Action({},0, nil, nil, 1),
+	DEPLOY_AT_RANGE = Action({},0, nil, nil, 1), --DEPLOY_AT_RANGE is deprecated, ACTIONS.DEPLOY now has deploy distance = 1
 	LAUNCH = Action({},nil, nil, nil, 3, true),
 	RETRIEVE = Action({},1, nil, nil, 3, true),
 	PLAY = Action({mount_enabled=true}),

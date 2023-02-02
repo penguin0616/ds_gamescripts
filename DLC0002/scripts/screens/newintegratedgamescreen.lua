@@ -274,7 +274,7 @@ function NewIntegratedGameScreen:Start()
 		CleanupTweakTable()
 		self.root:Disable()
 
-		TravelBetweenWorlds("shipwrecked_portal", 7.5, {"chester_eyebone", "packim_fishbone"}, self.customoptions)
+		TravelBetweenWorlds("shipwrecked_portal", 7.5, "dropontravel", self.customoptions)
 	end
 end
 

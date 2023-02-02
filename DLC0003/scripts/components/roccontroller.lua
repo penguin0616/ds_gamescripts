@@ -263,6 +263,10 @@ function RocController:OnUpdate(dt)
 		onvalidtiles = false
 	end
 
+	if IsPointCloseToWaterOrImpassable(px, py, pz, 15) then
+		onvalidtiles = false
+	end
+
 	local onvaliddungtiles = false	
 
 	local cx,cy,cz = self.inst.Transform:GetWorldPosition()

@@ -283,7 +283,7 @@ function NewIntegratedGameScreen:Start()
 		CleanupTweakTable()
 		self.root:Disable()
 
-		TravelBetweenWorlds(self.target_mode, self.portal_event, 7.5, {"chester_eyebone", "packim_fishbone", "ro_bin_gizzard_stone", "roc_robin_egg"}, self.customoptions)
+		TravelBetweenWorlds(self.target_mode, self.portal_event, 7.5, "dropontravel", self.customoptions)
 	end
 end
 
