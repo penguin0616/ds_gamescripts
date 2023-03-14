@@ -527,6 +527,7 @@ return {
 		LUCY = "You look different. Different is good.",
 		BALLOONS_EMPTY = "Too bad they weren't 100 times bigger and attached to a basket.",
 		SPEAR_WATHGRITHR = "Looks sharp. Sharp could come in handy around here.",
+		WATHGRITHRHAT = "Sure wish those wings were a little bigger.",
 		WAXWELLJOURNAL = "That's an adventure waiting to happen.",
 
 		ABIGAIL_FLOWER = 
@@ -706,6 +707,7 @@ return {
             OPEN = "An dark adventure waiting to happen.",
         },
         CAVE_EXIT = "Looks like the way out. But do I want out?",
+		CAVE_REGENERATOR = "I think I'll bring it back to the entrance, see what happens.",
         CAVE_ENTRANCE = "My Grandma taught me to always look under rocks.",
         CAVE_ENTRANCE_RUINS = "Smells like trouble. I like trouble.",
 
@@ -2750,6 +2752,7 @@ return {
     	HARDSHELL_TACOS = "Swell. Bug cuisine.",
     	GUMMY_CAKE = "Mmmm... grub.",
     	STEAMEDHAMSANDWICH = "I thought I was having steamed clams.",
+		MEATED_NETTLE = "The meat helps the medicine go down.",
 
     	ROC_NEST_DEBRIS1 = "Someone left their junk lying around.",
     	ROC_NEST_DEBRIS2 = "That bird isn't exactly keen on cleaning up.",
@@ -2821,6 +2824,7 @@ return {
         HIPPO_ANTLER = "Maybe I could use it as a hatrack. Or a hat.",
         BILL_QUILL = "You could poke someone's eye out with this.",
         ANTLER = "Maybe this bird whistle will convince a bird to fly me out of here.",
+        ANTLER_CORRUPTED = "This should make any giant birds steer clear.",
 
         PUGALISK_SKULL = "It's dead. Why do I feel like it's still staring at me?",
         PUGALISK_CORPSE = "It conveniently dug its own grave.",
@@ -2903,6 +2907,13 @@ return {
         ---------YOTP---------
         FIRECRACKERS = "I prefer things that \"pew\" over things that \"pow\".",
         REDLANTERN = "Must be some kind of celebration going on here.",
+
+		-------------Wormwood Specific-------
+
+		COMPOSTWRAP = "Must be someone's idea of a joke.",
+		POISONBALM = "Handy!",
+		ARMOR_BRAMBLE = "I think it looks pretty sharp on me.",
+		TRAP_BRAMBLE = "Wouldn't want to step on that.",
 
         ----------reward update ------
         TURF_DEEPRAINFOREST_NOCANOPY = "Do I really need to drag this dirt around with me?",

@@ -37,7 +37,7 @@ local function SpringMod(amt)
 end
 
 local function OnAttackedByDecidRoot(inst, attacker)
-    local fn = function(dude) return dude:HasTag("antman") end
+    local fn = function(dude) return dude:HasTag("ant") end
 
     local x, y, z = inst.Transform:GetWorldPosition()
     local ents = nil
@@ -157,7 +157,7 @@ local function common()
     inst.components.talker.offset = Vector3(0, -400, 0)
 
     MakeCharacterPhysics(inst, 50, .5)
-    MakePoisonableCharacter(inst)
+    MakePoisonableCharacter(inst, "antman_torso")
     
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.runspeed = TUNING.ANTMAN_WARRIOR_RUN_SPEED --5

@@ -79,12 +79,14 @@ local actionhandlers =
     ActionHandler(ACTIONS.TURNON, "give"),
     ActionHandler(ACTIONS.FERTILIZE, "doshortaction"),
     ActionHandler(ACTIONS.TRAVEL, "doshortaction"),
-    ActionHandler(ACTIONS.LIGHT, "give"),
+    ActionHandler(ACTIONS.LIGHT, "catchonfire"),
     ActionHandler(ACTIONS.ADDFUEL, "doshortaction"),
     ActionHandler(ACTIONS.ADDWETFUEL, "doshortaction"),
     ActionHandler(ACTIONS.LAUNCH, "dolongaction"),
     ActionHandler(ACTIONS.RETRIEVE, "dolongaction"),
-    ActionHandler(ACTIONS.REPAIR, "dolongaction"),
+    ActionHandler(ACTIONS.REPAIR, function(inst, action)
+        return action.target:HasTag("repairshortaction") and "doshortaction" or "dolongaction"
+    end),
     ActionHandler(ACTIONS.REPAIRBOAT, "dolongaction"),
     ActionHandler(ACTIONS.READ, "book"),
     ActionHandler(ACTIONS.READMAP, "map"),
@@ -1879,12 +1881,35 @@ local states=
                     inst.components.driver.vehicle.components.boathealth:DoDelta(-1, "combat")
                     inst.components.beaverness:SetPercent(0)
                 end 
-                inst.sg:GoToState("werebeaver_death_boat")  -- This state is in SGWilson, the stategraph gets switch when the boat dies 
+                inst.sg:GoToState("werebeaver_death_boat")
             end ),
         } 
     },
 
-   
+    State{
+        name = "werebeaver_death_boat",
+        tags = {"busy"},
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.last_death_position = inst:GetPosition()
+            inst.AnimState:SetBuild("werebeaver_boat_death") --This animation is in it's own build and bank because?
+            inst.AnimState:SetBank("werebeaver_boat_death") -- It gets set back in the resurrectable component, kind of ugly 
+            inst.AnimState:PlayAnimation("boat_death")
+            inst.SoundEmitter:PlaySound("dontstarve_DLC002/characters/woody/warebeaver_sinking_death")
+        end,
+
+        onexit= function(inst) 
+            inst.DynamicShadow:Enable(true) 
+        end,
+
+        timeline=
+        {
+            TimeEvent(70*FRAMES, function(inst)
+                inst.DynamicShadow:Enable(false)
+            end),
+        },
+    },
 
     State{
         name = "quicktele",
@@ -1913,7 +1938,7 @@ local states=
     },  
 
 
-     State{
+    State{
         name = "give",
         tags = {"boating"},
         
@@ -1934,7 +1959,34 @@ local states=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
         },
-    },   
+    },
+
+    State{
+        name = "catchonfire",
+        tags = { "igniting" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("light_fire")
+            inst.AnimState:PushAnimation("light_fire_pst", false)
+        end,
+
+        timeline =
+        {
+            TimeEvent(13 * FRAMES, function(inst)
+                inst:PerformBufferedAction()
+            end),
+        },
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },
 
     State{
         name = "book",

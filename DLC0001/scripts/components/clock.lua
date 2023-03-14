@@ -10,7 +10,7 @@ local Clock = Class(function(self, inst)
     self.lmax = 1
 
     self.dayColour =         Point(255/255, 230/255, 158/255) -- This isn't being used any longer: now use GetDayColour to do special casing for Spring
-    self.duskColour =        Point(100/255, 100/255, 100/255) -- This isn't being used any longer: now use GetDuskColour to do special casing for Spring
+    self.duskColour =        Point(150/255, 150/255, 150/255) -- This isn't being used any longer: now use GetDuskColour to do special casing for Spring
     self.nightColour =       Point(0/255,   0/255,   0/255)
     self.fullMoonColour =    Point(84/255,  122/255, 156/255)
     self.caveColour =        Point(0/255,   0/255,   0/255)
@@ -55,7 +55,7 @@ local function GetDuskColour()
     if GetSeasonManager() and GetSeasonManager():IsSpring() then
         return Point(171/255, 146/255, 147/255)
     else
-        return Point(100/255, 100/255, 100/255)
+        return Point(150/255, 150/255, 150/255)
     end
 end
 

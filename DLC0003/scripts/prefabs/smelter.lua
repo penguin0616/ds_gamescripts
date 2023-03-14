@@ -67,11 +67,7 @@ local widgetbuttoninfo = {
 }
 
 local function itemtest(inst, item, slot)
-	if not inst:HasTag("burnt") then
-		if item.prefab == "iron" then
-			return true
-		end
-	end
+	return not inst:HasTag("burnt") and item:HasTag("smeltable")
 end
 
 --anim and sound callbacks

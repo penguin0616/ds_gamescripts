@@ -25,6 +25,11 @@ local function Retreat(inst)
 end
 
 local function Dissipate(inst)
+    if inst.dissipating then
+        return
+    end
+    inst.dissipating = true
+    
     inst.SoundEmitter:PlaySound("dontstarve/sanity/shadowhand_snuff")
 	inst.SoundEmitter:KillSound("creeping")
 	inst.SoundEmitter:KillSound("retreat")
@@ -169,6 +174,7 @@ local function create_hand()
     inst.components.playerprox:SetOnPlayerFar(Regroup)
     
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
+	inst.components.locomotor:SetTriggersCreep(false)
     inst.components.locomotor.walkspeed = 2
     inst.components.locomotor.directdrive = true
 	inst.components.locomotor.slowmultiplier = 1

@@ -358,7 +358,7 @@ function PlayerController:GetActionButtonAction()
 
 		--bug catching (has to go before combat)
 		local notags = {"FX", "NOCLICK"}
-		if tool and tool.components.tool and tool.components.tool:CanDoAction(ACTIONS.NET) then
+		if notriding(self.inst) and tool and tool.components.tool and tool.components.tool:CanDoAction(ACTIONS.NET) then
 			local target = FindEntity(self.inst, 5, 
 				function(guy) 
 					return  guy.components.health and not guy.components.health:IsDead() and 
@@ -394,7 +394,7 @@ function PlayerController:GetActionButtonAction()
 																		(guy.components.trap and guy.components.trap.issprung) or
 																		(guy.components.dryer and guy.components.dryer:IsDone()) or
 																		(guy.components.activatable and guy.components.activatable.inactive)
-																		 end)
+																		end, nil, notags)
 
 		local has_active_item = self.inst.components.inventory:GetActiveItem() ~= nil
 		if pickup then -- and not has_active_item

@@ -81,10 +81,11 @@ local function MakeShadowCreature(data)
         inst:AddTag("shadowcreature")
     	
         MakeCharacterPhysics(inst, 10, 1.5)
-        RemovePhysicsColliders(inst)
-	    inst.Physics:SetCollisionGroup(COLLISION.SANITY)
-	    inst.Physics:CollidesWith(COLLISION.SANITY)      
-         
+        inst.Physics:ClearCollisionMask()
+        inst.Physics:SetCollisionGroup(COLLISION.SANITY)
+        inst.Physics:CollidesWith(COLLISION.SANITY)
+        inst.Physics:CollidesWith(COLLISION.GROUND)
+
         anim:SetBank(bank)
         anim:SetBuild(build)
         anim:PlayAnimation("idle_loop")

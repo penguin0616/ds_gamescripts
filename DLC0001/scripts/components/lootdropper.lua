@@ -14,7 +14,8 @@ end)
 
 -- Translates prefabs to their cooked prefab for when they are not in default form (cookedXXX or XXX_cooked)
 local special_cooked_prefabs = {
-	["fish_raw"] = "fish_med_cooked",
+	["trunk_summer"] = "trunk_cooked",
+	["trunk_winter"] = "trunk_cooked",
 }
 
 -- For modders use:
@@ -142,10 +143,10 @@ function LootDropper:GenerateLoot()
 				table.insert(loots, v.type)
 			end
 		end
+	end
 
-		if self.inst:HasTag("burnt") and math.random() < .4 then
-			table.insert(loots, "charcoal") -- Add charcoal to loot for burnt structures
-		end
+	if self.inst:HasTag("burnt") and math.random() < .4 then
+		table.insert(loots, "charcoal") -- Add charcoal to loot for burnt structures and trees.
 	end
     
     return loots

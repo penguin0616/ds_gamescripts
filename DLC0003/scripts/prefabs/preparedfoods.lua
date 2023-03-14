@@ -18,6 +18,7 @@ local function MakePreparedFood(data)
 		Asset("INV_IMAGE", "meatballs_yotp"),
 		Asset("INV_IMAGE", "monsterlasagna_yotp"),
 		Asset("INV_IMAGE", "nettlelosange_yotp"),
+		Asset("INV_IMAGE", "meated_nettle_yotp"),
 		Asset("INV_IMAGE", "perogies_yotp"),
 		Asset("INV_IMAGE", "pumpkincookie_yotp"),
 		Asset("INV_IMAGE", "ratatouille_yotp"),

@@ -25,6 +25,7 @@ local PREFABFILES = {
   "axe",
   "axe_pickaxe",
   "babybeefalo",
+  "babyox",
   "backpack",
   "balloon",
   "balloons_empty",

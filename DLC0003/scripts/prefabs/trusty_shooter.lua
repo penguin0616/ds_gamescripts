@@ -283,6 +283,7 @@ local function fn()
     inst:AddComponent("inspectable")
 
     inst:AddComponent("weapon")
+    inst.components.weapon.projectilelaunchsymbol = "swap_object"
     inst.components.weapon:SetCanAttack(CanAttack)
     --inst.components.weapon:SetAttackCallback(OnAttack)
     inst.components.weapon:SetOnProjectileLaunch(OnProjectileLaunch)
@@ -323,6 +324,7 @@ local function fn()
     inst.CanTakeItem = CanTakeAmmo
 
     inst:AddComponent("trader")
+    inst.components.trader.acceptnontradable = true
     inst.components.trader.deleteitemonaccept = true
     inst.components.trader:SetAcceptTest(CanTakeAmmo)
     inst.components.trader.enabled = true

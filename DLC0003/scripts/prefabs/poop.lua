@@ -27,6 +27,16 @@ local function FuelTaken(inst, taker)
     end
 end
 
+local function OnEntityWake(inst)
+    if inst.components.inventoryitem and inst.components.inventoryitem:IsHeld() and not inst:HasTag("thrown") then 
+        inst.components.inventoryitem:OnStartFalling()
+    end
+end
+
+local function OnHitGround(inst)
+    inst.components.floatable:UpdateAnimations("idle_water", "idle")
+end
+
 local function MakeEquippable(inst)
 
     local onequip = function(inst, owner)
@@ -94,17 +104,11 @@ local function MakeEquippable(inst)
     inst.components.reticule.ease = true
 end
 
-local function UpdateAnimations(inst)
-    inst.components.floatable:UpdateAnimations("idle_water", "idle")
-end
-
 local function OnPickup(inst, owner)
     if inst.cityID then
         GetWorld().components.periodicpoopmanager:OnPickedUp(inst.cityID, inst)
         inst.cityID = nil
     end
-
-    UpdateAnimations(inst)
 end
 
 local function OnRemove(inst)
@@ -126,20 +130,24 @@ local function fn(Sim)
 	inst.entity:AddAnimState()
 	inst.entity:AddSoundEmitter()
 
+    inst.OnEntityWake = OnEntityWake
+
     MakeInventoryPhysics(inst)
-    MakeInventoryFloatable(inst, "dump", "dump")
+    MakeInventoryFloatable(inst, "idle_water", "dump")
     MakeBlowInHurricane(inst, TUNING.WINDBLOWN_SCALE_MIN.MEDIUM, TUNING.WINDBLOWN_SCALE_MAX.MEDIUM)
 
+    inst.components.floatable:SetOnHitWaterFn(OnHitGround)
+    inst.components.floatable:SetOnHitLandFn(OnHitGround)
+    
     inst.AnimState:SetBank("poop")
     inst.AnimState:SetBuild("poop")
     inst.AnimState:PlayAnimation("dump")
-
-    inst.components.floatable:SetOnHitWaterFn(UpdateAnimations)
-    inst.components.floatable:SetOnHitLandFn(UpdateAnimations)
-
+    inst.AnimState:PushAnimation("idle")
+    
     inst:AddComponent("stackable")
-
+ 
     inst:AddComponent("inspectable")
+    
 
     inst:AddComponent("fertilizer")
     inst.components.fertilizer.fertilizervalue = TUNING.POOP_FERTILIZE
@@ -163,6 +171,7 @@ local function fn(Sim)
 
     inst:AddComponent("appeasement")
     inst.components.appeasement.appeasementvalue = TUNING.WRATH_SMALL
+    
 
 	MakeSmallBurnable(inst, TUNING.MED_BURNTIME)
     inst.components.burnable:SetOnIgniteFn(OnBurn)
@@ -177,6 +186,7 @@ local function fn(Sim)
         MakeEquippable(inst)
     end
 
+    
     return inst
 end
 

@@ -194,7 +194,7 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata)
         end
 
         inst.AnimState:PlayAnimation("idle"..suffix)
-        MakeInventoryFloatable(inst, "idle"..suffix.."_water", "idle"..suffix)
+        inst.components.floatable:UpdateAnimations("idle"..suffix.."_water", "idle"..suffix)
 
         if doer ~= nil and doer.SoundEmitter ~= nil then
             doer.SoundEmitter:PlaySound("dontstarve/common/craftable/bundles/packaged")

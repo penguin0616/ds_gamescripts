@@ -111,8 +111,12 @@ local function onhammered(inst, worker)
 end
 
 local function onhit(inst, worker)
-	inst.AnimState:PlayAnimation("hit")
-	inst.AnimState:PushAnimation("idle")
+    inst.AnimState:PlayAnimation("hit")
+    if inst.lightson then
+        inst.AnimState:PushAnimation("lit")
+    else
+        inst.AnimState:PushAnimation("idle")
+    end
 end
 
 local function OnDay(inst)

@@ -179,6 +179,14 @@ local octo_slotpos = {}
 for y = 0, 3 do
 	table.insert(octo_slotpos, Vector3(-162 +(75/2), -y*75 + 114 ,0))
 end
+
+local minotaur_slotpos = {}
+
+for y = 2.5, -0.5, -1 do
+	for x = 0, 2 do
+		table.insert(minotaur_slotpos, Vector3(75*x-75*2+75, 75*y-75*2+75,0))
+	end
+end
 		
 local function chest(style, aquatic)
 	local fn = function(Sim)
@@ -247,6 +255,14 @@ local function chest(style, aquatic)
 			inst:AddTag("aquatic")
 			inst:AddComponent("waterproofer")
     		inst.components.waterproofer.effectiveness = 0
+		end
+
+		if style == "minotaur_chest" then
+			inst.components.container:SetNumSlots(#minotaur_slotpos, true)
+			inst.components.container.widgetslotpos = minotaur_slotpos
+			inst.components.container.widgetpos = Vector3(0, 200, 0)
+		    inst.components.container.widgetanimbank = "ui_chester_shadow_3x4"
+		    inst.components.container.widgetanimbuild = "ui_chester_shadow_3x4"			
 		end
 
 		return inst

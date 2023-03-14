@@ -128,19 +128,28 @@ for y = 2.5, -0.5, -1 do
 	end
 end
 
-local function RetargetFn(inst)	
-	local notags = {"FX", "NOCLICK","INLIMBO", "abigail"}
-	local yestags = {"monster"}
-	if not inst.last_fire_time or (inst.fire_interval and (GetTime() - inst.last_fire_time) > inst.fire_interval) then	    
-	    return FindEntity(inst, TUNING.PIG_TARGET_DIST,
-	        function(guy)
-	            if not guy.LightWatcher or guy.LightWatcher:IsInLight() then
-	                return guy.components.health and not guy.components.health:IsDead() and inst.components.combat:CanTarget(guy) 
-	            end
-	        end, yestags, notags)
-	end
-	return false
+local function RetargetFilterFn(inst)
+    return function(guy)
+        return
+                (not guy.LightWatcher or guy.LightWatcher:IsInLight())
+                and  guy.components.health
+                and  not guy.components.health:IsDead()
+                and  guy.components.combat
+                and  inst.components.combat:CanTarget(guy)
+                and  GetPlayer().components.combat.target == guy
+    end
 end
+
+local CANT_TAGS = {"FX", "NOCLICK", "INLIMBO", "abigail"}
+
+local function RetargetFn(inst)
+    if not inst.last_fire_time or (inst.fire_interval and (GetTime() - inst.last_fire_time) > inst.fire_interval) then
+        return FindEntity(inst, TUNING.PIG_TARGET_DIST, RetargetFilterFn(inst), nil, CANT_TAGS)
+    end
+
+    return false
+end
+
 local function KeepTargetFn(inst, target)
 	if not inst.last_fire_time or (inst.fire_interval and (GetTime() - inst.last_fire_time) > inst.fire_interval) then
 	    --give up on dead guys, or guys in the dark, or werepigs

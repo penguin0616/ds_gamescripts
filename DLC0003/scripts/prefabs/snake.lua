@@ -85,14 +85,14 @@ end
 
 local function retargetfn(inst)
 	local dist = TUNING.SNAKE_TARGET_DIST
-	local notags = {"FX", "NOCLICK","INLIMBO", "wall", "snake", "structure", "aquatic"}
+	local notags = {"FX", "NOCLICK","INLIMBO", "wall", "snake", "structure"}
 	return FindEntity(inst, dist, function(guy)
-		return  inst.components.combat:CanTarget(guy)
+		return  inst.components.combat:CanTarget(guy) and (not guy:HasTag("aquatic") or inst:HasTag("snake_amphibious"))
 	end, nil, notags)
 end
 
 local function KeepTarget(inst, target)
-	return inst.components.combat:CanTarget(target) and inst:GetDistanceSqToInst(target) <= (TUNING.SNAKE_KEEP_TARGET_DIST*TUNING.SNAKE_KEEP_TARGET_DIST) and not target:HasTag("aquatic")
+	return inst.components.combat:CanTarget(target) and inst:GetDistanceSqToInst(target) <= (TUNING.SNAKE_KEEP_TARGET_DIST*TUNING.SNAKE_KEEP_TARGET_DIST) and (not target:HasTag("aquatic") or inst:HasTag("snake_amphibious"))
 end
 
 local function OnAttacked(inst, data)
@@ -144,19 +144,14 @@ end
 local function OnWaterChange(inst, onwater)
     if onwater then
         inst.onwater = true
-        inst.sg:GoToState("submerge")
         inst.DynamicShadow:Enable(false)
-    --        inst.components.locomotor.walkspeed = 3
     else
-          
-        if inst.onwater then
-        	inst.sg:GoToState("emerge")
-    	end
-        inst.onwater = false      
+        inst.onwater = false
         inst.DynamicShadow:Enable(true)
-    --        inst.components.locomotor.walkspeed = 4
     end
 
+	local noanim = inst:GetTimeAlive() < 1
+	inst.sg:GoToState(onwater and "submerge" or "emerge", noanim)
 end
 
 local function OnEntityWake(inst)	
@@ -186,6 +181,7 @@ local function fn(Sim)
 	inst:AddTag("hostile")
 	inst:AddTag("snake")
 	inst:AddTag("animal")
+	inst:AddTag("canbetrapped")
 
 	MakeCharacterPhysics(inst, 10, .5)
 

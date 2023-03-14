@@ -36,7 +36,7 @@ ACTIONS=
 	DRY = Action({}),
 	ADDFUEL = Action({mount_enabled=true}),
 	ADDWETFUEL = Action({mount_enabled=true}),
-	LIGHT = Action({},-4),
+	LIGHT = Action({}, -4, nil, nil, 1.5),
 	EXTINGUISH = Action({},0),
 	LOOKAT = Action({mount_enabled=true},-3, true),
 	TALKTO = Action({mount_enabled=true},3, true),
@@ -348,7 +348,9 @@ end
 
 ACTIONS.DROP.strfn = function(act)
 	if act.invobject and act.invobject.components.trap then
-		if act.invobject:GetIsOnWater(act.pos.x, act.pos.y, act.pos.z) then
+		act.pos = act.pos or act.doer and act.doer:GetPosition()
+
+		if act.pos and act.invobject:GetIsOnWater(act.pos.x, act.pos.y, act.pos.z) then
 			if act.invobject.components.trap.water then
 				return "SETTRAP"
 			end
@@ -527,7 +529,7 @@ ACTIONS.FERTILIZE.fn = function(act)
 			return true
 		elseif act.target.components.pickable and act.target.components.pickable:CanBeFertilized() then
 			local obj = act.invobject
-			act.target.components.pickable:Fertilize(obj)
+			act.target.components.pickable:Fertilize(obj, act.doer)
 			return true		
 		elseif act.target.components.hackable and act.target.components.hackable:CanBeFertilized() then
 			local obj = act.invobject
@@ -770,6 +772,12 @@ ACTIONS.ADDFUEL.fn = function(act)
 	end
 end
 
+ACTIONS.ADDFUEL.strfn = function(act)
+	if act.target:HasTag("fuelrepairable") then
+		return "REPAIR"
+	end
+end
+
 ACTIONS.ADDWETFUEL.fn = function(act)
 	if act.doer.components.inventory then
 		local fuel = act.doer.components.inventory:RemoveItem(act.invobject)
@@ -784,14 +792,14 @@ ACTIONS.ADDWETFUEL.fn = function(act)
 	end
 end
 
-ACTIONS.GIVE.fn = function(act)
+ACTIONS.ADDWETFUEL.strfn = ACTIONS.ADDFUEL.strfn
 
-	if act.invobject.components.tradable then 
-		if act.target.components.trader then
-			act.target.components.trader:AcceptGift(act.doer, act.invobject)
-			return true
-		end
-	end 
+ACTIONS.GIVE.fn = function(act)
+	if act.target.components.trader and (act.invobject.components.tradable or act.target.components.trader.acceptnontradable) then
+		act.target.components.trader:AcceptGift(act.doer, act.invobject)
+		return true
+	end
+	
 	if act.invobject.components.appeasement then 
 		if act.target.components.appeasable then 
 			act.target.components.appeasable:AcceptGift(act.doer, act.invobject)
@@ -803,7 +811,11 @@ ACTIONS.GIVE.fn = function(act)
 			act.target.components.payable:AcceptCurrency(act.doer, act.invobject)
 			return true
 		end 
-	end 
+	end
+	if act.invobject.components.usableitem then
+        act.invobject.components.usableitem:Use(act.doer, act.target)
+        return true
+    end
 end
 
 ACTIONS.GIVE.strfn = function(act)

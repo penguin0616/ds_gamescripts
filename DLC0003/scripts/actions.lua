@@ -40,7 +40,7 @@ ACTIONS=
 	ADDFUEL = Action({mount_enabled=true},0.5),
 	SHOP = Action({}), 	
 	ADDWETFUEL = Action({mount_enabled=true}),
-	LIGHT = Action({},-4),
+	LIGHT = Action({}, -4, nil, nil, 1.5),
 	EXTINGUISH = Action({},0),
 	LOOKAT = Action({mount_enabled=true},-3, true),
 	TALKTO = Action({mount_enabled=true},3, true),
@@ -422,7 +422,7 @@ ACTIONS.PICKUP.fn = function(act)
 		
 		item:AddTag("cost_one_oinc")
 		if not act.target.components.shelfer.shelf:HasTag("playercrafted") then
-			if act.doer.components.shopper:IsWatching(item) then 
+			if act.doer.components.shopper and act.doer.components.shopper:IsWatching(item) then 
 				if act.doer.components.shopper:CanPayFor(item) then 
 					act.doer.components.shopper:PayFor(item)
 				else 			
@@ -716,7 +716,9 @@ end
 
 ACTIONS.DROP.strfn = function(act)
 	if act.invobject and act.invobject.components.trap then
-		if act.invobject:GetIsOnWater(act.pos.x, act.pos.y, act.pos.z) then
+		act.pos = act.pos or act.doer and act.doer:GetPosition()
+
+		if act.pos and act.invobject:GetIsOnWater(act.pos.x, act.pos.y, act.pos.z) then
 			if act.invobject.components.trap.water then
 				return "SETTRAP"
 			end
@@ -947,7 +949,7 @@ ACTIONS.FERTILIZE.fn = function(act)
 			end
 
 			local obj = act.invobject
-			act.target.components.pickable:Fertilize(obj)
+			act.target.components.pickable:Fertilize(obj, act.doer)
 			return true		
 		elseif act.target.components.hackable and act.target.components.hackable:CanBeFertilized() then
 			local obj = act.invobject
@@ -1391,6 +1393,12 @@ ACTIONS.ADDFUEL.fn = function(act)
 	end
 end
 
+ACTIONS.ADDFUEL.strfn = function(act)
+	if act.target:HasTag("fuelrepairable") then
+		return "REPAIR"
+	end
+end
+
 ACTIONS.SHOP.stroverridefn = function(act)
 	if not act.target or not act.target.costprefab or not act.target.components.shopdispenser:GetItem() then
 		return nil
@@ -1504,36 +1512,36 @@ ACTIONS.ADDWETFUEL.fn = function(act)
 	end
 end
 
+ACTIONS.ADDWETFUEL.strfn = ACTIONS.ADDFUEL.strfn
+
 ACTIONS.GIVE.fn = function(act)
-	print("TEST 1")
-	if act.invobject.components.tradable then
-		print("TEST 2")
-		if act.target.components.trader then
-			act.target.components.trader:AcceptGift(act.doer, act.invobject)
-			return true
-		end
+	if act.target.components.trader and (act.invobject.components.tradable or act.target.components.trader.acceptnontradable) then
+		act.target.components.trader:AcceptGift(act.doer, act.invobject)
+		return true
 	end
+
 	if act.invobject.components.inventoryitem then
-		print("TEST 3")
 		if act.target.components.shelfer then
 			act.target.components.shelfer:AcceptGift(act.doer, act.invobject)
 			return true
 		end
 	end 	
 	if act.invobject.components.appeasement then
-		print("TEST 4")
 		if act.target.components.appeasable then
 			act.target.components.appeasable:AcceptGift(act.doer, act.invobject)
 			return true
 		end 
 	end 
 	if act.invobject.components.currency then
-		print("TEST 5")
 		if act.target.components.payable then
 			act.target.components.payable:AcceptCurrency(act.doer, act.invobject)
 			return true
 		end 
-	end 
+	end
+	if act.invobject.components.usableitem then
+        act.invobject.components.usableitem:Use(act.doer, act.target)
+        return true
+    end
 end
 
 ACTIONS.GIVE.strfn = function(act)
@@ -1687,7 +1695,6 @@ ACTIONS.HARVEST.strfn = function(act)
 		return "WITHERED"
 	end
 end
-
 
 ACTIONS.LIGHT.fn = function(act)
 	if act.invobject and act.invobject.components.lighter then
@@ -2050,12 +2057,17 @@ ACTIONS.CASTSPELL.fn = function(act)
 	--For use with magical staffs
 	local staff = act.invobject or act.doer.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 
-	if staff and staff.components.spellcaster and staff.components.spellcaster:CanCast(act.doer, act.target, act.pos) then
-		staff.components.spellcaster:CastSpell(act.target, act.pos)
-		return true
+	if staff then
+		if staff:HasTag("greenstaff") and act.target:HasTag("interior_door") and not act.target.doorcanberemoved then
+			act.doer.components.talker:Say(GetString(act.doer.prefab, "ANNOUNCE_ROOM_STUCK"))
+			return true
+
+		elseif staff.components.spellcaster and staff.components.spellcaster:CanCast(act.doer, act.target, act.pos) then
+			staff.components.spellcaster:CastSpell(act.target, act.pos)
+			return true
+		end
 	end
 end
-
 
 ACTIONS.BLINK.fn = function(act)
 	if act.invobject and act.invobject.components.blinkstaff then

@@ -55,6 +55,10 @@ function Workable:SetWorkable(b)
     self.workable = b
 end
 
+function Workable:CanBeWorked()
+    return self.workleft > 0 and self.workable
+end
+
 function Workable:SetWorkLeft(work)
     if not self.workable then self.workable = true end
     work = work or 10

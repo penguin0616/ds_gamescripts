@@ -80,6 +80,7 @@ local function MakeShadowCreature(data)
 	    inst.Physics:SetCollisionGroup(COLLISION.SANITY)
 	    inst.Physics:CollidesWith(COLLISION.SANITY)
 	    inst.Physics:CollidesWith(GetWorldCollision())
+	    inst.Physics:CollidesWith(GetWaterCollision())
         
         inst:AddTag("aquatic")
          

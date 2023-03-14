@@ -74,13 +74,17 @@ local function fn()
 	inst.AnimState:SetBuild("blueprint")
 	inst.AnimState:PlayAnimation("idle")
 
-    inst:AddComponent("inspectable")    
+    inst:AddComponent("inspectable")
+    inst.components.inspectable.nameoverride = "blueprint"
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem:ChangeImageName("blueprint")
     inst:AddComponent("named")
     inst:AddComponent("teacher")
     inst.components.teacher.onteach = OnTeach
-    
+
+    MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
+    MakeSmallPropagator(inst)
+
     inst.OnLoad = onload
     inst.OnSave = onsave
 

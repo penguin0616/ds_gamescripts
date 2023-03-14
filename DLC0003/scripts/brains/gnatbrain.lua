@@ -51,7 +51,7 @@ local function makenest(inst)
     if inst.makehome and not inst.components.homeseeker then       
         local x,y,z = inst.Transform:GetWorldPosition()
         local ents = TheSim:FindEntities(x,y,z, 4, nil, {"FX", "NOCLICK", "DECOR","INLIMBO"} )
-        if #ents <= 1 then
+        if #ents <= 1 and not IsPointCloseToWaterOrImpassable(x, y, z, 2) then
             inst.makehome = nil
             if inst.makehometime then
                 inst.makehometime:Cancel()

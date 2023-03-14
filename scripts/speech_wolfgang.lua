@@ -550,6 +550,7 @@ return {
 		LUCY = "Wolfgang loves a sharp missus.",
 		BALLOONS_EMPTY = "Wolfgang will make balloon muscles.",
 		SPEAR_WATHGRITHR = "Is a fine weapon.",
+		WATHGRITHRHAT = "Is strong helm for strong warrior!",
 		WAXWELLJOURNAL = "Wolfgang is glad he cannot read!",
 
 		ABIGAIL_FLOWER = 
@@ -693,6 +694,7 @@ return {
             OPEN = "World has belly button!",
         },
         CAVE_EXIT = "Is dark and scary down here.",
+		CAVE_REGENERATOR = "Want Wolfgang to bring you back to cave opening?",
         CAVE_EXIT = 
         {
             GENERIC = "Please let Wolfgang out!",
@@ -2730,6 +2732,7 @@ return {
     	HARDSHELL_TACOS = "Is crunchy bug skins.",
     	GUMMY_CAKE = "Is chewy. Wolfgang like.",
     	STEAMEDHAMSANDWICH = "Is mouth watering hamburgers.",
+		MEATED_NETTLE = "Meaty snack clears Wolfgang's mighty nostrils!",
 
     	ROC_NEST_DEBRIS1 = "Is stick.",
     	ROC_NEST_DEBRIS2 = "Is stick.",
@@ -2806,6 +2809,7 @@ return {
         BILL_QUILL = "Is for teeny diggings.",
 
         ANTLER = "Wolfgang sings like big birdy.",
+        ANTLER_CORRUPTED = "Birds not like it, makes scary sound!",
 
         PUGALISK_SKULL = "Is mighty skull. Wolfgang is mightier.",
         PUGALISK_CORPSE = "Wolfgang conquer mighty beast!",
@@ -2888,6 +2892,13 @@ return {
 
         FIRECRACKERS = "Crackle bangs!",
         REDLANTERN = "Wolfgang does not like the dark.",
+
+		-------------Wormwood Specific-------
+		
+		COMPOSTWRAP = "Is very mighty poop.",
+		POISONBALM = "Wolfgang does not feat poison! But will take just in case!",
+        ARMOR_BRAMBLE = "Mighty Wolfgang does not need armor!",
+        TRAP_BRAMBLE = "Is sharp plant for hurting feets.",
 
 		-------rewards update-------
 

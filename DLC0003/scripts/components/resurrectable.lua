@@ -38,7 +38,11 @@ function Resurrectable:FindClosestResurrector(cause)
 					local offset = Vector3(range * math.cos( newangle ), 0, -range * math.sin( newangle ))
 					
 					local tile = GetWorld().Map:GetTileAtPoint(x+offset.x, 0, z+offset.z)
-					if not GetWorld().Map:IsWater(tile) and tile ~= GROUND.IMPASSABLE and tile ~= GROUND.INVALID then
+					if not GetWorld().Map:IsWater(tile) and
+						tile ~= GROUND.IMPASSABLE and
+						tile ~= GROUND.INVALID and
+						self.inst:IsPosSurroundedByLand(x+offset.x, 0, z+offset.z, 3)
+					then
 						landtile ={x=x+offset.x,y=0, z=z+offset.z}
 					end
 				end
@@ -156,7 +160,7 @@ function Resurrectable:CanResurrect(cause)
 	return false
 end
 
-local function TrySpawnSkeleton(inst)
+function TrySpawnSkeleton(inst)
 	for i,ent in pairs(Ents) do
 		if ent.HiddenPlayerSkeleton then
 			ent.HiddenPlayerSkeleton = false

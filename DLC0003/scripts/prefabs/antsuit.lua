@@ -27,7 +27,7 @@ local function ontakedamage(inst, damage_amount, absorbed, leftover)
     inst.SoundEmitter:PlaySound("dontstarve_DLC003/common/crafted/antsuit/hit")
 	-- absorbed is the amount of durability that should be consumed
 	-- so that's what should be consumed in the fuel
-	local absorbedDamageInPercent = absorbed/TUNING.ARMORWOOD
+	local absorbedDamageInPercent = absorbed/inst.components.armor.maxcondition
 	if inst.components.fueled then
 		local percent = inst.components.fueled:GetPercent()
 		local newPercent = percent - absorbedDamageInPercent
@@ -49,7 +49,6 @@ local function fn(Sim)
     inst:AddComponent("inspectable")
     
     inst:AddComponent("inventoryitem")
-    inst.components.inventoryitem.atlasname = "images/inventoryimages.xml"
     inst.components.inventoryitem.foleysound = "dontstarve_DLC003/common/crafted/antsuit/foley"
     
     inst:AddComponent("armor")
@@ -65,7 +64,7 @@ local function fn(Sim)
     
     inst:AddComponent("fueled")
     inst.components.fueled.fueltype = "USAGE"
-    inst.components.fueled:InitializeFuelLevel(TUNING.RAINCOAT_PERISHTIME)
+    inst.components.fueled:InitializeFuelLevel(TUNING.ANTSUIT_PERISHTIME)
     inst.components.fueled:SetDepletedFn(onperish)
     inst.components.fueled:SetUpdateFn(onupdate)
     

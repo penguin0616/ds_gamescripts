@@ -610,7 +610,7 @@ local function fn(Sim)
     inst:AddComponent("eater")
     inst.components.eater.foodprefs = { "VEGGIE","ROUGHAGE" }
     inst.components.eater.ablefoods = { "VEGGIE","ROUGHAGE" }
-    --inst.components.eater:SetAbsorptionModifiers(4,1,1)
+    inst.components.eater:SetAbsorptionModifiers(4,1,1)
     inst.components.eater:SetOnEatFn(OnEat)
     
     inst:AddComponent("combat")

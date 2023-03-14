@@ -534,6 +534,7 @@ return {
 		LUCY = "Strange waves of energy are emanating from it.",
 		BALLOONS_EMPTY = "Balloons? Here?",
 		SPEAR_WATHGRITHR = "Ornate, but I suspect it's not a real artifact.",
+		WATHGRITHRHAT = "Upon closer inspection, it seems to be nothing more than a stage prop.",
 		WAXWELLJOURNAL = "My attempts to understand this are being thwarted somehow.",
 
 		ABIGAIL_FLOWER = 
@@ -713,6 +714,7 @@ return {
             OPEN = "Its dark dampness intrigues me.",
         },
         CAVE_EXIT = "Intriguing. But perhaps later.",
+		CAVE_REGENERATOR = "I hypothesize it will have an interesting reaction with the caves' entrance.",
         CAVE_ENTRANCE = "There is something strange about that rock.",
         CAVE_ENTRANCE_RUINS = "Aha! I'm certain this will lead to knowledge.",
 
@@ -2765,6 +2767,7 @@ return {
     	HARDSHELL_TACOS = "Who knew insect carapaces could be so tasty?!",
     	GUMMY_CAKE = "Its rubbery texture reminds me of the desserts of my youth!",
     	STEAMEDHAMSANDWICH = "Delightfully devilish.",
+		MEATED_NETTLE = "Wrapping the fronds in meat makes them considerably more palatable.",
 
     	ROC_NEST_DEBRIS1 = "Evidently, it's a stick.",
     	ROC_NEST_DEBRIS2 = "Theoretically, it has the same properties as other sticks.",
@@ -2841,6 +2844,7 @@ return {
         BILL_QUILL = "Surprisingly hardy. Theoretically, it could be used as a tool.",
 
         ANTLER = "A bird whistle that appears to call an exceedingly large bird.",
+        ANTLER_CORRUPTED = "This model appears to deter the exceedingly large bird.",
 
         PUGALISK_SKULL = "The cranium has retained some of the beasts' incredible hypnotic power.",
         PUGALISK_CORPSE = "The skeletal remains of an alluring beast. I must dig them up!",
@@ -2925,6 +2929,13 @@ return {
         ---------YOTP---------
         FIRECRACKERS = "A chemical explosive used to enhance festive occasions.",
         REDLANTERN = "Intriguing. There appears to be a red motif to the lanterns here.",
+
+		-------------Wormwood Specific-------
+
+		COMPOSTWRAP = "A bundle of assorted excrement. Charming.",
+		POISONBALM = "I should keep this on hand, in case I find myself poisoned.",
+		ARMOR_BRAMBLE = "Brambles woven into a makeshift piece of armor.",
+		TRAP_BRAMBLE = "Incredible! This plant has been weaponized!",
 
         ----------reward update ------
         TURF_DEEPRAINFOREST_NOCANOPY = "Perfect for plants native to the jungle.",

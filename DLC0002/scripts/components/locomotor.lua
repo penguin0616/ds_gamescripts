@@ -338,7 +338,7 @@ function LocoMotor:UpdateGroundSpeedMultiplier()
     local ground = GetWorld()
     local x,y,z = self.inst.Transform:GetWorldPosition()
 
-	local oncreep = ground ~= nil and ground.GroundCreep:OnCreep(x, y, z) and self.triggerscreep
+	local oncreep = ground ~= nil and ground.GroundCreep:OnCreep(x, y, z) and self.triggerscreep and not self.inst:GetIsOnWater()
     local onflood = ground ~= nil and ground.Flooding ~= nil and ground.Flooding:OnFlood(x, y, z)
     local boating = self.inst.components.driver and self.inst.components.driver:GetIsDriving() 
     

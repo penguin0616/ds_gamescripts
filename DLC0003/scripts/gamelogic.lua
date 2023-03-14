@@ -29,10 +29,12 @@ if PLATFORM == "WIN32_STEAM" or PLATFORM == "WIN32" then
 	global_broadcastnig_widget:SetVAnchor(ANCHOR_TOP)
 end
 
+global_loading_widget = nil
 LoadingWidget = require "widgets/loadingwidget"
 global_loading_widget = LoadingWidget()
 global_loading_widget:SetHAnchor(ANCHOR_LEFT)
 global_loading_widget:SetVAnchor(ANCHOR_BOTTOM)
+global_loading_widget:SetScaleMode(SCALEMODE_PROPORTIONAL)
 
 local DeathScreen = require "screens/deathscreen"
 local PopupDialogScreen = require "screens/popupdialog"
@@ -328,6 +330,7 @@ local function OnPlayerDeath(wilson, data)
 			res = SaveGameIndex:GetResurrector()
 			if res then
 				DoAgeWorld()
+				TrySpawnSkeleton(wilson)
 
 				local fadetime = 8.3
 				if cause == "file_load" then
@@ -393,6 +396,7 @@ end
 
 local function StartGame(wilson)
 	TheFrontEnd:GetSound():KillSound("FEMusic") -- just in case...
+	TheFrontEnd:GetSound():KillSound("worldgensound")
 	
 	start_game_time = GetTime()
 	SetUpPlayerCharacterCallbacks(wilson)
@@ -1413,7 +1417,7 @@ function TravelBetweenWorlds(targetmode, playerevent, waittime, dropitems_tag, c
 	SetPause(false)
 
 	if dropitems_tag ~= nil and type(dropitems_tag) == "string" then
-		local itemlist = GetPlayer().components.inventory:GetItems(function(i, item) return item:HasTag(dropitems_tag) end)
+		local itemlist = GetPlayer().components.inventory:FindItems(function(item) return item:HasTag(dropitems_tag) end)
 		for i, item in pairs(itemlist) do
 			local owner = item.components.inventoryitem:GetContainer()
 			if owner then

@@ -78,9 +78,7 @@ local function MakeShadowCreature(data)
         RemovePhysicsColliders(inst)
 	    inst.Physics:SetCollisionGroup(COLLISION.SANITY)
 	    inst.Physics:CollidesWith(COLLISION.SANITY)
-	    inst.Physics:CollidesWith(COLLISION.WORLD)
-        
-         
+
         anim:SetBank(bank)
         anim:SetBuild(build)
         anim:PlayAnimation("idle_loop")

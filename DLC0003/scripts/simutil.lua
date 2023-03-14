@@ -508,6 +508,31 @@ function CanEntitySeeTarget(inst, target)
 end
 -- [[ END FROM DST]]
 
+function IsPassableAtPoint(x, y, z)
+    local tile = GetWorld().Map:GetTileAtPoint(x, y, z)
+    return tile ~= GROUND.IMPASSABLE and
+        tile ~= GROUND.INVALID
+end
+
+function ErodeAway(inst, erode_time)
+    local time_to_erode = erode_time or 1
+    local tick_time = TheSim:GetTickTime()
+
+    if inst.DynamicShadow ~= nil then
+        inst.DynamicShadow:Enable(false)
+    end
+
+    inst:StartThread(function()
+        local ticks = 0
+        while ticks * tick_time < time_to_erode do
+            local erode_amount = ticks * tick_time / time_to_erode
+            inst.AnimState:SetErosionParams(erode_amount, 0.1, 1.0)
+            ticks = ticks + 1
+            Yield()
+        end
+        inst:Remove()
+    end)
+end
 
 function CheckLOSFromPoint(pos, target_pos)
     local dist = target_pos:Dist(pos)
@@ -551,14 +576,29 @@ end
 
 local inventoryItemAtlasLookup = {}
 
+function RegisterInventoryItemAtlas(atlas, imagename)
+	if atlas ~= nil and imagename ~= nil then
+		if inventoryItemAtlasLookup[imagename] ~= nil then
+			if inventoryItemAtlasLookup[imagename] ~= atlas then
+				print("RegisterInventoryItemAtlas: Image '" .. imagename .. "' is already registered to atlas '" .. atlas .."'")
+			end
+		else
+			inventoryItemAtlasLookup[imagename] = atlas
+		end
+	end
+end
+
 function GetInventoryItemAtlas(imagename)
 	local atlas = inventoryItemAtlasLookup[imagename]
 	if atlas then
 		return atlas
 	end
 	local base_atlas = "images/inventoryimages.xml"
+
 	atlas = TheSim:AtlasContains(base_atlas, imagename) and base_atlas or "images/inventoryimages_2.xml"
-	inventoryItemAtlasLookup[imagename] = atlas
+	if atlas ~= nil then
+		inventoryItemAtlasLookup[imagename] = atlas
+	end
 	return atlas
 end
 

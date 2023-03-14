@@ -54,7 +54,7 @@ local function ondestroyed(inst)
 	end
 	inst.components.lootdropper:DropLoot()
 	SpawnPrefab("collapse_small").Transform:SetPosition(inst.Transform:GetWorldPosition())
-	inst.SoundEmitter:PlaySound("dontstarve/common/destroy_wood")
+	inst.SoundEmitter:PlaySound("dontstarve/common/destroy_magic")
 	inst:Remove()
 end
 

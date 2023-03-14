@@ -30,6 +30,7 @@ local function fn(Sim)
     inst.AnimState:PlayAnimation("anim")
     
     inst:AddTag("metal")
+    inst:AddTag("smeltable") -- Smelter
     
     inst:AddComponent("inspectable")
     

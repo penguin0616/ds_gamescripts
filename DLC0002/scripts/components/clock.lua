@@ -11,7 +11,7 @@ local Clock = Class(function(self, inst)
     self.lmax = 1
 
     self.dayColour =         Point(255/255, 230/255, 158/255) -- This isn't being used any longer: now use GetDayColour to do special casing for Spring
-    self.duskColour =        Point(100/255, 100/255, 100/255) -- This isn't being used any longer: now use GetDuskColour to do special casing for Spring
+    self.duskColour =        Point(150/255, 150/255, 150/255) -- This isn't being used any longer: now use GetDuskColour to do special casing for Spring
     self.nightColour =       Point(0/255,   0/255,   0/255)
     self.fullMoonColour =    Point(84/255,  122/255, 156/255)
     self.caveColour =        Point(0/255,   0/255,   0/255)
@@ -50,7 +50,8 @@ function Clock:GetTotalTime()
 end
 
 local function GetDayColour()
-    local sm = GetSeasonManager()
+    return Point(255/255, 230/255, 158/255)
+    --[[ local sm = GetSeasonManager()
     if sm and sm:IsSpring() then
         return Point(255/255, 230/255, 158/255)--Point(255/255, 244/255, 213/255)
     elseif sm and sm:IsMildSeason() then
@@ -63,14 +64,14 @@ local function GetDayColour()
         return Point(255/255, 230/255, 158/255)--Point(255/255, 225/255, 225/255)
     else
         return Point(255/255, 230/255, 158/255)--Point(255/255, 230/255, 158/255)
-    end
+    end ]]
 end
 
 local function GetDuskColour()
     if GetSeasonManager() and GetSeasonManager():IsSpring() then
-        return Point(100/255, 100/255, 100/255)--Point(171/255, 146/255, 147/255)
+        return Point(150/255, 150/255, 150/255)--Point(171/255, 146/255, 147/255)
     else
-        return Point(100/255, 100/255, 100/255)--Point(100/255, 100/255, 100/255)
+        return Point(150/255, 150/255, 150/255)--Point(100/255, 100/255, 100/255)
     end
 end
 

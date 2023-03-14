@@ -620,8 +620,8 @@ function MakeHat(name)
 		inst:AddComponent("waterproofer")
 		inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
 
-		inst:AddComponent("characterspecific")
-		inst.components.characterspecific:SetOwner("wathgrithr")
+		--inst:AddComponent("characterspecific")
+		--inst.components.characterspecific:SetOwner("wathgrithr")
 
 		return inst
 	end
@@ -1183,8 +1183,10 @@ function MakeHat(name)
 			owner.components.builder.jellybrainhat = true
 			owner:PushEvent("techlevelchange")
     		owner:PushEvent("unlockrecipe")
-    		inst.brainjelly_onbuild = function()
-    			inst.components.finiteuses:Use(1)
+    		inst.brainjelly_onbuild = function(owner, data)
+				if data.used_jellybrainhat == nil or data.used_jellybrainhat then
+    				inst.components.finiteuses:Use(1)
+				end
     		end
     		owner:ListenForEvent("builditem", inst.brainjelly_onbuild)
     		owner:ListenForEvent("bufferbuild", inst.brainjelly_onbuild)
@@ -1258,8 +1260,8 @@ function MakeHat(name)
 		inst.components.fueled:SetSections(TUNING.WOODLEGSHAT_TREASURES)
 		inst.components.fueled:SetSectionCallback(woodlegs_spawntreasure)
 
-        inst:AddComponent("characterspecific")
-        inst.components.characterspecific:SetOwner("woodlegs")
+        --inst:AddComponent("characterspecific")
+        --inst.components.characterspecific:SetOwner("woodlegs")
 
 		return inst
 	end

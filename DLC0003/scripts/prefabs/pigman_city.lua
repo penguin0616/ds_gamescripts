@@ -163,12 +163,18 @@ local function CalcSanityAura(inst, observer)
 	return 0
 end
 
+local function OnGasChange(inst, onGas)
+	if onGas and inst.components.poisonable then
+		inst.components.poisonable:Poison(true, nil, true)
+	end
+end
+
 local function ShouldAcceptItem(inst, item)
     if inst.components.sleeper:IsAsleep() then
         return false
     end
 
-    if item.components.edible then
+    if inst.components.eater:CanEat(item) then
         
         if (item.components.edible.foodtype == "MEAT" or item.components.edible.foodtype == "HORRIBLE")
            and inst.components.follower.leader
@@ -186,7 +192,7 @@ local function ShouldAcceptItem(inst, item)
             local wanteditems = econ:GetTradeItems(econprefab)
             local wantitem = false
             for i,wanted in ipairs(wanteditems or {})do
-                if wanted == item.prefab then            
+                if wanted == item.prefab then
                     wantitem = true
                     break
                 end
@@ -976,6 +982,10 @@ local function makefn(name, build, fixer, guard_pig, shopkeeper, tags, sex, econ
         inst:AddTag("guard")
         inst:AddTag("extinguisher")
 
+        inst:AddComponent("tiletracker")
+        inst.components.tiletracker:SetOnGasChangeFn(OnGasChange)
+        inst.components.tiletracker:Start()
+
         inst.components.burnable:SetBurnTime(2)
 
         inst.equiptask = inst:DoTaskInTime(0,function()
@@ -1075,7 +1085,7 @@ local function makefn(name, build, fixer, guard_pig, shopkeeper, tags, sex, econ
             end)
 
         inst.components.inspectable.getstatus = function(inst)
-            if inst:IsAsleep() then
+            if inst.components.sleeper:IsAsleep() then
                 return "SLEEPING"            
             end
         end
@@ -1145,10 +1155,21 @@ local function makefn(name, build, fixer, guard_pig, shopkeeper, tags, sex, econ
         return inst
     end
 
+    local function make_mayor()
+        local inst = make_common()
+        inst.components.named:SetName(STRINGS.NAMES.PIGMAN_MAYOR)
+
+        return inst
+    end
+
     --------------------------------------------------------------------------
 
     if name == "pigman_queen" then
         return make_queen
+    end
+
+    if name == "pigman_mayor" then
+        return make_mayor
     end
 
     if name == "pigman_mechanic" then

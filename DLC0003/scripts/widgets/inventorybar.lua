@@ -288,8 +288,14 @@ function Inv:Rebuild()
 	end
 
 
-	local new_backpack = self.owner.components.inventory.overflow
-	local do_integrated_backpack = TheInput:ControllerAttached() and new_backpack
+	local controller_attached = TheInput:ControllerAttached()
+    self.controller_build = controller_attached
+	self.integrated_backpack = controller_attached or Profile:GetIntegratedBackpack()
+
+	local overflow = self.owner.components.inventory.overflow and self.owner.components.inventory.overflow.components.container
+	overflow = (overflow ~= nil and overflow:IsOpenedBy(self.owner)) and overflow or nil
+
+	local do_integrated_backpack = overflow ~= nil and self.integrated_backpack
 
 	if self.boatwidget then
 		if self.boatwidget.inst:IsValid() then
@@ -299,8 +305,9 @@ function Inv:Rebuild()
 		end
 	end
 
-	if do_integrated_backpack then
+	local new_backpack = self.owner.components.inventory.overflow
 
+	if do_integrated_backpack then
 		local num = new_backpack.components.container.numslots
 
 		local x = - (num * (W+SEP) / 2)
@@ -324,6 +331,7 @@ function Inv:Rebuild()
 			if item then
 				slot:SetTile(ItemTile(item))
 			end
+			
 		end
 		
 		self.backpack = self.owner.components.inventory.overflow
@@ -331,28 +339,37 @@ function Inv:Rebuild()
 	    self.inst:ListenForEvent("itemlose", BackpackLose, self.backpack)
 	end
 
+
+
 	if old_backpack	and not self.backpack then
 		self:SelectSlot(self.inv[1])
 		self.current_list = self.inv
 	end
+
+	--self.bg:Flow(total_w+60, 256, true)
 	
 	if do_integrated_backpack then
 		self.bg:SetPosition(Vector3(0,-24,0))
 	    self.bgcover:SetPosition(Vector3(0, -135, 0))
 		self.toprow:SetPosition(Vector3(0,W/2 + YSEP/2,0))
 		self.bottomrow:SetPosition(Vector3(0,-W/2 - YSEP/2,0))
-		self.root:MoveTo(self.out_pos, self.in_pos, .5)
+
+		if self.rebuild_snapping then
+            self.root:SetPosition(self.in_pos)
+        else
+            self.root:MoveTo(self.out_pos, self.in_pos, .5)
+        end
 	else
 		self.bg:SetPosition(Vector3(0, -64, 0))
 	    self.bgcover:SetPosition(Vector3(0, -100, 0))
 		self.toprow:SetPosition(Vector3(0,0,0))
 		self.bottomrow:SetPosition(0,0,0)
 		
-		if TheInput:ControllerAttached() then
-			self.root:MoveTo(self.in_pos, self.out_pos, .2)
-		else
-			self.root:SetPosition(self.out_pos)
-		end
+		if do_integrated_backpack and not self.rebuild_snapping then
+            self.root:MoveTo(self.in_pos, self.out_pos, .2)
+        else
+            self.root:SetPosition(self.out_pos)
+        end
 	end
 	
 	self.actionstring:MoveToFront()

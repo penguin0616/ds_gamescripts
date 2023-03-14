@@ -48,7 +48,7 @@ local function wetanddamage(inst, other)
         end
 
         if other.components.inventory then 
-            waterproofMultiplier = 1 - other.components.inventory:GetWaterproofness()
+            waterproofMultiplier = 1 - math.min(other.components.inventory:GetWaterproofness(), 1)
         end
 
         local delta = inst.hitmoisture * hitmoisturerate * waterproofMultiplier

@@ -1,7 +1,7 @@
 local TRADER = {
     
     pigman_collector = {
-        items = { "stinger", "silk", "mosquitosack", "chitin", "venus_stalk", "venomgland", "spidergland", "lotus_flower" },
+        items = { "stinger", "silk", "mosquitosack", "chitin", "venus_stalk", "venomgland", "spidergland", "lotus_flower", "bill_quill" },
         reset = 0,
         desc = STRINGS.CITY_PIG_COLLECTOR_TRADE,
         reward = "oinc",
@@ -26,7 +26,7 @@ local TRADER = {
 
     pigman_mechanic = {
         items = { "boards", "rope", "cutstone", "papyrus" },
-        reset = 1,
+        reset = 0,
         desc = STRINGS.CITY_PIG_MECHANIC_TRADE,
         reward = "oinc",
         rewardqty = 2
@@ -41,7 +41,7 @@ local TRADER = {
     },
 
     pigman_hunter = {
-        items = { "houndstooth", "stinger" },
+        items = { "houndstooth", "stinger", "hippo_antler" },
         reset = 1,
         desc = STRINGS.CITY_PIG_HUNTER_TRADE,
         reward = "oinc",

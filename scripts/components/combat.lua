@@ -495,6 +495,10 @@ function Combat:StartAttack()
     self.laststartattacktime = GetTime()
 end
 
+function Combat:HasTarget()
+    return self.target ~= nil
+end
+
 function Combat:CanTarget(target)
     
     return target and 
@@ -624,6 +628,7 @@ function Combat:CalcDamage(target, weapon, multiplier)
             local mount = self.inst.components.rider:GetMount()
             if mount and mount.components.combat then
                 basedamage = mount.components.combat.defaultdamage
+                multiplier = mount.components.combat.damagemultiplier or 1
                 bonus = mount.components.combat.damagebonus or 0
             end
             local saddle = self.inst.components.rider:GetSaddle()

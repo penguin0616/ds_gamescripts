@@ -13,7 +13,7 @@ local Clock = Class(function(self, inst)
     self.lmax = 1
 
     self.dayColour = Point(255/255, 230/255, 158/255)
-    self.duskColour = Point(100/255, 100/255, 100/255)
+    self.duskColour = Point(150/255, 150/255, 150/255)
     self.nightColour =       NIGHT_COLOR
     self.fullMoonColour =    FULLMOON_COLOR
     self.caveColour = Point(0,0,0)
@@ -52,12 +52,12 @@ local function GetFullMoonColour()
     return FULLMOON_COLOR   
 end
 
-local function GetDuskColour()           
-    return Point(100/255, 100/255, 100/255)--Point(100/255, 100/255, 100/255)
+local function GetDuskColour()
+    return Point(150/255, 150/255, 150/255)
 end
 
 local function GetDayColour()
-    return Point(255/255, 230/255, 158/255)--Point(255/255, 230/255, 158/255)    
+    return Point(255/255, 230/255, 158/255)
 end
 
 function Clock:GetTimeLeftInEra()

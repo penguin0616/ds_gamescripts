@@ -40,6 +40,7 @@ local function fn(Sim)
     
     --inst:AddTag("fx")
     inst:AddTag("NOCLICK")
+    inst:AddTag("NOBLOCK")
     inst.Transform:SetScale(1.0,4,1)
     
     inst:AddComponent("firefx")

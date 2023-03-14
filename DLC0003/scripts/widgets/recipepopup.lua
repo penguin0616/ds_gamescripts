@@ -296,7 +296,7 @@ function RecipePopup:Refresh()
     
     for k,v in pairs(recipe.ingredients) do
     
-        local has, num_found = owner.components.inventory:Has(v.type, RoundUp(v.amount * owner.components.builder.ingredientmod))
+        local has, num_found = owner.components.inventory:Has(v.type, RoundUp(v.amount * owner.components.builder.ingredientmod), true)
         local amt = v.amount
         if v.type == "oinc" then
             num_found = owner.components.shopper:GetMoney(owner.components.inventory)

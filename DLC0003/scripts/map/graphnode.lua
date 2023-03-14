@@ -478,11 +478,10 @@ function Node:PopulateExtra(world_gen_choices, spawnFn, data, worldprefab)
 			
 		local amount_to_generate = {}
 		for prefab,amt in pairs(world_gen_choices) do
-
-			if data.prefab_list[prefab] == nil and worldprefab ~= "porkland" then
+			--if data.prefab_list[prefab] == nil and worldprefab ~= "porkland" then
 				-- TODO: Need a better way to increse items in areas where they dont usually generate				
-				data.prefab_list[prefab] = math.random(1,2)
-			end
+				--data.prefab_list[prefab] = math.random(1,2)
+			--end
 			
 			if data.prefab_list[prefab] then
 				if worldprefab == "porkland" then
@@ -510,7 +509,6 @@ function Node:PopulateExtra(world_gen_choices, spawnFn, data, worldprefab)
 				self:AddEntity(prefab, data.points_x, data.points_y, data.idx_left[idx], data.entitiesOut, data.width, data.height, data.prefab_list, prefab_data)				
 					
 				amount_to_generate[prefab] = amount_to_generate[prefab] - 1
-				
 				-- Remove any complete items from the list
 				if amount_to_generate[prefab] <= 0 then
 					--print("Generated enough",prefab)

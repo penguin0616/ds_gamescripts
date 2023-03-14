@@ -64,7 +64,7 @@ end
 
 local function turnon(inst)
     if inst.components.fueled then
-        if not inst.components.fueled:IsEmpty() then        
+        if not inst.components.fueled:IsEmpty() then
             inst.components.fueled:StartConsuming()
         else
             return
@@ -79,7 +79,7 @@ local function turnon(inst)
 
 
     if inst.equippedby then
-        setswapsymbol(inst, "swap_lantern")      
+        setswapsymbol(inst, "swap_lantern")
     else
         if inst:GetIsOnWater() then
             inst.AnimState:PlayAnimation("idle_on_water")
@@ -269,6 +269,8 @@ local function fn(Sim)
     inst.components.burnable.fxprefab = nil
 
     inst:AddComponent("fueled")
+    inst.components.fueled.fueltype = "TAR"
+    inst.components.fueled.accepting = true
     inst.components.fueled:SetUpdateFn( onfueledupdate )
     inst.components.fueled:SetSectionCallback(
         function(section)
@@ -276,11 +278,11 @@ local function fn(Sim)
 
                 depleted(inst)
                 turnoff(inst) 
-                local owner = inst.components.inventoryitem.owner                                
+                local owner = inst.components.inventoryitem.owner
                 if owner then
                     owner:PushEvent("torchranout", {torch = inst})
                 end
-                inst:Remove()                
+                inst:Remove()
             end
         end)
     inst.components.fueled:InitializeFuelLevel(TUNING.TORCH_FUEL)

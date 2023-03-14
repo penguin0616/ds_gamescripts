@@ -55,6 +55,7 @@ local function fn(Sim)
     inst:AddTag("ghost")
     inst:AddTag("windspeedimmune")
     inst:AddTag("noauradamage")
+    inst:AddTag("notraptrigger")
 
     inst:AddComponent("locomotor")
     inst.components.locomotor.walkspeed = TUNING.GHOST_SPEED

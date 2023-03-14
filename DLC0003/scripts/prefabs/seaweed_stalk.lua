@@ -87,7 +87,9 @@ local function fn(Sim)
     inst.AnimState:SetBank("seaweed_seed")
     inst.AnimState:SetBuild("seaweed_seed")
     inst.AnimState:PlayAnimation("idle")
-    
+
+    inst:AddTag("plant")
+
     MakeInventoryFloatable(inst, "idle_water", "idle")
 
     inst:AddComponent("tradable")

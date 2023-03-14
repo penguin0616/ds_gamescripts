@@ -13,6 +13,8 @@ local assets =
     Asset("ANIM", "anim/dust_fx.zip"),
     Asset("SOUND", "sound/forest.fsb"),
     Asset("MINIMAP_IMAGE", "tree_leaf"),
+    Asset("MINIMAP_IMAGE", "tree_leaf_burnt"),
+    Asset("MINIMAP_IMAGE", "tree_leaf_stump"),
 }
 
 local prefabs =
@@ -560,7 +562,7 @@ local function chop_down_tree(inst, chopper)
     else
         inst.AnimState:PlayAnimation(inst.anims.fallright)
         if inst.components.growable and inst.components.growable.stage == 3 and inst.leaf_state == "colorful" then
-            inst.components.lootdropper:SpawnLootPrefab("acorn", pt - TheCamera:GetRightVec())
+            inst.components.lootdropper:SpawnLootPrefab("acorn", pt + TheCamera:GetRightVec())
         end
         inst.components.lootdropper:DropLoot(pt + TheCamera:GetRightVec())
     end
@@ -579,6 +581,7 @@ local function chop_down_tree(inst, chopper)
 
     RemovePhysicsColliders(inst)
     inst.AnimState:PushAnimation(inst.anims.stump)
+    inst.MiniMapEntity:SetIcon("tree_leaf_stump.png")
 
     if inst.leaveschangetask then
         inst.leaveschangetask:Cancel()
@@ -666,6 +669,8 @@ local function onburntchanges(inst)
             inst:RemoveComponent("propagator")
         end
     end)
+
+    inst.MiniMapEntity:SetIcon("tree_leaf_burnt.png")
 end
 
 local function OnBurnt(inst, imm)
@@ -1063,6 +1068,7 @@ local function onload(inst, data)
 
         if data.burnt then
             inst:AddTag("fire") -- Add the fire tag here: OnEntityWake will handle it actually doing burnt logic
+            inst.MiniMapEntity:SetIcon("tree_leaf_burnt.png")
         elseif data.stump then
             while inst:HasTag("shelter") do inst:RemoveTag("shelter") end
             while inst:HasTag("cattoyairborne") do inst:RemoveTag("cattoyairborne") end
@@ -1079,6 +1085,7 @@ local function onload(inst, data)
                 end
             end
             inst.AnimState:PlayAnimation(inst.anims.stump)
+            inst.MiniMapEntity:SetIcon("tree_leaf_stump.png")
 
             MakeSmallBurnable(inst)
             inst:RemoveComponent("workable")
@@ -1360,6 +1367,7 @@ local function makefn(build, stage, data)
             inst:RemoveComponent("blowinwindgust")
             RemovePhysicsColliders(inst)
             inst.AnimState:PlayAnimation(inst.anims.stump)
+            inst.MiniMapEntity:SetIcon("tree_leaf_stump.png")
             inst:AddTag("stump")
             inst:AddComponent("workable")
             inst.components.workable:SetWorkAction(ACTIONS.DIG)

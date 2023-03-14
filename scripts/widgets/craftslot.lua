@@ -139,7 +139,7 @@ function CraftSlot:Refresh(recipename)
             image = PORK_ICONS[imagename] .. ".tex"
         end   
 
-        self.tile:SetVisual(self.recipe.atlas, image)
+        self.tile:SetVisual(self.recipe:GetAtlas(), image)
         self.tile:Show()
 
         if self.fgimage then

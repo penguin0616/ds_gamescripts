@@ -92,13 +92,13 @@ local SHOPTYPES = {
 
     pig_shop_antiquities = {
         { "silk",               "oinc", 5  },
-        { "gears",              "oinc", 10 },
+        { "gears",              "oinc", 20 },
         { "mandrake",           "oinc", 50 },
-        { "wormlight",          "oinc", 20 },
+        { "wormlight",          "oinc", 5  },
         { "deerclops_eyeball",  "oinc", 50 },
         { "walrus_tusk",        "oinc", 50 },
         { "bearger_fur",        "oinc", 40 },
-        { "goose_feather",      "oinc", 40 },
+        { "goose_feather",      "oinc", 10 },
         { "dragon_scales",      "oinc", 30 },
         { "houndstooth",        "oinc", 5  },
         { "bamboo",             "oinc", 3  },
@@ -109,8 +109,8 @@ local SHOPTYPES = {
     },
 
     pig_shop_arcane = {
-        { "icestaff",           "oinc", 50 },
-        { "firestaff",          "oinc", 50 },
+        { "icestaff",           "oinc", 30 },
+        { "firestaff",          "oinc", 30 },
         { "amulet",             "oinc", 50 },
         { "blueamulet",         "oinc", 50 },
         { "purpleamulet",       "oinc", 50 },
@@ -123,7 +123,7 @@ local SHOPTYPES = {
 
     pig_shop_weapons = {
         { "spear",              "oinc", 3  },
-        { "halberd",            "oinc", 5  },
+        { "halberd",            "oinc", 15 },
         { "cutlass",            "oinc", 50 },
         { "trap_teeth",         "oinc", 10 },
         { "birdtrap",           "oinc", 20 },
@@ -146,6 +146,7 @@ local SHOPTYPES = {
         { "strawhat",           "oinc", 3  },
         { "beefalohat",         "oinc", 10 },
         { "pithhat",            "oinc", 10 },
+        { "sewing_kit",         "oinc", 50 },
     },
 
     pig_shop_bank = {
@@ -164,6 +165,7 @@ local SHOPTYPES = {
         { "molehat_blueprint",          "oinc", 30  },
         { "beargervest_blueprint",      "oinc", 50  },
         { "ox_flute_blueprint",         "oinc", 100 },
+        { "trawlnet_blueprint",         "oinc", 30  },
     },
 
     pig_shop_academy = {},

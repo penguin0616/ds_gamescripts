@@ -1683,7 +1683,7 @@ function InteriorSpawner:SpawnInterior(interior)
 
 	for k, prefab in ipairs(interior.prefabs) do
 
-		if GetWorld().getworldgenoptions(GetWorld())[prefab.name] and GetWorld().getworldgenoptions(GetWorld())[prefab.name] == "never" then
+		if GetWorld():IsWorldGenOptionNever(prefab.name) then
 			print("CANCEL SPAWN ITEM DUE TO WORLD GEN PREFS", prefab.name)
 	 	else
 
@@ -1967,7 +1967,7 @@ local function CollectLootInInterior(interior, is_pigshop)
     return loot
 end
 
-local function IsGenericDoor(prefab)
+local function IsGenericWall(prefab)
     -- These walls are not per room.
     return prefab == "generic_wall_back" or prefab == "generic_wall_side"
 end
@@ -1986,6 +1986,9 @@ function InteriorSpawner:DestroyInteriorByDoor(door, main_door)
             * Workable:WorkedBy
                 - Destroy all interiors from ouside the interior.
                 - Drops the all loots on the "door" parameter.
+
+            * Green Staff Spell (staffs.lua)
+                - It depends on the door type.
     ]]
 
     main_door = main_door or door
@@ -2004,7 +2007,7 @@ function InteriorSpawner:DestroyInteriorByDoor(door, main_door)
     for i = obj_count, 1, -1 do
         local inst = interior.object_list[i]
 
-        if inst and not IsGenericDoor(inst.prefab) then
+        if inst and not IsGenericWall(inst.prefab) then
 
             if inst:HasTag("house_door") then
                 local connected_door = self:GetDoorInst(inst.components.door.target_door_id)
@@ -2907,7 +2910,7 @@ function InteriorSpawner:CleanupBlackRoomAfterHiddenDoor()
 			--assert(interior)
 			--print("interior:",interior,interior.unique_name)
 			-- add this entity to the object list for this interior
-			if interior.object_list and #interior.object_list > 0 then
+			if interior and interior.object_list and #interior.object_list > 0 then
 				local found = false
 				for i,v in pairs(interior.object_list) do
 					if v == entity then

@@ -178,6 +178,8 @@ local function fn()
     local minimap = inst.entity:AddMiniMapEntity()
     minimap:SetIcon( "nightmarelight.png" )
 
+    inst:AddTag("nightmarelight")
+
     inst.rockstate = "calm"
 
     anim:SetBuild("rock_light")

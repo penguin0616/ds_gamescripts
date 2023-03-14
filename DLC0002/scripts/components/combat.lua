@@ -557,7 +557,7 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli)
 			if attacker.components.combat and attacker.components.combat.onhitotherfn then
 				attacker.components.combat.onhitotherfn(attacker, self.inst, damage, stimuli)
 			end
-			if poisonAttack then 
+			if poisonAttack and not boating then 
 				if self.inst.components.poisonable then
 					self.inst.components.poisonable:Poison()
 				end
@@ -670,6 +670,10 @@ function Combat:StartAttack()
 		self.inst:ForceFacePoint(self.target:GetPosition())
 	end
 	self.laststartattacktime = GetTime()
+end
+
+function Combat:HasTarget()
+    return self.target ~= nil
 end
 
 function Combat:CanTarget(target)
@@ -811,6 +815,7 @@ function Combat:CalcDamage(target, weapon, multiplier)
             local mount = self.inst.components.rider:GetMount()
             if mount and mount.components.combat then
                 basedamage = mount.components.combat.defaultdamage
+                multiplier = mount.components.combat:GetDamageModifier()
                 bonus = mount.components.combat.damagebonus or 0
             end
             local saddle = self.inst.components.rider:GetSaddle()

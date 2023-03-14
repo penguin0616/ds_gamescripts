@@ -533,6 +533,7 @@ return {
 		LUCY = "Nyah! Stay back, please!",
 		BALLOONS_EMPTY = "Needs air",
 		SPEAR_WATHGRITHR = "Sharp",
+		WATHGRITHRHAT = "Pokey branch hat",
 		WAXWELLJOURNAL = "Nope",
 
 		ABIGAIL_FLOWER = 
@@ -712,6 +713,7 @@ return {
             OPEN = "Open now",
         },
         CAVE_EXIT = "Way out",
+		CAVE_REGENERATOR = "Bring to opening? Okay!",
         CAVE_ENTRANCE = "Goes somewhere",
         CAVE_ENTRANCE_RUINS = "Goes somewhere",
 
@@ -2763,6 +2765,7 @@ return {
     	HARDSHELL_TACOS = "Crunchy Bzzters",
     	GUMMY_CAKE = "Squishy",
     	STEAMEDHAMSANDWICH = "Egads!",
+		MEATED_NETTLE = "Mmmm...",
 
     	ROC_NEST_DEBRIS1 = "Friend!",
     	ROC_NEST_DEBRIS2 = "Hello, stick!",
@@ -2842,6 +2845,7 @@ return {
         BILL_QUILL = "Pokey part",
 
         ANTLER = "Sounds like Womp Tweeter!",
+        ANTLER_CORRUPTED = "Scares Womp Tweeter",
 
         PUGALISK_SKULL = "From big Wiggler",
         PUGALISK_CORPSE = "Growing bones?",

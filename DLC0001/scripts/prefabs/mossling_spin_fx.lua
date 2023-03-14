@@ -21,7 +21,8 @@ local function fn()
 		end)
 	end)
 
-	inst:AddTag("fx")
+    inst:AddTag("FX")
+    inst:AddTag("NOBLOCK")
 
 	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 

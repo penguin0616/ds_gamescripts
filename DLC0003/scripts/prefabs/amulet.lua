@@ -322,6 +322,12 @@ local function orange(inst)
     inst.components.finiteuses:SetMaxUses(TUNING.ORANGEAMULET_USES)
     inst.components.finiteuses:SetUses(TUNING.ORANGEAMULET_USES)
 
+    inst:AddComponent("repairable")
+    inst.components.repairable.repairmaterial = "nightmare"
+    inst.components.repairable.announcecanfix = false
+
+    inst:AddTag("repairshortaction")
+
     return inst
 end
 

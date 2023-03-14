@@ -302,18 +302,12 @@ function RocController:OnUpdate(dt)
 		if disttoplayer < LAND_PROX*LAND_PROX and onvalidtiles then
 			self.landed = true
 			self.inst:PushEvent("land")
-		end			
-	end
-
-	local dungok = true
-	if GetWorld().getworldgenoptions(GetWorld())["dungpile"] then
-		if GetWorld().getworldgenoptions(GetWorld())["dungpile"] == "never" then
-			dungok = false
 		end
 	end
 
-	if not self.landed and onvaliddungtiles and dungok then				
+	local dungok = not GetWorld():IsWorldGenOptionNever("dungpile")
 
+	if not self.landed and onvaliddungtiles and dungok then
 		if self.dungtime > 0 then
 			self.dungtime = math.max(self.dungtime - dt,0)
 		else

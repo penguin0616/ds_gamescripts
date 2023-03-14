@@ -224,12 +224,56 @@ local DRY_LOOT = {
     }
 }
 
--- Pick just one of these.
+-- Porkland loot;
+local LILYPOND_LOOT = {
+    shallow = {
+        { "cutreeds", chance_high },
+        { "cutgrass", chance_high },
+        { "twigs", chance_high },
+        { "rocks", chance_high },
+        { "log", chance_high },
+        { "fish", chance_high },
+        { "lotus_flower", chance_medium },
+        { "rottenegg", chance_medium },
+        { "oinc", chance_medium },
+        { "iron", chance_medium },
+        { "spoiled_fish", chance_medium },
+        { "bill_quill", chance_medium },
+        { "boneshard", chance_medium },
+        { "goldnugget", chance_low },
+        { "fabric", chance_low },
+        { "goldenshovel", chance_low },
+        { "goldenaxe", chance_low },
+        { "disarming_kit", chance_low },
+        { "shears", chance_low },
+        { "trinket_17", chance_low },
+        { "oinc10", chance_low },
+        { "redgem", chance_verylow },
+        { "bluegem", chance_verylow },
+        { "purplegem", chance_verylow },
+        { "amulet", chance_verylow },
+        { "relic_1", chance_verylow },
+        { "relic_2", chance_verylow },
+        { "relic_3", chance_verylow },
+        { "trinket_giftshop_1", chance_verylow },
+        { "trinket_giftshop_3", chance_verylow },
+        { "trinket_18", chance_verylow },
+    },
+    medium = {},
+    deep = {},
+}
+
+-- Don't collect more than one of these.
 local UNIQUE_ITEMS = {
     "trinket_16",
     "trinket_17",
     "trinket_18",
     "trident",
+    "relic_1",
+    "relic_2",
+    "relic_3",
+    "trinket_giftshop_1",
+    "trinket_giftshop_3",
 }
 
 local SPECIAL_CASE_PREFABS = {
@@ -276,6 +320,7 @@ return {
     LOOT                 = LOOT,
     HURRICANE_LOOT       = HURRICANE_LOOT,
     DRY_LOOT             = DRY_LOOT,
+    LILYPOND_LOOT        = LILYPOND_LOOT,
     UNIQUE_ITEMS         = UNIQUE_ITEMS,
     SPECIAL_CASE_PREFABS = SPECIAL_CASE_PREFABS,
 }

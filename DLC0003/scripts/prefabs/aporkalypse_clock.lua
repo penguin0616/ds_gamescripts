@@ -327,7 +327,7 @@ local function make_common_plate()
     inst.components.creatureprox:SetOnPlayerNear(on_pressure_plate_near)
     inst.components.creatureprox:SetOnPlayerFar(on_pressure_plate_far)
 
-    inst.components.creatureprox:SetTestfn(function(testing) return not testing:HasTag("flying") end)
+    inst.components.creatureprox:SetTestfn(function(testing) return not testing:HasTag("flying") and not testing:HasTag("notraptrigger") end)
     
     inst.components.creatureprox:SetDist(0.8, 0.9)
     inst.components.creatureprox.inventorytrigger = true

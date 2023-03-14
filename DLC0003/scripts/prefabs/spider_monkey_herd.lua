@@ -116,6 +116,7 @@ local function fn(Sim)
 	local trans = inst.entity:AddTransform()
 
     inst:AddTag("herd")
+    inst:AddTag("NOBLOCK")
 
     inst:AddComponent("herd")
     inst.components.herd:SetMemberTag("spider_monkey")

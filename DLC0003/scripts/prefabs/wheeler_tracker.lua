@@ -272,6 +272,7 @@ local function fn(Sim)
     inst:ListenForEvent("trade", on_take_item)
 
     inst:AddComponent("trader")
+    inst.components.trader.acceptnontradable = true
     inst.components.trader:SetAcceptTest(can_take_item)
     
     inst.TakeItem = function(inst, item)

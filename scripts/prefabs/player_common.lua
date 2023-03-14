@@ -66,6 +66,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
         Asset("ANIM", "anim/player_one_man_band.zip"),
         Asset("ANIM", "anim/player_slurtle_armor.zip"),
         Asset("ANIM", "anim/player_staff.zip"),
+        Asset("ANIM", "anim/player_wagstaff.zip"),
 
 		Asset("ANIM", "anim/shadow_hands.zip"),
 
@@ -79,7 +80,9 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
         Asset("ANIM", "anim/player_mount_shock.zip"),
         Asset("ANIM", "anim/player_mount_frozen.zip"),
         Asset("ANIM", "anim/player_mount_groggy.zip"),
-        Asset("ANIM", "anim/player_mount_hit_darkness.zip"),    
+        Asset("ANIM", "anim/player_mount_hit_darkness.zip"),
+        Asset("ANIM", "anim/player_mount_wagstaff.zip"),
+        Asset("ANIM", "anim/player_mount_idles_shiver.zip"),
 
         Asset("ANIM", "anim/player_actions_unsaddle.zip"),
 
@@ -117,6 +120,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
         "reticule",
 	    "shovel_dirt",
 	    "mining_fx",
+        "spear_wathgrithr",
+        "wathgrithrhat",
 
         "gogglesnormalhat",
         "gogglesheathat",
@@ -191,6 +196,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
         anim:OverrideSymbol("fx_liquid", "wilson_fx", "fx_liquid")
 		anim:OverrideSymbol("shadow_hands", "shadow_hands", "shadow_hands")
 
+        anim:AddOverrideBuild("player_wagstaff")
         anim:AddOverrideBuild("player_wrap_bundle")
 		
         inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
@@ -313,10 +319,22 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
                     inst.SoundEmitter:PlaySound("dontstarve/wilson/burned")
                     inst.SoundEmitter:PlaySound("dontstarve/common/campfire", "burning")
                     inst.SoundEmitter:SetParameter("burning", "intensity", 1)
+					local frozenitems = inst.components.inventory:FindItems(function(item) return item:HasTag("frozen") or item:HasTag("meltable") end)
+                    if #frozenitems > 0 then
+                        for i,v in pairs(frozenitems) do
+                            v:PushEvent("firemelt")
+                        end
+                    end
             end)  
 
         inst:ListenForEvent( "stopfiredamage", function(it, data) 
                     inst.SoundEmitter:KillSound("burning")
+					local frozenitems = inst.components.inventory:FindItems(function(item) return item:HasTag("frozen") or item:HasTag("meltable") end)
+                    if #frozenitems > 0 then
+                        for i,v in pairs(frozenitems) do
+                            v:PushEvent("stopfiremelt")
+                        end
+                    end
             end)  
 
         inst:ListenForEvent( "containergotitem", function(it, data) 
@@ -324,7 +342,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
             end)  
         
         inst:ListenForEvent( "gotnewitem", function(it, data) 
-                if data.slot then
+                if data.slot and not data.toactiveitem then
                 	Print(VERBOSITY.DEBUG, "gotnewitem: ["..data.item.prefab.."]") 
                     inst.SoundEmitter:PlaySound("dontstarve/HUD/collect_resource")
                 end

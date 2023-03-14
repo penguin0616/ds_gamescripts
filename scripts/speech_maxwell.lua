@@ -532,6 +532,7 @@ return {
 		BOOK_BRIMSTONE = "It's a novel, er... novel.",
 		LUCY = "Ah. How have you been, Lucy.",
 		BALLOONS_EMPTY = "Those look much too jovial for my liking.",
+		WATHGRITHRHAT = "Well... it's no crown.",
 		SPEAR_WATHGRITHR = "I can appreciate a finely crafted weapon.",
 
 		ABIGAIL_FLOWER = 
@@ -622,6 +623,7 @@ return {
 			OPEN = "That was not a good idea!",
 		},
         CAVE_EXIT = "Get me out of here!",
+		CAVE_REGENERATOR = "A return to the beginning. I should leave it at the cave entrance.",
 
 		MAXWELLPHONOGRAPH = "That accursed thing!",
 		BOOMERANG = "Beats getting your hands dirty.",
@@ -2650,6 +2652,7 @@ return {
     	HARDSHELL_TACOS = "At least the shells are fresh.",
     	GUMMY_CAKE = "Cake with the texture of tar.",
     	STEAMEDHAMSANDWICH = "They're obviously grilled.",
+		MEATED_NETTLE = "Meaty and medicinal.",
 
     	ROC_NEST_DEBRIS1 = "How boring.",
     	ROC_NEST_DEBRIS2 = "An ordinary stick. Droll.",
@@ -2726,6 +2729,7 @@ return {
         BILL_QUILL = "Sharp and pointed. Like me.",
 
         ANTLER = "Why would I want to call that bird?",
+        ANTLER_CORRUPTED = "This should rid me of that giant pest.",
 
         PUGALISK_SKULL = "How very macabre.",
         PUGALISK_CORPSE = "Can't say I'm sad to see him dead.",
@@ -2806,6 +2810,13 @@ return {
         -----------YOTP-----------
         FIRECRACKERS = "Great for magic tricks.",
         REDLANTERN = "Not having a light would certainly be unlucky.",
+
+		-------------Wormwood Specific-------
+
+		COMPOSTWRAP = "I'm utterly dung with all of this.",
+		POISONBALM = "It's almost as bad as the poison.",
+        ARMOR_BRAMBLE = "Who's frail now?",
+        TRAP_BRAMBLE = "Best laid traps.",
 
         ----------reward update ------
         TURF_DEEPRAINFOREST_NOCANOPY = "Fertile turf.",

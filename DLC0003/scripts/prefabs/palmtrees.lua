@@ -11,6 +11,8 @@ local assets =
 	Asset("ANIM", "anim/dust_fx.zip"),
 	Asset("SOUND", "sound/forest.fsb"),
 	Asset("MINIMAP_IMAGE", "palmTree"),
+	Asset("MINIMAP_IMAGE", "palmTree_stump"),
+	Asset("MINIMAP_IMAGE", "palmTree_burnt"),
 }
 
 local prefabs =
@@ -155,6 +157,7 @@ local function OnBurnt(inst, imm)
 		inst:DoTaskInTime( 0.5, changes)
 	end
 	inst.AnimState:PlayAnimation(inst.anims.burnt, true)
+	inst.MiniMapEntity:SetIcon("palmTree_burnt.png")
 	--inst.AnimState:SetRayTestOnBB(true);
 	inst:AddTag("burnt")
 
@@ -382,6 +385,7 @@ local function chop_down_tree(inst, chopper)
 
 	RemovePhysicsColliders(inst)
 	inst.AnimState:PushAnimation(inst.anims.stump)
+	inst.MiniMapEntity:SetIcon("palmTree_stump.png")
 
 	inst:AddComponent("workable")
 	inst.components.workable:SetWorkAction(ACTIONS.DIG)
@@ -509,6 +513,7 @@ local function onload(inst, data)
 
 		if data.burnt then
 			inst:AddTag("fire") -- Add the fire tag here: OnEntityWake will handle it actually doing burnt logic
+			inst.MiniMapEntity:SetIcon("palmTree_burnt.png")
 		elseif data.stump then
 			inst:RemoveComponent("burnable")
 			MakeSmallBurnable(inst)
@@ -519,6 +524,7 @@ local function onload(inst, data)
 			inst:RemoveComponent("blowinwindgust")
 			RemovePhysicsColliders(inst)
 			inst.AnimState:PlayAnimation(inst.anims.stump)
+			inst.MiniMapEntity:SetIcon("palmTree_stump.png")
 			inst:AddTag("stump")
 			inst:RemoveTag("shelter")
 			inst:RemoveTag("gustable")
@@ -720,6 +726,7 @@ local function makefn(build, stage, data)
 			inst:RemoveTag("gustable")
 			RemovePhysicsColliders(inst)
 			inst.AnimState:PlayAnimation(inst.anims.stump)
+			inst.MiniMapEntity:SetIcon("palmTree_stump.png")
 			inst:AddTag("stump")
 			inst:AddComponent("workable")
 			inst.components.workable:SetWorkAction(ACTIONS.DIG)

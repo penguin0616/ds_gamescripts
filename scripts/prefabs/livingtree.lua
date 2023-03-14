@@ -1,6 +1,9 @@
 local assets =
 {
 	Asset("ANIM", "anim/evergreen_living_wood.zip"),
+	Asset("MINIMAP_IMAGE", "livingtree"),
+    Asset("MINIMAP_IMAGE", "livingtree_burnt"),
+    Asset("MINIMAP_IMAGE", "livingtree_stump"),
 }
 
 local prefabs =
@@ -43,6 +46,8 @@ local function OnBurnt(inst)
 	
     inst.AnimState:SetRayTestOnBB(true);
     inst:AddTag("burnt")
+
+	inst.MiniMapEntity:SetIcon("livingtree_burnt.png")
 end
 
 local function ondug(inst, worker)
@@ -63,6 +68,8 @@ local function makestump(inst, instant)
     inst.components.workable:SetOnFinishCallback(ondug)
     inst.components.workable:SetWorkLeft(1)    
     inst:AddTag("stump")
+
+	inst.MiniMapEntity:SetIcon("livingtree_stump.png")
 end
 
 local function onworked(inst, chopper, workleft)

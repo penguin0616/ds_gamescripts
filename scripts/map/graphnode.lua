@@ -378,16 +378,17 @@ function Node:PopulateExtra(world_gen_choices, spawnFn, data)
 			
 		local amount_to_generate = {}
 		for prefab,amt in pairs(world_gen_choices) do
-			if data.prefab_list[prefab] == nil then
+			--if data.prefab_list[prefab] == nil then
 				-- TODO: Need a better way to increse items in areas where they dont usually generate
-				data.prefab_list[prefab] = math.random(1,2)
+				--data.prefab_list[prefab] = math.random(1,2)
+			--end
+			
+			if data.prefab_list[prefab] then
+				local new_amt = math.floor(data.prefab_list[prefab]*amt) - data.prefab_list[prefab]
+				if new_amt > 0 then
+					amount_to_generate[prefab] = new_amt
+				end
 			end
-				
-			local new_amt = math.floor(data.prefab_list[prefab]*amt) - data.prefab_list[prefab]
-			if new_amt > 0 then
-				amount_to_generate[prefab] = new_amt
-			end
-			--print("Need ",prefab,new_amt)
 		end	
 					
 		local idx = 1 

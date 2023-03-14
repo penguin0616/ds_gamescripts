@@ -157,7 +157,7 @@ local actionhandlers =
     ActionHandler(ACTIONS.MANUALEXTINGUISH, "dolongaction"),
     ActionHandler(ACTIONS.RANGEDSMOTHER, "attack"),
 	ActionHandler(ACTIONS.TRAVEL, "doshortaction"),
-    ActionHandler(ACTIONS.LIGHT, "give"),
+    ActionHandler(ACTIONS.LIGHT, "catchonfire"),
     ActionHandler(ACTIONS.UNLOCK, "give"),
     ActionHandler(ACTIONS.TURNOFF, "give"),
     ActionHandler(ACTIONS.TURNON, "give"),
@@ -165,7 +165,9 @@ local actionhandlers =
     ActionHandler(ACTIONS.TOGGLEON, "give"),
     ActionHandler(ACTIONS.ADDFUEL, "doshortaction"),
     ActionHandler(ACTIONS.ADDWETFUEL, "doshortaction"),
-    ActionHandler(ACTIONS.REPAIR, "dolongaction"),
+    ActionHandler(ACTIONS.REPAIR, function(inst, action)
+        return action.target:HasTag("repairshortaction") and "doshortaction" or "dolongaction"
+    end),
     ActionHandler(ACTIONS.REPAIRBOAT, "dolongaction"),
     
     ActionHandler(ACTIONS.READ, "book"),
@@ -471,11 +473,13 @@ local events=
         inst.components.playercontroller:Enable(false)
         if inst.components.rider:IsRiding()then
             inst.sg:GoToState("death_mounted")
-        elseif data.cause == "drowning" then        
+        elseif data.cause == "drowning" then
             inst.sg:GoToState("death_boat")
             local sound_name = inst.soundsname or inst.prefab
-            local path = inst.talker_path_override or "dontstarve_DLC002/characters/"
-            inst.SoundEmitter:PlaySound(path..sound_name.."/sinking_death")
+            local path = inst.talker_path_override or
+            inst.SoundEmitter:PlaySound("dontstarve_DLC002/characters/sinking_death")
+        elseif data.cause == "file_load" then
+            inst.sg:GoToState("death")
         else
             inst.sg:GoToState("death")
             local sound_name = inst.soundsname or inst.prefab
@@ -485,7 +489,9 @@ local events=
             end
         end
 
-        inst.SoundEmitter:PlaySound("dontstarve/wilson/death")
+        if data.cause ~= "file_load" then
+            inst.SoundEmitter:PlaySound("dontstarve/wilson/death")
+        end
     end),
 
     EventHandler("ontalk", function(inst, data)
@@ -670,7 +676,7 @@ local states=
 
     State{
         name = "vacuumedin",
-        tags = {"busy", "vacuum_in", "canrotate"},
+        tags = {"busy", "vacuum", "vacuum_in", "canrotate"},
         onenter = function(inst)
             inst.components.playercontroller:Enable(false)
             inst.AnimState:PlayAnimation("flying_pre")
@@ -684,7 +690,7 @@ local states=
 
      State{
         name = "vacuumedheld",
-        tags = {"busy", "vacuum_held"},
+        tags = {"busy", "vacuum", "vacuum_held"},
         onenter = function(inst)
             inst.components.playercontroller:Enable(false)
             inst.DynamicShadow:Enable(false)
@@ -700,7 +706,7 @@ local states=
 
     State{
         name = "vacuumedout",
-        tags = {"busy", "vacuum_out", "canrotate"},
+        tags = {"busy", "vacuum", "vacuum_out", "canrotate"},
 
         onenter = function(inst, data)
             inst.components.playercontroller:Enable(false)
@@ -1073,35 +1079,6 @@ local states=
             end),
         },
     },
-
-     State{
-        name = "werebeaver_death_boat",
-        tags = {"busy"},
-
-        onenter = function(inst)
-            --inst.components.driver:SplitFromVehicle()
-            --inst.components.driver:CombineWithVehicle()
-            inst.components.locomotor:Stop()
-            inst.last_death_position = inst:GetPosition()
-            inst.AnimState:SetBuild("werebeaver_boat_death") --This animation is in it's own build and bank because?
-            inst.AnimState:SetBank("werebeaver_boat_death") -- It gets set back in the resurrectable component, kind of ugly 
-            inst.AnimState:PlayAnimation("boat_death")
-            inst.SoundEmitter:PlaySound("dontstarve_DLC002/characters/woody/warebeaver_sinking_death")
-        end,
-
-        onexit= function(inst) 
-            inst.DynamicShadow:Enable(true) 
-        end,
-
-        timeline=
-        {
-            TimeEvent(70*FRAMES, function(inst)
-                inst.DynamicShadow:Enable(false)
-            end),
-        },
-    },
-
-
 
     State{
         name = "idle",
@@ -2224,7 +2201,15 @@ local states=
             inst.SoundEmitter:KillSound("make")
         end,
     },
-    
+
+    State{
+        name = "domediumaction",
+        
+        onenter = function(inst)
+            inst.sg:GoToState("dolongaction", .5)
+        end,
+    },
+
     State{
         name = "bundle",
         tags = { "doing", "busy", "nodangle" },
@@ -3371,14 +3356,18 @@ local states=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("run_monkey") end),
 
-            EventHandler("equip", function(inst) 
-                inst.AnimState:Show("TAIL_carry")
-                inst.AnimState:Hide("TAIL_normal")
+            EventHandler("equip", function(inst, data)
+                if data.eslot == EQUIPSLOTS.HANDS then
+                    inst.AnimState:Show("TAIL_carry")
+                    inst.AnimState:Hide("TAIL_normal")
+                end
             end),
 
-            EventHandler("unequip", function(inst) 
-                inst.AnimState:Hide("TAIL_carry")
-                inst.AnimState:Show("TAIL_normal")
+            EventHandler("unequip", function(inst, data)
+                if data.eslot == EQUIPSLOTS.HANDS then 
+                    inst.AnimState:Hide("TAIL_carry")
+                    inst.AnimState:Show("TAIL_normal")
+                end
             end),
         },
     },
@@ -3426,28 +3415,33 @@ local states=
         },
     },    
 
-
     State{
-        name = "give",
-        
+        name = "catchonfire",
+        tags = { "igniting" },
+
         onenter = function(inst)
             inst.components.locomotor:Stop()
-            inst.AnimState:PlayAnimation("give") 
+            inst.AnimState:PlayAnimation("light_fire")
+            inst.AnimState:PushAnimation("light_fire_pst", false)
         end,
-        
+
         timeline =
         {
-            TimeEvent(13*FRAMES, function(inst)
+            TimeEvent(13 * FRAMES, function(inst)
                 inst:PerformBufferedAction()
             end),
-        },        
-
-        events=
-        {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
         },
-    },   
-    
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },
+
 	State{
         name = "bedroll",
         

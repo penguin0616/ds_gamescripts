@@ -255,7 +255,7 @@ local actionhandlers =
             if equipped and equipped:HasTag("magnifying_glass") then
                 return "investigate_start"
             else
-                return "give"
+                return "catchonfire"
             end
         end),
         
@@ -267,7 +267,9 @@ local actionhandlers =
     ActionHandler(ACTIONS.ADDFUEL, "doshortaction"),
     ActionHandler(ACTIONS.SHOP, "doshortaction"),
     ActionHandler(ACTIONS.ADDWETFUEL, "doshortaction"),
-    ActionHandler(ACTIONS.REPAIR, "dolongaction"),
+    ActionHandler(ACTIONS.REPAIR, function(inst, action)
+        return action.target:HasTag("repairshortaction") and "doshortaction" or "dolongaction"
+    end),
     ActionHandler(ACTIONS.REPAIRBOAT, "dolongaction"),
     
     ActionHandler(ACTIONS.READ, "book"),
@@ -645,6 +647,8 @@ local events=
             local sound_name = inst.soundsname or inst.prefab
             local path = inst.talker_path_override or
             inst.SoundEmitter:PlaySound("dontstarve_DLC002/characters/sinking_death")
+        elseif data.cause == "file_load" then
+            inst.sg:GoToState("death", true)
         else
             inst.sg:GoToState("death")
             local sound_name = inst.soundsname or inst.prefab
@@ -654,7 +658,9 @@ local events=
             end
         end
 
-        inst.SoundEmitter:PlaySound("dontstarve/wilson/death")
+        if data.cause ~= "file_load" then
+            inst.SoundEmitter:PlaySound("dontstarve/wilson/death")
+        end
     end),
 
     EventHandler("ontalk", function(inst, data)
@@ -940,7 +946,7 @@ local states=
 
     State{
         name = "vacuumedin",
-        tags = {"busy", "vacuum_in", "canrotate"},
+        tags = {"busy", "vacuum", "vacuum_in", "canrotate"},
         onenter = function(inst)
             inst.components.playercontroller:Enable(false)
             inst.AnimState:PlayAnimation("flying_pre")
@@ -954,7 +960,7 @@ local states=
 
      State{
         name = "vacuumedheld",
-        tags = {"busy", "vacuum_held"},
+        tags = {"busy", "vacuum", "vacuum_held"},
         onenter = function(inst)
             inst.components.playercontroller:Enable(false)
             inst.DynamicShadow:Enable(false)
@@ -970,7 +976,7 @@ local states=
 
     State{
         name = "vacuumedout",
-        tags = {"busy", "vacuum_out", "canrotate"},
+        tags = {"busy", "vacuum", "vacuum_out", "canrotate"},
 
         onenter = function(inst, data)
             inst.components.playercontroller:Enable(false)
@@ -1346,10 +1352,10 @@ local states=
         name = "death",
         tags = {"busy"},
         
-        onenter = function(inst)
+        onenter = function(inst, was_file_load)
             inst.components.locomotor:Stop()
             inst.last_death_position = inst:GetPosition()
-			SpawnPlayerSkeletonHidden(inst:GetPosition())
+			if not was_file_load then SpawnPlayerSkeletonHidden(inst:GetPosition()) end
             inst.AnimState:Hide("swap_arm_carry")
             inst.AnimState:PlayAnimation("death")
         end,
@@ -1392,36 +1398,6 @@ local states=
             end),
         },
     },
-
-     State{
-        name = "werebeaver_death_boat",
-        tags = {"busy"},
-
-        onenter = function(inst)
-            --inst.components.driver:SplitFromVehicle()
-            --inst.components.driver:CombineWithVehicle()
-            inst.components.locomotor:Stop()
-            inst.last_death_position = inst:GetPosition()
-			SpawnPlayerSkeletonHidden(inst:GetPosition())
-            inst.AnimState:SetBuild("werebeaver_boat_death") --This animation is in it's own build and bank because?
-            inst.AnimState:SetBank("werebeaver_boat_death") -- It gets set back in the resurrectable component, kind of ugly 
-            inst.AnimState:PlayAnimation("boat_death")
-            inst.SoundEmitter:PlaySound("dontstarve_DLC002/characters/woody/warebeaver_sinking_death")
-        end,
-
-        onexit= function(inst) 
-            inst.DynamicShadow:Enable(true) 
-        end,
-
-        timeline=
-        {
-            TimeEvent(70*FRAMES, function(inst)
-                inst.DynamicShadow:Enable(false)
-            end),
-        },
-    },
-
-
 
     State{
         name = "idle",
@@ -2361,6 +2337,10 @@ local states=
         tags = {"busy","canrotate"},
         
         onenter = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetFourFaced()
+            end
+
             local action = inst:GetBufferedAction()
             
             inst:FacePoint(Point(action.pos.x,action.pos.y,action.pos.z))
@@ -2385,6 +2365,12 @@ local states=
         {
             EventHandler("animqueueover", function(inst) inst.sg:GoToState("idle") end),
         },
+
+        onexit = function(inst)
+            if inst.components.rider:IsRiding() then
+                inst.Transform:SetSixFaced()
+            end
+        end,
     },
 
 	State{ name = "dig_start",
@@ -4459,14 +4445,18 @@ local states=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("run_monkey") end),
 
-            EventHandler("equip", function(inst) 
-                inst.AnimState:Show("TAIL_carry")
-                inst.AnimState:Hide("TAIL_normal")
+            EventHandler("equip", function(inst, data)
+                if data.eslot == EQUIPSLOTS.HANDS then
+                    inst.AnimState:Show("TAIL_carry")
+                    inst.AnimState:Hide("TAIL_normal")
+                end
             end),
 
-            EventHandler("unequip", function(inst) 
-                inst.AnimState:Hide("TAIL_carry")
-                inst.AnimState:Show("TAIL_normal")
+            EventHandler("unequip", function(inst, data)
+                if data.eslot == EQUIPSLOTS.HANDS then 
+                    inst.AnimState:Hide("TAIL_carry")
+                    inst.AnimState:Show("TAIL_normal")
+                end
             end),
         },
     },
@@ -4534,8 +4524,35 @@ local states=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
         },
-    },   
-    
+    },
+
+    State{
+        name = "catchonfire",
+        tags = { "igniting" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("light_fire")
+            inst.AnimState:PushAnimation("light_fire_pst", false)
+        end,
+
+        timeline =
+        {
+            TimeEvent(13 * FRAMES, function(inst)
+                inst:PerformBufferedAction()
+            end),
+        },
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },
+
 	State{
         name = "bedroll",
         

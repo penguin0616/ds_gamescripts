@@ -73,14 +73,13 @@ local function MakeShadowCreature(data)
 	    local sound = inst.entity:AddSoundEmitter()
         inst.Transform:SetFourFaced()
         inst:AddTag("shadowcreature")
-    	
+
         MakeCharacterPhysics(inst, 10, 1.5)
-        RemovePhysicsColliders(inst)
-	    inst.Physics:SetCollisionGroup(COLLISION.SANITY)
-	    inst.Physics:CollidesWith(COLLISION.SANITY)
-	    inst.Physics:CollidesWith(GetWorldCollision())
-        
-         
+        inst.Physics:ClearCollisionMask()
+        inst.Physics:SetCollisionGroup(COLLISION.SANITY)
+        inst.Physics:CollidesWith(COLLISION.SANITY)
+        inst.Physics:CollidesWith(COLLISION.GROUND)
+
         anim:SetBank(bank)
         anim:SetBuild(build)
         anim:PlayAnimation("idle_loop")

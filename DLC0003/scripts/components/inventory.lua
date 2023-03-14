@@ -455,7 +455,7 @@ function Inventory:DropItem(item, wholestack, randomdir, pos, skipfall, tossdir,
 		dropped.Transform:SetPosition(pos:Get())
        
         if dropped.components.inventoryitem then
-            if self.inst.components.driver and self.inst.components.driver:GetIsDriving() and not tossdir then                 
+            if self.inst.components.driver and self.inst.components.driver:GetIsDriving() and not tossdir and not dropped.components.inventoryitem.nothrow then                 
                 local rot = self.inst.Transform:GetRotation() * DEGREES
                -- print("my rot", rot)
                 tossdir = Vector3(0,0,0)
@@ -819,17 +819,32 @@ function Inventory:GiveItem( inst, slot, screen_src_pos, skipsound, dontDropOnFa
         end
     end
 
-    self.inst:PushEvent("inventoryfull", {item=inst})
-    
-    --can't hold it!    
+    -- Can't hold it!
     if not self.activeitem and not TheInput:ControllerAttached() then
         inst.components.inventoryitem:OnPutInInventory(self.inst)
         self:SetActiveItem(inst)
+
+        self.inst:PushEvent("inventoryfull", {item=inst})
+
         return true
     else
-		if not dontDropOnFail then
-	        self:DropItem(inst, true, true)
-		end
+        if self.activeitem and self.activeitem ~= inst and
+            self.activeitem.components.stackable and
+            inst.components.stackable and
+            self.activeitem.prefab == inst.prefab and
+            not self.activeitem.components.stackable:IsFull()
+            then
+            self.activeitem.components.stackable:Put(inst, Vector3(TheSim:GetScreenPos(self.inst.Transform:GetWorldPosition())))
+            self.inst:PushEvent("gotnewitem", { item = inst, toactiveitem = true, })
+
+            return true
+        else
+            if not dontDropOnFail then
+                self:DropItem(inst, true, true)
+                
+                self.inst:PushEvent("inventoryfull", {item=inst})
+            end
+        end
     end
 end
 
@@ -955,7 +970,7 @@ function Inventory:Equip(item, old_to_active)
 
 end
 
-function Inventory:RemoveItem(item, wholestack)
+function Inventory:RemoveItem(item, wholestack, checkallcontainers)
 
     local dec_stack = not wholestack and item and item.components.stackable and item.components.stackable:IsStack() and item.components.stackable:StackSize() > 1
 	
@@ -965,6 +980,7 @@ function Inventory:RemoveItem(item, wholestack)
 
     if dec_stack then
         local dec = item.components.stackable:Get()
+        dec.components.inventoryitem:OnRemoved()
         dec.prevslot = prevslot
         return dec
     else
@@ -992,6 +1008,7 @@ function Inventory:RemoveItem(item, wholestack)
         for k,v in pairs(self.equipslots) do
             if v == item then
                 self:Unequip(k)
+                item.components.inventoryitem:OnRemoved()
                 ret = v
             end
         end
@@ -1011,13 +1028,26 @@ function Inventory:RemoveItem(item, wholestack)
 				return item
             end
         end
-    end    
+    end
+
+    local overflow = self.overflow and self.overflow.components.container
+
+    if checkallcontainers then
+        for container_inst in pairs(self.opencontainers) do
+            local container = container_inst.components.container or container_inst.components.inventory
+            if container and container ~= overflow and not container.excludefromcrafting then
+                local container_item = container:RemoveItem(item, wholestack)
+                if container_item then
+                    return container_item
+                end
+            end
+        end
+    end
 
     return item
-
 end
 
-function Inventory:Count(item)
+function Inventory:Count(item, checkallcontainers)
     local num_found = 0
     for k,v in pairs(self.itemslots) do
         if v and v.prefab == item then
@@ -1042,11 +1072,24 @@ function Inventory:Count(item)
         num_found = num_found + overflow_found
     end
 
+    local overflow = self.overflow and self.overflow.components.container
+
+    if checkallcontainers then
+        local containers = self.opencontainers
+
+        for container_inst in pairs(containers) do
+            local container = container_inst.components.container or container_inst.components.inventory
+            if container and container ~= overflow and not container.excludefromcrafting then
+                num_found = num_found + container:Count(item)
+            end
+        end
+    end
+
     return num_found
 end
 
-function Inventory:Has(item, amount)
-    local num_found = self:Count(item)
+function Inventory:Has(item, amount, checkallcontainers)
+    local num_found = self:Count(item, checkallcontainers)
     return num_found >= amount, num_found
 end
 
@@ -1059,7 +1102,7 @@ function Inventory:GetSingleItemByName(item)
     end
 end
 
-function Inventory:GetItemByName(item, amount)
+function Inventory:GetItemByName(item, amount, checkallcontainers)
     local total_num_found = 0
     local items = {}
     amount = amount or 1
@@ -1100,13 +1143,105 @@ function Inventory:GetItemByName(item, amount)
         local overflow_items = self.overflow.components.container:GetItemByName(item, (amount - total_num_found))
         for k,v in pairs(overflow_items) do
             items[k] = v
+            total_num_found = total_num_found + v
+        end
+    end
+
+    if checkallcontainers and total_num_found < amount then
+        local containers = self.opencontainers
+
+        for container_inst in pairs(containers) do
+            local container = container_inst.components.container or container_inst.components.inventory
+            if container and container ~= overflow and not container.excludefromcrafting then
+                local container_items = container:GetItemByName(item, (amount - total_num_found))
+                for k,v in pairs(container_items) do
+                    items[k] = v
+                    total_num_found = total_num_found + v
+                end
+            end
+            if total_num_found >= amount then
+                break
+            end
         end
     end
 
     return items
 end
 
-function Inventory:ConsumeByName(item, amount)
+local function GetStackSize(inst)
+    if inst.components.stackable == nil then
+        return 1
+    end
+
+    return inst.components.stackable:StackSize()
+end
+
+local function crafting_priority_fn(a, b)
+    if a.stacksize == b.stacksize then
+        return a.slot < b.slot
+    end
+    return a.stacksize < b.stacksize --smaller stacks first
+end
+
+function Inventory:GetCraftingIngredient(item, amount)
+    local overflow = self.overflow and self.overflow.components.container or nil
+    local crafting_items = {}
+    local total_num_found = 0
+
+    for container_inst in pairs(self.opencontainers) do
+        local container = container_inst.components.container or container_inst.components.inventory
+        if container and container ~= overflow and not container.excludefromcrafting then
+            for k, v in pairs(container:GetCraftingIngredient(item, amount - total_num_found, true)) do
+                crafting_items[k] = v
+                total_num_found = total_num_found + v
+            end
+        end
+        if total_num_found >= amount then
+            return crafting_items
+        end
+    end
+
+    local items = {}
+    for i = 1, self.maxslots do
+        local v = self.itemslots[i]
+		if v ~= nil and v.prefab == item then
+            table.insert(items, {
+                item = v,
+                stacksize = GetStackSize(v),
+                slot = i,
+            })
+        end
+    end
+
+    table.sort(items, crafting_priority_fn)
+
+    for i, v in ipairs(items) do
+        local stacksize = math.min(v.stacksize, amount - total_num_found)
+        crafting_items[v.item] = stacksize
+        total_num_found = total_num_found + stacksize
+        if total_num_found >= amount then
+            return crafting_items
+        end
+    end
+
+    if overflow then
+        for k,v in pairs(overflow:GetCraftingIngredient(item, amount - total_num_found)) do
+            crafting_items[k] = v
+            total_num_found = total_num_found + v
+        end
+        if total_num_found >= amount then
+            return crafting_items
+        end
+    end
+
+	if self.activeitem ~= nil and self.activeitem.prefab == item then
+        crafting_items[self.activeitem] = math.min(GetStackSize(self.activeitem), amount - total_num_found)
+    end
+
+    return crafting_items
+end
+
+function Inventory:ConsumeByName(item, amount, checkallcontainers)
     
     local total_num_found = 0
     
@@ -1156,6 +1291,27 @@ function Inventory:ConsumeByName(item, amount)
 		total_num_found = total_num_found + tryconsume(self.activeitem)
     end
     
+    if self.activeitem and self.activeitem.prefab == item and total_num_found < amount then
+		total_num_found = total_num_found + tryconsume(self.activeitem)
+    end
+    
+    local overflow = self.overflow and self.overflow.components.container
+
+    if checkallcontainers then
+        for container_inst in pairs(self.opencontainers) do
+            local container = container_inst.components.container or container_inst.components.inventory
+            if container and container ~= overflow and not container.excludefromcrafting then
+                for k = 1, #container.slots do
+                    local v = container.slots[k]
+                    total_num_found = total_num_found + tryconsume(v)
+                    if total_num_found >= amount then
+                        return
+                    end
+                end
+            end
+        end
+    end
+
     if self.overflow and total_num_found < amount then
 		self.overflow.components.container:ConsumeByName(item, (amount - total_num_found))
     end

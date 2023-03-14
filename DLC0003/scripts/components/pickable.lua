@@ -163,6 +163,7 @@ function Pickable:MakeWitherable()
 	self.inst:AddTag("witherable")
 end
 
+-- Notes(DiogoW): Deprecated.
 function Pickable:Rejuvenate(fertilizer)
 	if self.inst.components.burnable then
         self.inst.components.burnable:StopSmoldering()
@@ -327,8 +328,8 @@ function Pickable:CanBeFertilized()
 	end
 end
 
-function Pickable:Fertilize(fertilizer)
-	if self.inst.components.burnable then
+function Pickable:Fertilize(fertilizer, doer)
+    if self.inst.components.burnable ~= nil then
         self.inst.components.burnable:StopSmoldering()
     end
 
@@ -337,15 +338,26 @@ function Pickable:Fertilize(fertilizer)
     else
         fertilizer.components.stackable:Get(1):Remove()
     end
-	self.cycles_left = self.max_cycles
-	if self.withered or self.shouldwither then
-		self:Rejuvenate(fertilizer)
-	else
-		self:MakeEmpty()
-	end	
+
+    local fertilize_cycles = fertilizer.components.fertilizer ~= nil and fertilizer.components.fertilizer.withered_cycles or 0
+
+    self.protected_cycles = (self.protected_cycles or 0) + fertilize_cycles
+
+    if self.protected_cycles >= 1 then
+        if self.withered or self.shouldwither then
+			self.withered = false
+			self.inst:RemoveTag("withered")
+			self.witherable = false
+			self.inst:RemoveTag("witherable")
+			self.shouldwither = true
+        end
+
+        self.cycles_left = self.max_cycles
+        self:MakeEmpty()
+    else
+        doer:PushEvent("insufficientfertilizer")
+    end
 end
-
-
 
 function Pickable:OnSave()
 	
@@ -523,10 +535,13 @@ function Pickable:Pick(picker)
 			end
 		end
 
-		if self.shouldwither then
-			if self.protected_cycles ~= nil then
-				self.protected_cycles = self.protected_cycles - 1
-			end
+		if self.protected_cycles ~= nil then
+			self.protected_cycles = self.protected_cycles - 1
+			if self.protected_cycles <= 0 then
+                if not self:IsWithered() then
+                    self:MakeWitherable()
+                end
+            end
 		end
 		
 		local loot = nil
@@ -573,10 +588,13 @@ function Pickable:SimulatePick(picker)
 			end
 		end
 
-		if self.shouldwither then
-			if self.protected_cycles ~= nil then
-				self.protected_cycles = self.protected_cycles - 1
-			end
+		if self.protected_cycles ~= nil then
+			self.protected_cycles = self.protected_cycles - 1
+			if self.protected_cycles <= 0 then
+                if not self:IsWithered() then
+                    self:MakeWitherable()
+                end
+            end
 		end
         
         if self.onpickedfn then

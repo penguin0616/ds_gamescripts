@@ -565,6 +565,7 @@ local function red()
     inst:AddTag("rangedfireweapon")
 
     inst:AddComponent("weapon")
+    inst.components.weapon.projectilelaunchsymbol = "swap_object"
     inst.components.weapon:SetDamage(0)
     inst.components.weapon:SetRange(8, 10)
     inst.components.weapon:SetOnAttack(onattack_red)
@@ -588,6 +589,7 @@ local function blue()
     inst:AddTag("extinguisher")
 
     inst:AddComponent("weapon")
+    inst.components.weapon.projectilelaunchsymbol = "swap_object"
     inst.components.weapon:SetDamage(0)
     inst.components.weapon:SetRange(8, 10)
     inst.components.weapon:SetOnAttack(onattack_blue)

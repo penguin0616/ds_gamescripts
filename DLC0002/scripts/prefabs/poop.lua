@@ -27,6 +27,16 @@ local function FuelTaken(inst, taker)
     end
 end
 
+local function OnEntityWake(inst)
+    if inst.components.inventoryitem and inst.components.inventoryitem:IsHeld() and not inst:HasTag("thrown") then
+        inst.components.inventoryitem:OnStartFalling()
+    end
+end
+
+local function OnHitGround(inst)
+    inst.components.floatable:UpdateAnimations("idle_water", "idle")
+end
+
 local function MakeEquippable(inst)
 
     local onequip = function(inst, owner)
@@ -94,20 +104,13 @@ local function MakeEquippable(inst)
     inst.components.reticule.ease = true
 end
 
-local function UpdateAnimations(inst)
-    inst.components.floatable:UpdateAnimations("idle_water", "idle")
+local function OnDropped(inst, dropper)
+    inst.flies = inst:SpawnChild("flies")
 end
 
-local function OnRemove(inst)
+local function OnPickup(inst, owner)
     if inst.flies then 
-        inst.flies:Remove() 
-	inst.flies = nil 
-    end
-end
-
-local function OnReturn(inst)
-    if not inst.flies then
-        inst.flies = inst:SpawnChild("flies")
+        inst.flies:Remove() inst.flies = nil 
     end
 end
 
@@ -117,20 +120,25 @@ local function fn(Sim)
 	inst.entity:AddAnimState()
 	inst.entity:AddSoundEmitter()
 
+    inst.OnEntityWake = OnEntityWake
+
     MakeInventoryPhysics(inst)
-    MakeInventoryFloatable(inst, "dump", "dump")
+    MakeInventoryFloatable(inst, "idle_water", "dump")
     MakeBlowInHurricane(inst, TUNING.WINDBLOWN_SCALE_MIN.MEDIUM, TUNING.WINDBLOWN_SCALE_MAX.MEDIUM)
 
+    inst.components.floatable:SetOnHitWaterFn(OnHitGround)
+    inst.components.floatable:SetOnHitLandFn(OnHitGround)
+    
     inst.AnimState:SetBank("poop")
     inst.AnimState:SetBuild("poop")
     inst.AnimState:PlayAnimation("dump")
-
-    inst.components.floatable:SetOnHitWaterFn(UpdateAnimations)
-    inst.components.floatable:SetOnHitLandFn(UpdateAnimations)
-
+    inst.AnimState:PushAnimation("idle")
+    
     inst:AddComponent("stackable")
-
+ 
     inst:AddComponent("inspectable")
+    
+    inst:AddComponent("inventoryitem")
 
     inst:AddComponent("fertilizer")
     inst.components.fertilizer.fertilizervalue = TUNING.POOP_FERTILIZE
@@ -139,8 +147,9 @@ local function fn(Sim)
 
     inst:AddComponent("smotherer")
 
-    inst:AddComponent("inventoryitem")
-    inst.components.inventoryitem:SetOnPutInInventoryFn(UpdateAnimations)
+    inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
+    inst.components.inventoryitem:SetOnPickupFn(OnPickup)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(OnPickup)
 
     inst.flies = inst:SpawnChild("flies")
     
@@ -150,21 +159,20 @@ local function fn(Sim)
 
     inst:AddComponent("appeasement")
     inst.components.appeasement.appeasementvalue = TUNING.WRATH_SMALL
+    
 
 	MakeSmallBurnable(inst, TUNING.MED_BURNTIME)
     inst.components.burnable:SetOnIgniteFn(OnBurn)
     MakeSmallPropagator(inst)
     inst.components.burnable:MakeDragonflyBait(3)
-
-    inst:ListenForEvent("enterlimbo", OnRemove)
-    inst:ListenForEvent("exitlimbo", OnReturn)
-
+    
     ---------------------        
-
+    
     if GetPlayer():HasTag("monkey") then
         MakeEquippable(inst)
     end
 
+    
     return inst
 end
 

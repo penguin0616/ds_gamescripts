@@ -106,6 +106,14 @@ local function stopspawning(inst)
 end
 
 local function makebarrenfn(inst)
+	if inst.AnimState:IsCurrentAnimation("idle_dead") then
+		inst.Physics:SetCollides(true)
+		stopshaking(inst)
+		stopspawning(inst)
+
+		return
+	end
+
 	if inst.components.hackable and inst.components.hackable.withered then
 		if not inst.components.hackable.hasbeenhacked then
 			inst.AnimState:PlayAnimation("full_to_dead")

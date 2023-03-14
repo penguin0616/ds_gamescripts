@@ -131,10 +131,10 @@ function Resurrectable:CanResurrect(cause)
 	return false
 end
 
-local function TrySpawnSkeleton(inst)
+function TrySpawnSkeleton(inst, instant)
 	if inst and inst.last_death_position then
 	    local last_death_position = inst.last_death_position
-		inst:DoTaskInTime(3, function(inst)
+		inst:DoTaskInTime(instant and 0 or 3, function(inst)
 			if not inst:GetIsOnWater(last_death_position.x, last_death_position.y, last_death_position.z) then 
 				local skel = SpawnPrefab("skeleton_player")
 				if skel then
@@ -168,7 +168,7 @@ function Resurrectable:DoResurrect(res, cause)
 	else
 		--External/Statue/Stone/etc
 		res.components.resurrector:Resurrect(self.inst)
-		TrySpawnSkeleton(self.inst)
+		if cause ~= "file_load" then TrySpawnSkeleton(self.inst) end
 	end
 end
 

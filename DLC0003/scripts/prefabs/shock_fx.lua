@@ -13,7 +13,8 @@ local function fn()
     anim:SetBuild("shock_fx")
     anim:PlayAnimation("shock")
     snd:PlaySound("dontstarve_DLC001/common/shocked")
-    inst:AddTag("fx")
+    inst:AddTag("FX")
+    inst:AddTag("NOBLOCK")
 
     inst.persists = false
 	inst:ListenForEvent("animover", inst.Remove)

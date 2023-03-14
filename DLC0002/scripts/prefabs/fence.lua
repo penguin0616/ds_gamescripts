@@ -20,12 +20,6 @@ local function IsNearOtherWall(other, pt, min_spacing_sq)
     return IsNearOther(other, pt, min_spacing_sq)
 end
 
-function IsPassableAtPoint(x, y, z)
-    local tile = GetWorld().Map:GetTileAtPoint(x, y, z)
-    return tile ~= GROUND.IMPASSABLE and
-        tile ~= GROUND.INVALID
-end
-
 function IsDeployPointClear(pt, inst, min_spacing, min_spacing_sq_fn, near_other_fn)
     local min_spacing_sq = min_spacing ~= nil and min_spacing * min_spacing or nil
     near_other_fn = near_other_fn or IsNearOther

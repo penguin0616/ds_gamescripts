@@ -289,6 +289,15 @@ return {
 		GREENSTAFF = "This will come in handy.",
 		POTTEDFERN = "A fern in a pot.",
 
+		BOOK_BIRDS = "No point studying when I can just wing it.",
+        BOOK_TENTACLES = "Someone'll get suckered into reading this.",
+        BOOK_GARDENING = "I see no farm in reading that.",
+        BOOK_SLEEP = "Strange, it's just 500 pages of telegraph codes.",
+        BOOK_BRIMSTONE = "The beginning was dull, but got better near the end.",
+
+		WATHGRITHRHAT = "Pretty fancy hat, that.",
+		SPEAR_WATHGRITHR = "It feels very stabby.",
+
 		THULECITE = "I wonder where this is from?",
 		ARMORRUINS = "It's oddly light.",
 		RUINS_BAT = "It has quite a heft to it.",
@@ -463,6 +472,7 @@ return {
             OPEN = "I bet there's all sorts of things to discover down there.",
         },
         CAVE_EXIT = "I've had enough discovery for now.",
+		CAVE_REGENERATOR = "I feel a strangely magnetic pull towards the cave entrance.",
         CAVE_ENTRANCE_OPEN = 
         {
             GENERIC = "The earth itself rejects me!",
@@ -2795,6 +2805,7 @@ return {
     	HARDSHELL_TACOS = "I'm going to pretend I don't know what's in it.",
     	GUMMY_CAKE = "Chewy and confectionery.",
     	STEAMEDHAMSANDWICH = "Science says it's a hamburger.",
+		MEATED_NETTLE = "Improved with scientific meat-wrapping technology.",
 
     	ROC_NEST_DEBRIS1 = "A sticky situation.",
     	ROC_NEST_DEBRIS2 = "Stick to your tree, stick.",
@@ -2869,6 +2880,7 @@ return {
         BILL_QUILL = "It's boring.",
 
         ANTLER = "For the bird.",
+        ANTLER_CORRUPTED = "This should scare off that big bird.",
 
         PUGALISK_SKULL = "A numbskull.",
         PUGALISK_CORPSE = "Petrifying.",
@@ -2947,6 +2959,13 @@ return {
         ---------YOTP---------
         FIRECRACKERS = "Filled with explosion science!",
         REDLANTERN = "This lantern feels more special than the others.",
+
+		-------------Wormwood Specific-------
+		
+		COMPOSTWRAP = "Respectfully, I'd rather eat dirt.",
+		POISONBALM = "I do love not being poisoned.",
+        ARMOR_BRAMBLE = "The best offense is a good defense.",
+        TRAP_BRAMBLE = "It'd really poke whoever stepped on it.",
 
         -------rewards update-------
 

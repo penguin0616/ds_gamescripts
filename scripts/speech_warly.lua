@@ -439,6 +439,7 @@ return{
 			OPEN = "Dare I?",
 		},
 		CAVE_EXIT = "Thank goodness.",
+		CAVE_REGENERATOR = "It wants to be fed to the mouth of the cave.",
 		CAVE_ENTRANCE = "I wonder what is underneath that?",
         CAVE_ENTRANCE_RUINS = "What is within?",
        
@@ -1701,6 +1702,16 @@ return{
 		},
 		SHIPWRECKED_ENTRANCE = "Bonjour!",
 		SHIPWRECKED_EXIT = "Au revoir.",
+
+		BOOK_BIRDS = "I had hoped it was a poultry cookbook.",
+		BOOK_TENTACLES = "I don't see any recipes in this at all.",
+		BOOK_GARDENING = "Maybe I could start an herb garden.",
+		BOOK_SLEEP = "It's tradition to nap after a good meal.",
+		BOOK_BRIMSTONE = "I don't think that's my forte.",
+
+		WATHGRITHRHAT = "I don't quite have the confidence to pull it off.",
+		SPEAR_WATHGRITHR = "I'm better with a spatula.",
+
 		SNAKESKINSAIL = "Perhaps I'll sail to a land of spices.",
 		SPEAR_LAUNCHER = "Now we're cooking!",
 		SWEETPOTATOSOUFFLE = "Food that feeds the soul and nourishes the body.",
@@ -2636,6 +2647,7 @@ return{
     	HARDSHELL_TACOS = "I make do with the ingredients at hand.",
     	GUMMY_CAKE = "A little chewier than I normally like.",
     	STEAMEDHAMSANDWICH = "Tastes like fast food.",
+		MEATED_NETTLE = "Medicinal leaves with some added flavor.",
 
     	ROC_NEST_DEBRIS1 = "A fine stick.",
     	ROC_NEST_DEBRIS2 = "A palatable stick.",
@@ -2713,6 +2725,7 @@ return{
         BILL_QUILL = "It's sharp!",
 
         ANTLER = "Like a dinner bell for a bird!",
+        ANTLER_CORRUPTED = "Au revoir giant bird, no dinner for you!",
 
         PUGALISK_SKULL = "I won't use this for soup.",
         PUGALISK_CORPSE = "I can't roast this marrow.",
@@ -2798,6 +2811,13 @@ return{
 
         FIRECRACKERS = "Like oil splattering in a hot pan.",
         REDLANTERN = "I do like festivals like this.",
+
+		-------------Wormwood Specific-------
+
+		COMPOSTWRAP = "I'm frankly offended.",
+		POISONBALM = "I fear that it tastes as terrible as it smells.",
+        ARMOR_BRAMBLE = "I'll have to be very careful putting it on.",
+        TRAP_BRAMBLE = "I wonder who might have planted it?",
 
         -------rewards update-------
 

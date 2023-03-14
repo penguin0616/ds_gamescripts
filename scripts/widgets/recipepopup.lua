@@ -292,14 +292,15 @@ function RecipePopup:Refresh()
     
     for k,v in pairs(recipe.ingredients) do
     
-        local has, num_found = owner.components.inventory:Has(v.type, RoundUp(v.amount * owner.components.builder.ingredientmod))
+        local has, num_found = owner.components.inventory:Has(v.type, RoundUp(v.amount * owner.components.builder.ingredientmod), true)
         
         local item_img = v.type
         if SaveGameIndex:IsModeShipwrecked() and SW_ICONS[item_img] ~= nil then
             item_img = SW_ICONS[item_img]
         end
 
-        local ing = self.contents:AddChild(IngredientUI(v.atlas, item_img ..".tex", v.amount, num_found, has, STRINGS.NAMES[string.upper(v.type)], owner))
+        local imageName = item_img ..".tex"
+        local ing = self.contents:AddChild(IngredientUI(v:GetAtlas(imageName), imageName, v.amount, num_found, has, STRINGS.NAMES[string.upper(v.type)], owner))
         ing:SetPosition(Vector3(offset, 80, 0))
         offset = offset + (w+ half_div)
         self.ing[k] = ing

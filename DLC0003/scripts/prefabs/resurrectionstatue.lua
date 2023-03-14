@@ -107,7 +107,6 @@ local function doresurrect(inst, dude)
 
 	GetClock():MakeNextDay()
 	
-    dude.Transform:SetPosition(inst.Transform:GetWorldPosition())
     dude:Hide()
     dude:ClearBufferedAction()
 
@@ -118,24 +117,24 @@ local function doresurrect(inst, dude)
         dude.components.playercontroller:Enable(false)
     end
 
-	TheCamera:Snap()
-        
-	GetPlayer():DoTaskInTime(0, function()
-		if TheCamera.interior or inst.interior then
-			GetPlayer().Transform:SetRotation(0)
-			local interiorSpawner = GetWorld().components.interiorspawner
-			interiorSpawner:PlayTransition(GetPlayer(), nil, inst.interior, inst)			
-		else		
-			GetPlayer().Transform:SetRotation(inst.Transform:GetRotation())
+	dude:DoTaskInTime(0, function()
+		local snapcam = true
+
+		-- Do not transition to the same room.
+		if (TheCamera.interior and not inst:GetIsInInterior()) or inst.interior  then
+			GetInteriorSpawner():PlayTransition(dude, nil, inst.interior, inst, true)
+			snapcam = false
 		end
 
-		if not inst.interior then
-			if TheCamera.interior then
-				local interiorSpawner = GetWorld().components.interiorspawner
-				interiorSpawner.exteriorCamera:SetDistance(12)
-			else
-				TheCamera:SetDistance(12)	
-			end
+		dude.Transform:SetPosition(inst.Transform:GetWorldPosition())
+
+		if snapcam then
+			TheCamera:Snap()
+			TheFrontEnd:DoFadeIn(1)
+		end
+
+		if not TheCamera.interior then
+			TheCamera:SetDistance(12)	
 		end
 	end)
 

@@ -183,8 +183,14 @@ STRINGS =
         },
 		WRAPBUNDLE = "Wrap",
 		UNWRAP = "Unwrap",
-        ADDFUEL = "Add Fuel",
-        ADDWETFUEL = "Add Wet Fuel",
+        ADDFUEL = {
+            GENERIC = "Add Fuel",
+            REPAIR = "Repair",
+        },
+        ADDWETFUEL = {
+            GENERIC = "Add Wet Fuel",
+            REPAIR = "Repair",
+        },
         LIGHT = "Light",
         EXTINGUISH = "Extinguish",
         LOOKAT = "Examine",
@@ -522,6 +528,9 @@ STRINGS =
         CAVE_ENTRANCE_OPEN = "Sinkhole",
         CAVE_ENTRANCE_OPEN_CAVE = "Deeper",
         CAVE_ENTRANCE_CLOSED_CAVE = "Plugged Hole",
+        CAVE_REGENERATOR = "Seed of Ruin",
+        RUINS_CAVEIN_OBSTACLE = "Blocky Ruins",
+        BIGSHADOWTENTACLE = "Guardian Shadow Tentacle",
         RABBITHOUSE = "Rabbit Hutch",
         CAVE_EXIT = "Rope",
         UMBRELLA = "Umbrella",
@@ -2068,6 +2077,7 @@ STRINGS =
         HARDSHELL_TACOS = "Hard Shell Tacos",
         GUMMY_CAKE = "Gummy Cake",
         STEAMEDHAMSANDWICH = "Steamed Ham Sandwich",
+        MEATED_NETTLE = "Meated Nettles",
 
         RADISH = "Radish", 
         RADISH_COOKED = "Cooked Radish",
@@ -2221,6 +2231,7 @@ STRINGS =
         BILL_QUILL = "Platapine Quill",
 
         ANTLER = "Bird Whistle",
+        ANTLER_CORRUPTED = "Nightmarish Bird Whistle",
         PUGALISK_SKULL = "Pugalisk Skull",
         PUGALISK_CORPSE = "Petrifying Bones",
 
@@ -2487,6 +2498,8 @@ STRINGS =
 
         SPEAR_WATHGRITHR = "The gold makes it sharper.",
         WATHGRITHRHAT = "The unicorn is what protects you.",
+
+        SPIDEREGGSACK = "Get a little help from your friends.",
 
         MOLEHAT = "Grants the wearer Smell-E-Vision.",
         ICEHAT = "Science, on the rocks.",
@@ -2887,6 +2900,7 @@ STRINGS =
         TURF_DEEPRAINFOREST_NOCANOPY = "As tame as wild jungle can be.",
 
         ANTLER = "For calling birds. Did you make it too big?",
+        ANTLER_CORRUPTED = "Strikes fear into even the biggest birds.",
         BONESTAFF = "Wield the gaze of the Pugalisk!",
         
         FENCE_ITEM = "Wood fence segments.",
@@ -4664,6 +4678,7 @@ STRINGS.UI =
         MODSBADTITLE = "All Mods Disabled",
         MODSBADLOAD = "The game did not start correctly last time. This was likely caused by a mod, so all mods have been disabled.\n\nYou can try re-enabling mods from the mod settings screen.",
         MODS = "Mods",
+        ACKNOWLEDGEWARNING = "Don't Show This Again.",
         SCRIPTERRORQUIT = "Exit Game",
         SCRIPTERRORMODWARNING = "This error may have occurred due to a mod you have enabled!\nYou have the following mods enabled:\n",
         TESTING = "This is the testing branch!",
@@ -4922,6 +4937,10 @@ STRINGS.UI =
         DEFAULT = "Default",
         DIM = "Dim",
         DIMMEST = "Dimmest",
+
+        BACKPACKMODE = "Backpack Layout",
+		INTEGRATEDBACKPACK_DISABLED = "Separated",
+		INTEGRATEDBACKPACK_ENABLED = "Integrated",
     },
 
     LANGUAGE_OPTIONS_SCREEN = 
@@ -5101,6 +5120,30 @@ STRINGS.UI =
         NAMES = 
         {
             WORLD_SIZE = "World Size",
+            BRANCHING = "Branches",
+            LOOP = "Loops",
+            SEASON = "Seasons",
+            CAVE_ENTRANCE = "Caves", -- World customization.
+            MARSHBUSH = "Spiky Bushes",
+            RABBITS = "Rabbit Holes",
+            MOLES = "Mole Burrows",
+            PIGS = "Pigs",
+            BEEFALOHEAT = "Beefalo Mating Frequency",
+            HUNT = "Hunts",
+            PENGUINS = "Pengulls",
+            FROGS = "Frogs",
+            TENTACLES = "Tentacles",
+            CHESS = "Clockworks",
+            LIEFS = "Treeguards",
+            SUMMER = "Summer",
+            WINTER = "Winter",
+            SPRING = "Spring",
+            AUTUMN = "Autumn",
+            FROGRAIN = "Frog Rain",
+            WILDFIRES = "Wildfires",
+            PONDS = "Ponds",
+            DECIDUOUSMONSTER = "Poison Birchnut Trees",
+            GOOSEMOOSE = "Meese/Geese",
             MILD_SEASON = "Mild",
             WET_SEASON = "Hurricane",
             GREEN_SEASON = "Monsoon",
@@ -5702,7 +5745,7 @@ STRINGS.UI =
 
     RESETCAVE=
     {
-        TITLE="Regen this cave?",
+        TITLE="Regenerate this cave?",
         BODY="Are you sure you want to make a new cave here?",
         YES="Yes",
         NO="No",

@@ -45,7 +45,10 @@ local function makebarrenfn(inst)
 	if inst.dryuptask then
 		inst.dryuptask:Cancel()
 		inst.dryuptask = nil
-	end	
+	end
+
+	if inst.AnimState:IsCurrentAnimation("idle_dead") then return end
+
 	if inst.components.pickable and inst.components.pickable.withered then
 		if not inst.components.pickable.hasbeenpicked then
 			inst.AnimState:PlayAnimation("full_to_dead")

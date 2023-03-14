@@ -75,6 +75,7 @@ local function commonfn(Sim)
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
     
     inst:AddComponent("inspectable")
+    inst:AddComponent("tradable")
 	inst:AddComponent("waterproofer")
     inst:AddComponent("inventoryitem")
     

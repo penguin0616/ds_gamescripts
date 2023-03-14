@@ -483,7 +483,7 @@ function PlayerController:GetToolAction(tool)
 
 	--bug catching (has to go before combat)
 	local notags = {"FX", "NOCLICK"}
-	if tool and tool.components.tool and tool.components.tool:CanDoAction(ACTIONS.NET) then
+	if notriding(self.inst) and tool and tool.components.tool and tool.components.tool:CanDoAction(ACTIONS.NET) then
 		local target = FindEntity(self.inst, 5, 
 			function(guy) 					
 				return  guy.components.health and not guy.components.health:IsDead() and 

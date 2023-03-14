@@ -955,31 +955,32 @@ end
 
 
 function SaveIndex:ResetCave(cavenum, cb)
-	
+	local function OnErased()
+		self:Save(cb)
+	end
+
 	local slot = self.current_slot
 
 	if slot and cavenum and self.data.slots[slot] and self.data.slots[slot].modes.cave then
 		
 		local del_files = {}
 		for k,v in pairs(self.data.slots[slot].modes.cave.files) do
-			
 			local cave_num = string.match(v, "cave_(%d+)_")
 			if cave_num and tonumber(cave_num) == cavenum then
 				table.insert(del_files, v)
+				self.data.slots[slot].modes.cave.files[k] = nil
 			end
 		end
 		
-		EraseFiles(cb, del_files)
+		EraseFiles(OnErased, del_files)
 	else
 		if cb then
 			cb()
 		end
 	end
-
 end
 
 function SaveIndex:EraseVolcano(cb)
-
 	local function onerased()
 		self.data.slots[self.current_slot].modes.volcano = {}
 		self:Save(cb)
@@ -1021,10 +1022,9 @@ function SaveIndex:EraseCaves(cb)
 	EraseFiles(onerased, files)
 end
 
+function SaveIndex:EraseCurrent(cb, should_docaves)
+	should_docaves = should_docaves == nil and true or should_docaves
 
-
-function SaveIndex:EraseCurrent(cb)
-	
 	local current_mode = self.data.slots[self.current_slot].current_mode
 
 	local function docaves()
@@ -1046,7 +1046,7 @@ function SaveIndex:EraseCurrent(cb)
 	data.playerdata = nil
 	data.day = nil
 	data.world = nil
-	self:Save(onerased)
+	self:Save(should_docaves and onerased or cb)
 end
 
 function SaveIndex:GetDirectionOfTravel()

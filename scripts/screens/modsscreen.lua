@@ -111,12 +111,24 @@ local ModsScreen = Class(Screen, function(self, cb)
 	self.leftbutton = self.optionspanel:AddChild(ImageButton("images/ui.xml", "scroll_arrow.tex", "scroll_arrow_over.tex", "scroll_arrow_disabled.tex"))
     self.leftbutton:SetPosition(0, 290, 0)
 	self.leftbutton:SetRotation(-90)
-    self.leftbutton:SetOnClick(function() self:Scroll(-display_rows) end)
+	self.leftbutton:SetOnClick(function()
+        if self.option_offset < display_rows then
+            self:Scroll(-self.option_offset)
+        else
+            self:Scroll(-display_rows)
+        end
+    end)
 	
 	self.rightbutton = self.optionspanel:AddChild(ImageButton("images/ui.xml", "scroll_arrow.tex", "scroll_arrow_over.tex", "scroll_arrow_disabled.tex"))
     self.rightbutton:SetPosition(0, -300, 0)
 	self.rightbutton:SetRotation(90)
-    self.rightbutton:SetOnClick(function() self:Scroll(display_rows) end)	
+	self.rightbutton:SetOnClick(function()
+        if #self.modnames - self.option_offset < display_rows*2 then
+            self:Scroll((#self.modnames - display_rows) - self.option_offset)
+        else
+            self:Scroll(display_rows)
+        end
+    end)
 
 	---- Workshop blinker
 
@@ -402,9 +414,22 @@ function ModsScreen:ShowWorkshopStatus()
 end
 
 function ModsScreen:OnControl(control, down)
-	if ModsScreen._base.OnControl(self, control, down) then return true end
+	if self._base.OnControl(self, control, down) then return true end
 	
-	if not down and control == CONTROL_CANCEL then TheFrontEnd:PopScreen() return true end
+	if not down and control == CONTROL_CANCEL then 
+		self:Cancel()
+		return true
+	end
+
+	if down then
+		if not self:OnFirstPage() and control == CONTROL_SCROLLBACK then
+			self:Scroll(-1)
+			return true
+		elseif not self:OnLastPage() and control == CONTROL_SCROLLFWD then
+			self:Scroll(1)
+			return true
+		end
+	end
 end
 
 function ModsScreen:RefreshOptions()
@@ -731,8 +756,8 @@ function ModsScreen:ShowModDetails(idx)
 		elseif not modinfo.dont_starve_compatible and not modinfo.reign_of_giants_compatible and modinfo.shipwrecked_compatible and not modinfo.hamlet_compatible then
 			self.detailcompatibility:SetString(STRINGS.UI.MODSSCREEN.COMPATIBILITY_SW_ONLY)
 		elseif not modinfo.dont_starve_compatible and not modinfo.reign_of_giants_compatible and not modinfo.shipwrecked_compatible and modinfo.hamlet_compatible then
-			self.detailcompatibility:SetString(STRINGS.UI.MODSSCREEN.COMPATIBILITY_SW_ONLY)			
-		elseif modinfo.dont_starve_compatible or modinfo.reign_of_giants_compatible or modinfo.shipwrecked_compatible then
+			self.detailcompatibility:SetString(STRINGS.UI.MODSSCREEN.COMPATIBILITY_HAMLET_ONLY)			
+		elseif modinfo.dont_starve_compatible or modinfo.reign_of_giants_compatible or modinfo.shipwrecked_compatible or modinfo.hamlet_compatible then
 			--[[local str = STRINGS.UI.MODSSCREEN.COMPATIBILITY_SOME
 			if modinfo.dont_starve_compatible then
 				str = str .. STRINGS.UI.MODSSCREEN.COMPATIBILITY_DS .. " "

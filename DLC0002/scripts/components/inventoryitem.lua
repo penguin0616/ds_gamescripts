@@ -265,7 +265,7 @@ function InventoryItem:GetImage()
 end
 
 function InventoryItem:GetAtlas()
-	return self.atlasname or "images/inventoryimages.xml"
+    return self.atlasname or GetInventoryItemAtlas(self:GetImage())
 end
 
 function InventoryItem:RemoveFromOwner(wholestack)
@@ -325,6 +325,10 @@ function InventoryItem:CollectUseActions(doer, target, actions)
         if self:GetGrandOwner() == doer then
             table.insert(actions, target:HasTag("bundle") and ACTIONS.BUNDLESTORE or ACTIONS.STORE)
         end
+    end
+
+    if target.components.trader and target.components.trader.acceptnontradable then
+        table.insert(actions, ACTIONS.GIVE)
     end
 end
 

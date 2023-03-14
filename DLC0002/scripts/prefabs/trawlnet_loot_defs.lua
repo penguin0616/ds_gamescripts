@@ -224,7 +224,7 @@ local DRY_LOOT = {
     }
 }
 
--- Pick just one of these.
+-- Don't collect more than one of these.
 local UNIQUE_ITEMS = {
     "trinket_16",
     "trinket_17",

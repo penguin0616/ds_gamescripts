@@ -258,7 +258,7 @@ end
 
 local function mosquitofn(sim)
 	local inst = commonfn(sim)
-	MakePoisonableCharacter(inst)
+	MakePoisonableCharacter(inst, "body", Vector3(0, -1, 1))
 	inst.components.lootdropper:SetChanceLootTable('mosquito')	
 	return inst 
 end 

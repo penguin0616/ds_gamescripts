@@ -17,11 +17,11 @@ local function cantoggleon(inst)
 end
 
 local function toggleon(inst)
-    inst.turnon(inst)
+    inst.components.machine:TurnOn()
 end
 
 local function toggleoff(inst)
-    inst.turnoff(inst)
+    inst.components.machine:TurnOff()
 end
 
 
@@ -269,6 +269,8 @@ local function fn(Sim)
     inst.components.burnable.fxprefab = nil
 
     inst:AddComponent("fueled")
+    inst.components.fueled.fueltype = "TAR"
+    inst.components.fueled.accepting = true
     inst.components.fueled:SetUpdateFn( onfueledupdate )
     inst.components.fueled:SetSectionCallback(
         function(section)
@@ -276,11 +278,11 @@ local function fn(Sim)
 
                 depleted(inst)
                 turnoff(inst) 
-                local owner = inst.components.inventoryitem.owner                                
+                local owner = inst.components.inventoryitem.owner
                 if owner then
                     owner:PushEvent("torchranout", {torch = inst})
                 end
-                inst:Remove()                
+                inst:Remove()
             end
         end)
     inst.components.fueled:InitializeFuelLevel(TUNING.TORCH_FUEL)
@@ -300,9 +302,6 @@ local function fn(Sim)
     inst:ListenForEvent( "stoprowing", function(inst, data) 
         onequip(inst, data.owner, true, true)
         end, inst) 
-
-    inst.turnon = turnon
-    inst.turnoff = turnoff
 
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad

@@ -98,12 +98,14 @@ local actionhandlers =
         end
     ),
     ActionHandler(ACTIONS.TRAVEL, "doshortaction"),
-    ActionHandler(ACTIONS.LIGHT, "give"),
+    ActionHandler(ACTIONS.LIGHT, "catchonfire"),
     ActionHandler(ACTIONS.ADDFUEL, "doshortaction"),
     ActionHandler(ACTIONS.ADDWETFUEL, "doshortaction"),
     ActionHandler(ACTIONS.LAUNCH, "dolongaction"),
     ActionHandler(ACTIONS.RETRIEVE, "dolongaction"),
-    ActionHandler(ACTIONS.REPAIR, "dolongaction"),
+    ActionHandler(ACTIONS.REPAIR, function(inst, action)
+        return action.target:HasTag("repairshortaction") and "doshortaction" or "dolongaction"
+    end),
     ActionHandler(ACTIONS.REPAIRBOAT, "dolongaction"),
     ActionHandler(ACTIONS.READ, "book"),
     ActionHandler(ACTIONS.READMAP, "map"),
@@ -360,7 +362,7 @@ local events=
         end
     end),
 
-  EventHandler("coast",
+    EventHandler("coast",
         function(inst)
             inst.sg:GoToState("idle")
     end),
@@ -373,6 +375,10 @@ local events=
         end
     end),
 
+    EventHandler("transform_to_werewilba", function(inst, data)
+        TheCamera:SetDistance(14)
+        inst.sg:GoToState("werewilba_boat_transform")
+    end),
 
    EventHandler("locomote", function(inst)
 
@@ -2013,12 +2019,113 @@ local states=
                     inst.components.driver.vehicle.components.boathealth:DoDelta(-1, "combat")
                     inst.components.beaverness:SetPercent(0)
                 end 
-                inst.sg:GoToState("werebeaver_death_boat")  -- This state is in SGWilson, the stategraph gets switch when the boat dies 
+                inst.sg:GoToState("werebeaver_death_boat")
             end ),
         } 
     },
 
-   
+    State{
+        name = "werebeaver_death_boat",
+        tags = {"busy"},
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.last_death_position = inst:GetPosition()
+			SpawnPlayerSkeletonHidden(inst:GetPosition())
+            inst.AnimState:SetBuild("werebeaver_boat_death") --This animation is in it's own build and bank because?
+            inst.AnimState:SetBank("werebeaver_boat_death") -- It gets set back in the resurrectable component, kind of ugly 
+            inst.AnimState:PlayAnimation("boat_death")
+            inst.SoundEmitter:PlaySound("dontstarve_DLC002/characters/woody/warebeaver_sinking_death")
+        end,
+
+        onexit= function(inst) 
+            inst.DynamicShadow:Enable(true) 
+        end,
+
+        timeline=
+        {
+            TimeEvent(70*FRAMES, function(inst)
+                inst.DynamicShadow:Enable(false)
+            end),
+        },
+    },
+
+    State{
+        name = "werewilba_boat_transform",
+        tags = {"busy"},
+        onenter = function(inst)
+            inst:TransformToWere()
+            inst.Physics:Stop()
+            inst.components.playercontroller:Enable(false)
+            inst.AnimState:PlayAnimation("transform_pre")
+            inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/werewilba/transform_1")
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                 if inst.components.driver and inst.components.driver:GetIsDriving() then
+                    inst.AnimState:SetBuild("werewilba")
+                    inst.AnimState:SetBank("wilson")
+                    inst.were = true -- To get the wilba build back.
+                    inst.components.resurrectable.cantdrown = true 
+                    inst.components.driver.vehicle.components.boathealth:SetHealth(0)
+                    inst.components.driver.vehicle.components.boathealth:DoDelta(-1, "combat")
+                end
+            end ),
+        },
+
+        timeline=
+        {
+            TimeEvent(34*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(35*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube(nil) 
+            end), 
+            TimeEvent(36*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(37*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube(nil) 
+            end), 
+            TimeEvent(41*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(42*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube(nil) 
+            end),
+            TimeEvent(43*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(44*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube(nil) 
+            end),                                                
+            TimeEvent(48*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(49*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube(nil) 
+            end),                                                
+            TimeEvent(64*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(65*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube(nil) 
+            end),            
+            TimeEvent(71*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(105*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/werewilba/bark") 
+            end),
+            TimeEvent(139*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/werewilba/breath_out") 
+            end),
+
+            TimeEvent(151*FRAMES, function(inst) 
+                inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/werewilba/transform_2") 
+            end),
+        },
+    },
 
     State{
         name = "quicktele",
@@ -2047,7 +2154,7 @@ local states=
     },  
 
 
-     State{
+    State{
         name = "give",
         tags = {"boating"},
         
@@ -2058,17 +2165,44 @@ local states=
         end,
         
         timeline =
-        {
-            TimeEvent(13*FRAMES, function(inst)
-                inst:PerformBufferedAction()
-            end),
-        },        
+            {
+                TimeEvent(13*FRAMES, function(inst)
+                    inst:PerformBufferedAction()
+                end),
+            },        
 
         events=
+            {
+                EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
+            },
+    },
+
+    State{
+        name = "catchonfire",
+        tags = { "igniting" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("light_fire")
+            inst.AnimState:PushAnimation("light_fire_pst", false)
+        end,
+
+        timeline =
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
+            TimeEvent(13 * FRAMES, function(inst)
+                inst:PerformBufferedAction()
+            end),
         },
-    },   
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },
 
     State{
         name = "book",

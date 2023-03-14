@@ -977,14 +977,14 @@ local TUNING_OVERRIDES =
 																		GetSeasonManager():LightningNever()
 																	 end,
 												["rare"] = 	 function() 
-	                                                                    GetSeasonManager():OverrideLightningDelays(60, 90)
+																		GetSeasonManager():OverrideLightningDelays(60, 90)
 																	 end,
 												["often"] =  function() 
 																		GetSeasonManager():LightningWhenPrecipitating()
-	                                                                    GetSeasonManager():OverrideLightningDelays(10, 20)
+																		GetSeasonManager():OverrideLightningDelays(10, 20)
 																	 end,
 												["always"] = function() 
-	                                                                    GetSeasonManager():OverrideLightningDelays(10, 30)
+																		GetSeasonManager():OverrideLightningDelays(10, 30)
 																		GetSeasonManager():LightningAlways()
 																	 end,
 											}
@@ -997,10 +997,10 @@ local TUNING_OVERRIDES =
 										local tuning_vars = {
 												["always"] =
 												{
-		                                            CREEPY_EYES = 
-		                                            {
-		                                                {maxsanity=1, maxeyes=6},
-		                                            },
+													CREEPY_EYES = 
+													{
+														{maxsanity=1, maxeyes=6},
+													},
 												},
 											}
 										OverrideTuningVariables(tuning_vars[difficulty])
@@ -1146,7 +1146,7 @@ local TUNING_OVERRIDES =
 										if data == "off" then
 											local ground = GetWorld()
 											if ground.WaveComponent then
-    											ground.WaveComponent:SetMultColour(0,0,0,0)
+												ground.WaveComponent:SetMultColour(0,0,0,0)
 											end
 										end
 									end,
@@ -1354,7 +1354,29 @@ local TUNING_OVERRIDES =
 									end
 								end
 							end,
-						},											
+						},
+	["hanging_vine"] = 	{
+		doit = 	function(difficulty)
+			local tuning_vars = {
+					["never"] =  {HANGING_VINE_SPAWN_MIN = 0, HANGING_VINE_SPAWN_MAX = 0},
+					["rare"]  =  {HANGING_VINE_SPAWN_MIN = TUNING.HANGING_VINE_SPAWN_MIN * 0.5, HANGING_VINE_SPAWN_MAX = TUNING.HANGING_VINE_SPAWN_MAX * 0.5},
+					["often"] =  {HANGING_VINE_SPAWN_MIN = TUNING.HANGING_VINE_SPAWN_MIN * 1.5, HANGING_VINE_SPAWN_MAX = TUNING.HANGING_VINE_SPAWN_MAX * 1.5},
+					["always"] = {HANGING_VINE_SPAWN_MIN = TUNING.HANGING_VINE_SPAWN_MIN * 3,   HANGING_VINE_SPAWN_MAX = TUNING.HANGING_VINE_SPAWN_MAX * 3  },
+				}
+			OverrideTuningVariables(tuning_vars[difficulty])
+		end,
+	},
+	["grabbing_vine"] = 	{
+		doit = 	function(difficulty)
+			local tuning_vars = {
+					["never"] =  {GRABBING_VINE_SPAWN_MIN = 0, GRABBING_VINE_SPAWN_MAX = 0},
+					["rare"]  =  {GRABBING_VINE_SPAWN_MIN = TUNING.GRABBING_VINE_SPAWN_MIN * 0.5, GRABBING_VINE_SPAWN_MAX = TUNING.GRABBING_VINE_SPAWN_MAX * 0.5},
+					["often"] =  {GRABBING_VINE_SPAWN_MIN = TUNING.GRABBING_VINE_SPAWN_MIN * 1.5, GRABBING_VINE_SPAWN_MAX = TUNING.GRABBING_VINE_SPAWN_MAX * 1.5},
+					["always"] = {GRABBING_VINE_SPAWN_MIN = TUNING.GRABBING_VINE_SPAWN_MIN * 3,   GRABBING_VINE_SPAWN_MAX = TUNING.GRABBING_VINE_SPAWN_MAX * 3  },
+				}
+			OverrideTuningVariables(tuning_vars[difficulty])
+		end,
+	},
 }
 
 return {OVERRIDES = TUNING_OVERRIDES}

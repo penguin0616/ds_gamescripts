@@ -324,6 +324,7 @@ local function ModSafeStartup()
 	TheGlobalInstance = CreateEntity()
 	TheGlobalInstance.entity:SetCanSleep( false )
 	TheGlobalInstance.entity:AddTransform()
+	TheGlobalInstance:AddTag("NOBLOCK")
 
 	if RUN_GLOBAL_INIT then
 		GlobalInit()

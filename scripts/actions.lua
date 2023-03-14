@@ -19,7 +19,7 @@ ACTIONS=
     READ = Action({mount_enabled=true}),
     DROP = Action({mount_enabled=true},-1),
     TRAVEL = Action({}, 2),
-    CHOP = Action({}),
+    CHOP = Action({},nil, nil, nil, 2),
     ATTACK = Action({mount_enabled=true},2, true),
     FORCEATTACK = Action({mount_enabled=true},2, true),
     EAT = Action({mount_enabled=true}),
@@ -31,7 +31,7 @@ ACTIONS=
     COOK = Action({}),
     DRY = Action({}),
     ADDFUEL = Action({mount_enabled=true}),
-    LIGHT = Action({},-4),
+	LIGHT = Action({}, -4, nil, nil, 1.5),
     EXTINGUISH = Action({},0),
     LOOKAT = Action({mount_enabled=true},-3, true),
     TALKTO = Action({mount_enabled=true},3, true),
@@ -531,6 +531,11 @@ ACTIONS.GIVE.fn = function(act)
     if act.target.components.trader then
 		act.target.components.trader:AcceptGift(act.doer, act.invobject)
 	    return true
+    end
+
+    if act.invobject.components.usableitem then
+        act.invobject.components.usableitem:Use(act.doer, act.target)
+        return true
     end
 end
 

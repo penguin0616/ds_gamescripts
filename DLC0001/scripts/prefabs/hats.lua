@@ -617,8 +617,8 @@ function MakeHat(name)
         inst:AddComponent("waterproofer")
         inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
 
-        inst:AddComponent("characterspecific")
-        inst.components.characterspecific:SetOwner("wathgrithr")
+        --inst:AddComponent("characterspecific")
+        --inst.components.characterspecific:SetOwner("wathgrithr")
 
         return inst
     end

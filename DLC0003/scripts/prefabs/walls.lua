@@ -56,6 +56,12 @@ function isWallOnWater(inst)
 	return map:IsWater(tiletype)
 end
 
+-- NOTES(DiogoW): Things that add walls to the path finder appear with a wrong visual rotation when
+-- entering/exiting interiors. I have no idea why.
+local function FixUpRotation(inst)
+    inst.Transform:SetRotation(inst.Transform:GetRotation())
+end
+
 function MakeWallType(data)
 
 	local assets =
@@ -162,7 +168,6 @@ function MakeWallType(data)
 	end
 
 	local function makeobstacle(inst)
-		-- print('makeobstacle walls.lua')
 	
 		inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)	
 	    inst.Physics:ClearCollisionMask()
@@ -315,6 +320,9 @@ function MakeWallType(data)
 
 	local function returntointeriorscene(inst)
 		makeobstacle(inst)
+		if inst.components.health:GetPercent() <= 0 then
+			clearobstacle(inst)
+		end
 	end
 
 	local function removefrominteriorscene(inst)
@@ -402,9 +410,7 @@ function MakeWallType(data)
 	    inst.OnLoad = onload
 	    inst.OnRemoveEntity = onremoveentity
 
-		inst:ListenForEvent("endinteriorcam", function() 
-                inst.Transform:SetRotation(inst.Transform:GetRotation())
-            end, GetWorld())
+        inst:ListenForEvent("entitywake", FixUpRotation)
 		
 		MakeSnowCovered(inst)
 

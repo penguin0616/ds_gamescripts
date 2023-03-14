@@ -505,6 +505,15 @@ return {
 		GREENSTAFF = "This'll help me dismantle stuff!",
 		POTTEDFERN = "It shows my love of plant life.",
 
+		BOOK_BIRDS = "I already know more than enough aboot those things.",
+        BOOK_TENTACLES = "They don't have tentacles in Canada.",
+        BOOK_GARDENING = "Does it grow trees?",
+        BOOK_SLEEP = "The perfect book for a full moon.",
+        BOOK_BRIMSTONE = "I know better than to mess with that, eh.",
+
+		WATHGRITHRHAT = "Pretty snappy looking.",
+		SPEAR_WATHGRITHR = "Who needs a spear when you got ol'Luce?",
+
 		THULECITE = "It's the wood of the caves!",
 		ARMORRUINS = "That'll stop the hurt.",
 		RUINS_BAT = "Metal on a stick.",
@@ -707,6 +716,8 @@ return {
             GENERIC = "Maybe later. I've gotten cozy down here.",
             OPEN = "There are probably trees up there.",
         },
+
+        CAVE_REGENERATOR = "Why do I feel like I should bring it to the entrance, eh?",
 		
 		MAXWELLPHONOGRAPH = "Better than most of the stuff on the radio.",
 		BOOMERANG = "That looks hard to throw.",
@@ -2750,6 +2761,7 @@ return {
     	HARDSHELL_TACOS = "I like the crunch.",
     	GUMMY_CAKE = "I prefer Nanaimo bars.",
     	STEAMEDHAMSANDWICH = "Mouth watering hamburgers.",
+		MEATED_NETTLE = "It's not back bacon, but it'll do.",
 
     	ROC_NEST_DEBRIS1 = "Wood.",
     	ROC_NEST_DEBRIS2 = "Don't have to chop that.",
@@ -2826,6 +2838,7 @@ return {
         BILL_QUILL = "What'aya think this is for?",
 
         ANTLER = "That bird is a nuisance.",
+        ANTLER_CORRUPTED = "Bird repellant.",
 
         PUGALISK_SKULL = "Pretty big, eh?",
         PUGALISK_CORPSE = "Gotta be useful for something.",
@@ -2907,6 +2920,13 @@ return {
 
         FIRECRACKERS = "Let's not set them off in the forest.",
         REDLANTERN = "This little light of mine.",
+
+		-------------Wormwood Specific-------
+		
+		COMPOSTWRAP = "Well. Plants gotta fertilize.",
+		POISONBALM = "I really like not bein' poisoned.",
+        ARMOR_BRAMBLE = "All natural safety precautions.",
+        TRAP_BRAMBLE = "A trap for the forest, by the forest.",
 
         -------rewards update-------
 

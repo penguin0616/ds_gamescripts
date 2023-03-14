@@ -366,6 +366,8 @@ local function makeripple(speed)
 		anim:SetLayer( LAYER_BACKGROUND )
 		anim:SetSortOrder( 3 )
 
+		inst:AddTag("NOBLOCK")
+
 		anim:SetMultColour(1, 1, 1, 1)
     	
 		inst.persists = false

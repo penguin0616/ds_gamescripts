@@ -106,6 +106,10 @@ local function testitem_honeychest(inst, item, slot)
 	return item.prefab == "honey" or item.prefab == "nectar_pod"
 end
 
+local function testitem_roottrunk(inst, item, slot)
+	return not item:HasTag("irreplaceable") and not item.components.leader
+end
+
 local function onopen(inst) 
 	if not inst:HasTag("burnt") then
 		inst.AnimState:PlayAnimation("open")
@@ -340,9 +344,10 @@ local function chest(style, aquatic)
 			inst:DoTaskInTime(0.01, function() LoadHoneyFirstTime(inst) end)
 		end
 		if style == "root_chest" then
+			inst:AddTag("NOBLOCK")
 			inst:ListenForEvent("onremove", function() assert(false,"MAIN ROOT CHEST WAS REMOVED SOMEHOW") end)
 		end
-		if style == "root_chest" or style == "root_chest_child" then
+		if style == "root_chest" or style == "root_chest_child" or style == "minotaur_chest" then
 			inst.components.container:SetNumSlots(#root_slotpos, true)
 			inst.components.container.widgetslotpos = root_slotpos
 			inst.components.container.widgetpos = Vector3(0, 200, 0)
@@ -353,6 +358,7 @@ local function chest(style, aquatic)
 		if style == "root_chest_child" then
 			inst:ListenForEvent("onopen", function() if GetWorld().components.roottrunkinventory then GetWorld().components.roottrunkinventory:empty(inst) end end)
 			inst:ListenForEvent("onclose", function() if GetWorld().components.roottrunkinventory then GetWorld().components.roottrunkinventory:fill(inst) end end)
+			inst.components.container.itemtestfn = testitem_roottrunk
 		end
 
 		if style == "cork_chest" then

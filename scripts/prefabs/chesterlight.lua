@@ -32,6 +32,7 @@ local function fn()
 	anim:SetBuild("cave_exit_lightsource")
 
 	inst:AddTag("NOCLICK")
+	inst:AddTag("NOBLOCK")
 
 	local light = inst.entity:AddLight()
 	light:SetRadius(5)

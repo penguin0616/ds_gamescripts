@@ -726,6 +726,19 @@ local foods=
 		cooktime = 2,
 		yotp = true,
 	},		
+	meated_nettle = 
+	{
+		test = function(cooker, names, tags) return (tags.antihistamine and tags.antihistamine >=2) and (tags.meat and tags.meat >= 1) and (not tags.monster or tags.monster <= 1) and not tags.inedible end,
+		priority = 1,
+		foodtype = "MEAT",
+		health = TUNING.HEALING_MED,
+		hunger = TUNING.CALORIES_LARGE,
+		perishtime = TUNING.PERISH_FASTISH,
+		sanity = TUNING.SANITY_TINY,
+		antihistamine = 600,
+		cooktime = 1,
+		yotp = true,
+	},
 }
 
 for k,v in pairs(foods) do

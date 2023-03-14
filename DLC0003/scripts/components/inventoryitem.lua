@@ -360,7 +360,11 @@ function InventoryItem:CollectUseActions(doer, target, actions)
 
     if target:HasTag("weighdownable") then
         table.insert(actions, ACTIONS.WEIGHDOWN)
-    end  
+    end
+
+    if target.components.trader and target.components.trader.acceptnontradable then
+        table.insert(actions, ACTIONS.GIVE)
+    end
 end
 
 function InventoryItem:GetGrandOwner()

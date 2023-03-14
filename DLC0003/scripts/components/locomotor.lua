@@ -52,6 +52,17 @@ function Dest:GetPoint()
     end
 end
 
+local function OffsetDoorPosition(pos)
+    -- Fixes the PathFinder confusion for going to door positions.
+    local interiorSpawner = GetWorld().components.interiorspawner
+
+    if interiorSpawner and interiorSpawner.current_interior then
+        local originpt = interiorSpawner:getSpawnOrigin()
+
+        return pos + Vector3(originpt.x - pos.x, 0, originpt.z - pos.z):GetNormalized()
+    end
+end
+
 local LocoMotor = Class(function(self, inst)
     self.inst = inst
     self.dest = nil
@@ -343,7 +354,7 @@ function LocoMotor:UpdateGroundSpeedMultiplier()
     local ground = GetWorld()
     local x,y,z = self.inst.Transform:GetWorldPosition()
 
-	local oncreep = ground ~= nil and ground.GroundCreep:OnCreep(x, y, z) and self.triggerscreep
+	local oncreep = ground ~= nil and ground.GroundCreep:OnCreep(x, y, z) and self.triggerscreep and not self.inst:GetIsOnWater()
     local onflood = ground ~= nil and ground.Flooding ~= nil and ground.Flooding:OnFlood(x, y, z)
     local boating = self.inst.components.driver and self.inst.components.driver:GetIsDriving() 
     
@@ -469,13 +480,15 @@ function LocoMotor:PushAction(bufferedaction, run, try_instant)
     
     self:Clear()
     if bufferedaction.action == ACTIONS.WALKTO then
-
-
         if bufferedaction.target then
             self:GoToEntity(bufferedaction.target, bufferedaction, run)
         elseif bufferedaction.pos then
             self:GoToPoint(bufferedaction.pos, bufferedaction, run)
         end
+    -- Notes(DiogoW): Hack... This is not a good place to do this, but it fixes a very annoying bug, so...
+    elseif bufferedaction.action == ACTIONS.USEDOOR and bufferedaction.target:HasTag("interior_door") then
+        local pos = OffsetDoorPosition(bufferedaction.target:GetPosition())
+        self:GoToPoint(pos, bufferedaction, run)
     elseif bufferedaction.action.instant then
         self.inst:PushBufferedAction(bufferedaction)
     else

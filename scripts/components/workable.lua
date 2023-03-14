@@ -22,6 +22,10 @@ function Workable:SetWorkAction(act)
     self.action = act
 end
 
+function Workable:CanBeWorked()
+    return self.workleft > 0
+end
+
 function Workable:Destroy(destroyer)
     if not self.destroyed then
         self:WorkedBy(destroyer, self.workleft)

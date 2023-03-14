@@ -86,8 +86,8 @@ function Tune(overrides)
 	    TELESTAFF_USES = 5,
 	    HAMBAT_USES = 100,
 	    BATBAT_USES = 75,
-	    MULTITOOL_AXE_PICKAXE_USES = 400,
-	    RUINS_BAT_USES = 150,
+	    MULTITOOL_AXE_PICKAXE_USES = 800,
+	    RUINS_BAT_USES = 200,
 	    LITTLE_HAMMER_USES = 10,
 	    CORK_BAT_USES = 20,
 
@@ -104,12 +104,15 @@ function Tune(overrides)
 		PURPLEAMULET_FUEL = total_day_time * 0.4,
 
 		YELLOWAMULET_FUEL = total_day_time,
-		YELLOWSTAFF_USES = 20,
+        YELLOWSTAFF_USES = 20,
+        YELLOWSTAFF_STAR_DURATION = total_day_time * 3.5,
 
 		ORANGEAMULET_USES = 225,
 		ORANGEAMULET_RANGE = 4,
 		ORANGEAMULET_ICD = 0.33,
 		ORANGESTAFF_USES = 20,
+
+		NIGHTMAREFUEL_FINITEUSESREPAIRVALUE = 50,
 
 		GREENAMULET_USES = 5,
 		GREENAMULET_INGREDIENTMOD = 0.5,
@@ -148,7 +151,7 @@ function Tune(overrides)
 	    WALKING_STICK_DAMAGE = wilson_attack*.6,
 	    BEAVER_DAMAGE = wilson_attack*1.5,
 	    WEREWILBA_DAMAGE = wilson_attack*1.75,
-	    MULTITOOL_DAMAGE = wilson_attack*.9,
+	    MULTITOOL_DAMAGE = wilson_attack * 1.25,
 	    RUINS_BAT_DAMAGE = wilson_attack * 1.75,
 	    NIGHTSTICK_DAMAGE = wilson_attack*.85, -- Due to the damage being electric, it will get multiplied by 1.5 against any mob
 	    OBSIDIAN_SPEAR_DAMAGE = wilson_attack * 1.5, --Deals up to double damage with use.
@@ -356,6 +359,7 @@ function Tune(overrides)
 	    MINOTAUR_WALK_SPEED = 5,
 	    MINOTAUR_RUN_SPEED = 17,
 	    MINOTAUR_TARGET_DIST = 25,
+		MINOTAUR_LEAP_CD = 10,
 
 	    SLURTLE_DAMAGE = 25,
 	    SLURTLE_HEALTH = 600,
@@ -731,6 +735,8 @@ function Tune(overrides)
 	    TENTACLE_STOPATTACK_DIST = 6,
 	    TENTACLE_HEALTH = 500,
 
+		BIG_TENTACLE_DAMAGE = 60,
+
 	    TENTACLE_PILLAR_HEALTH = 500,
         TENTACLE_PILLAR_ARMS = 12,   -- max spawned at a time
         TENTACLE_PILLAR_ARMS_TOTAL = 25,  -- max simultaneous arms
@@ -771,6 +777,9 @@ function Tune(overrides)
 	    TEENBIRD_STARVE_KILL_TIME = 240,
 	    TEENBIRD_GROW_TIME = total_day_time*18,
 	    TEENBIRD_TARGET_DIST = 8,
+
+		TALLBIRD_LAY_EGG_TIME_MIN = 3 * total_day_time,
+		TALLBIRD_LAY_EGG_TIME_VAR = 2 * total_day_time,
 
 	    SMALLBIRD_HEALTH = 50,
 	    SMALLBIRD_DAMAGE = 10,
@@ -1124,7 +1133,7 @@ function Tune(overrides)
 		--PORKLAND HATS
 		BANDITHAT_PERISHTIME = total_day_time*1,
 		THUNDERHAT_PERISHTIME = total_day_time*4,
-
+		THUNDERHAT_USAGE_PER_LIGHTINING_STRIKE = 0.05, -- Percent
 
 		SNEAK_SIGHTDISTANCE = 8,
 
@@ -1149,10 +1158,10 @@ function Tune(overrides)
 	    BERRY_REGROW_VARIANCE = total_day_time*2,
 	    BERRYBUSH_CYCLES = 3,
 
-	    FLIPPABLE_ROCK_REPOPULATE_TIME = total_day_time*5,
-	    FLIPPABLE_ROCK_REPOPULATE_INCREASE = total_day_time*.5,
+	    FLIPPABLE_ROCK_REPOPULATE_TIME = total_day_time*8,
+	    FLIPPABLE_ROCK_REPOPULATE_INCREASE = total_day_time*.5, -- Not used.
 	    FLIPPABLE_ROCK_REPOPULATE_VARIANCE = total_day_time*2,
-	    FLIPPABLE_ROCK_CYCLES = 3,
+	    FLIPPABLE_ROCK_CYCLES = 3, -- Not used.
 
 	    REEDS_REGROW_TIME = total_day_time*3,
 
@@ -1222,6 +1231,8 @@ function Tune(overrides)
 
 		ARMORVORTEX = wilson_health*3,
 		ARMORVORTEX_ABSORPTION = 1,
+		ARMORVORTEX_DMG_AS_SANITY = 0.20,
+		ARMORVORTEX_REFUEL_PERCENT = 0.10,
 
 	    PANFLUTE_SLEEPTIME = 20,
 	    PANFLUTE_SLEEPRANGE = 15,
@@ -1336,10 +1347,12 @@ function Tune(overrides)
 
 		BASE_COOK_TIME = night_time*.3333,
 
-	    TALLBIRDEGG_HEALTH = 15;
+	    TALLBIRDEGG_HEALTH = 15,
 	    TALLBIRDEGG_HUNGER = 15,
-	    TALLBIRDEGG_COOKED_HEALTH = 25;
+	    TALLBIRDEGG_COOKED_HEALTH = 25,
 	    TALLBIRDEGG_COOKED_HUNGER = 30,
+
+		TALLBIRD_MAKE_NEST_RADIUS = 2,
 
 		REPAIR_CUTSTONE_HEALTH = 50,
 		REPAIR_ROCKS_HEALTH = 50/3,
@@ -1530,8 +1543,8 @@ function Tune(overrides)
 		MIN_SMOLDER_TIME = .5*seg_time,
 		MAX_SMOLDER_TIME = seg_time,
 
-		TENT_USES = 6,
-		SIESTA_CANOPY_USES = 6,
+		TENT_USES = 10,
+		SIESTA_CANOPY_USES = 10,
 
 		BEARDLING_SANITY = .4,
 		UMBRELLA_USES = 20,
@@ -2035,7 +2048,7 @@ function Tune(overrides)
 
 	    BLUBBERSUIT_PERISHTIME = total_day_time*8,
 	    
-	    TARSUIT_PERISHTIME = total_day_time,
+	    TARSUIT_PERISHTIME = total_day_time*3,
 
 	    ROWBOAT_HEALTH = 250,
 	    ROWBOAT_PERISHTIME = total_day_time*3,
@@ -2732,8 +2745,8 @@ function Tune(overrides)
 		---------------------------------------------------
 
 		-- QUACKERINGRAM
-		QUACKERINGRAM_USE_COUNT = 15,
-		QUACKERINGRAM_DAMAGE = 150,
+		QUACKERINGRAM_USE_COUNT = 25,
+		QUACKERINGRAM_DAMAGE = 100,
 		QUACKERINGRAM_TIMEOUT = 1,
 
 	    SEASHELL_REGEN_TIME = total_day_time * 2, --So small for temp testing
@@ -2779,6 +2792,9 @@ function Tune(overrides)
         OX_FLUTE_USES = 5,
         TAR_EXTRACTOR_MAX_FUEL_TIME = total_day_time*2,
         SEA_YARD_MAX_FUEL_TIME = seg_time*6,
+        SEA_YARD_REPAIR_PER_SECOND_PERCENT = 0.005,
+
+        AUTOFIXER_RANGE = 5,
 
         TAR_TRAP_TIME = seg_time,
 
@@ -2811,7 +2827,13 @@ function Tune(overrides)
 	   	GRABBING_VINE_HEALTH = 100,
 	    GRABBING_VINE_DAMAGE = 10,
 	    GRABBING_VINE_ATTACK_PERIOD = 1,
-	    GRABBING_VINE_TARGET_DIST = 3,	
+	    GRABBING_VINE_TARGET_DIST = 3,
+
+		GRABBING_VINE_SPAWN_MIN = 6,
+		GRABBING_VINE_SPAWN_MAX = 9,
+
+		HANGING_VINE_SPAWN_MIN = 8,
+		HANGING_VINE_SPAWN_MAX = 16,
 
 	    ZEB_DAMAGE = 20,
 	    ZEB_ATTACK_RANGE = 3,
@@ -3029,9 +3051,12 @@ function Tune(overrides)
         WEEVOLEDEN_MAX_WEEVOLES = 3,        
 
         ARMOR_WEEVOLE_DURABILITY = wilson_health*6,
-        ARMOR_WEEVOLE_ABSORPTION = .6,
+        ARMOR_WEEVOLE_ABSORPTION = .65,
 
-	    CANDLEHAT_LIGHTTIME = night_time*2,      
+	    CANDLEHAT_LIGHTTIME = night_time*2,
+
+		ANTMASKHAT_PERISHTIME = total_day_time*10,
+		ANTSUIT_PERISHTIME = total_day_time*10,
 
 	    ROBOT_TARGET_DIST = 15,  
 	    ROBOT_RIBS_DAMAGE = wilson_attack,
@@ -3099,11 +3124,11 @@ function Tune(overrides)
 		ROBIN_HATCH_TIME = total_day_time * 3,
 
 	    ARMORMETAL = wilson_health*8,
-		ARMORMETAL_ABSORPTION = .8,
-		ARMORMETAL_SLOW = -0.20,
+		ARMORMETAL_ABSORPTION = .85,
+		ARMORMETAL_SLOW = -0.10,
 
 	    ARMOR_KNIGHT = wilson_health*8,
-		ARMOR_KNIGHT_ABSORPTION = .8,
+		ARMOR_KNIGHT_ABSORPTION = .85,
 
 		SPRINKLER_MAX_FUEL_TIME = total_day_time,
 
@@ -3159,23 +3184,23 @@ function Tune(overrides)
 
         PINNABLE_WEAR_OFF_TIME = 10,
         PINNABLE_ATTACK_WEAR_OFF = 2.0,
-        PINNABLE_RECOVERY_LEEWAY = 1.5,   
-        FIRECRACKERS_STARTLE_RANGE = 10,   
+        PINNABLE_RECOVERY_LEEWAY = 1.5,
+        FIRECRACKERS_STARTLE_RANGE = 10,
        	FIRECRACKERS_FUSE = 2,
 
-        ARMORBRAMBLE_DMG = wilson_attack/1.5,     
-        ARMORBRAMBLE_ABSORPTION = .65,
-        ARMORBRAMBLE = wilson_health*2.5,
+        ARMORBRAMBLE_DMG = wilson_attack/1.5,
+        ARMORBRAMBLE_ABSORPTION = .8,
+        ARMORBRAMBLE = wilson_health * 3,
 
 	    TRAP_BRAMBLE_USES = 10,
 	    TRAP_BRAMBLE_DAMAGE = 40,
-	    TRAP_BRAMBLE_RADIUS = 2.5,     	
+	    TRAP_BRAMBLE_RADIUS = 2.5,
 
 		GOGGLES_NORMAL_PERISHTIME = 10*total_day_time,
 		GOGGLES_HEAT_PERISHTIME = 2*total_day_time,
 
-		GOGGLES_ARMOR_ARMOR = wilson_health*4,	
-		GOGGLES_ARMOR_ABSORPTION = 0.85,		
+		GOGGLES_ARMOR_ARMOR = wilson_health*4,
+		GOGGLES_ARMOR_ABSORPTION = 0.85,
 
 		GOGGLES_SHOOT_USES = 10,
 

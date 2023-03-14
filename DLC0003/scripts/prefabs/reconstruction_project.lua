@@ -8,10 +8,8 @@ local prefabs =
 
 }
 
-local REBUILD_REACTION_TIME = TUNING.TOTAL_DAY_TIME /50
-local REBUILD_REACTION_VARIANCE = TUNING.SEG_TIME * 3 /50
-
-local CALL_WORKER_TIME = TUNING.SEG_TIME * 3 /50
+local REBUILD_REACTION_TIME = TUNING.SEG_TIME -- 30-60 seconds.
+local REBUILD_REACTION_VARIANCE = TUNING.SEG_TIME
 
 local OFF_SCREENDIST = 30 
 local AUTO_REPAIRDIST = 100
@@ -248,10 +246,9 @@ local function spawnFixer(inst)
     if inst:GetDistanceSqToInst(GetPlayer()) > AUTO_REPAIRDIST * AUTO_REPAIRDIST then
         fix(inst)        
     else
-
-        if not inst.fixer or inst.fixer.components.health:IsDead() then
+        if (not inst.fixer or inst.fixer.components.health:IsDead()) and inst.cityID then -- Spawn the pig only for city structures.
             inst.fixer = nil
-            if GetClock():IsDay() then                
+            if GetClock():IsDay() then
                 local x,y,z = inst.Transform:GetWorldPosition()
 
                 local ents = TheSim:FindEntities(x,y,z, 30, {"fixer"})
@@ -275,7 +272,7 @@ local function spawnFixer(inst)
         end
         inst.task:Cancel()
         inst.task = nil
-        inst.task = inst:DoTaskInTime(1,function() spawnFixer(inst) end)
+        inst.task = inst:DoTaskInTime(REBUILD_REACTION_TIME + (math.random() * REBUILD_REACTION_VARIANCE), spawnFixer)
     end
 end
 
@@ -332,7 +329,7 @@ local function fn(Sim)
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
 
-    inst.task = inst:DoTaskInTime(REBUILD_REACTION_TIME +(math.random() *REBUILD_REACTION_VARIANCE), function() spawnFixer(inst) end)
+    inst.task = inst:DoTaskInTime(REBUILD_REACTION_TIME + (math.random() * REBUILD_REACTION_VARIANCE), spawnFixer)
     return inst
 end
 

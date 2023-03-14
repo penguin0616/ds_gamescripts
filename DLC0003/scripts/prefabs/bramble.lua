@@ -70,8 +70,16 @@ local function OnChildDeath(inst, rotdist)
 end
 
 local function testlocation(inst, pt)
-	local testTile = GetWorld().Map:GetTileAtPoint(pt.x , pt.y, pt.z) 
-	if testTile ~= GROUND.RAINFOREST and testTile ~= GROUND.GASJUNGLE and testTile ~= GROUND.DEEPRAINFOREST and testTile ~= GROUND.PLAINS and testTile ~= GROUND.PAINTED and testTile ~= GROUND.BATTLEGROUND then
+	local tile = GetWorld().Map:GetTileAtPoint(pt.x , pt.y, pt.z)
+	
+	if      tile ~= GROUND.DEEPRAINFOREST 
+		and tile ~= GROUND.GASJUNGLE 
+		and tile ~= GROUND.RAINFOREST 
+		and tile ~= GROUND.PLAINS 
+		and tile ~= GROUND.PAINTED
+		and tile ~= GROUND.BATTLEGROUND
+		and tile ~= GROUND.DIRT
+	then
 		return false
 	end
 

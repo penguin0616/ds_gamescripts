@@ -351,15 +351,17 @@ function Crop:ForceHarvest(harvester)
         
         return true
     else
-	-- nothing to give up, but pretend we did
-        if self.grower then       
+	    -- nothing to give up, but pretend we did
+        if self.grower then
             if self.grower.components.grower then
-                self.grower.components.grower:RemoveCrop(self.inst)
-            end
-            self.grower = nil       
-        else
+                self.grower.components.grower:RemoveCrop(self.inst)            
+            else
             self.inst:Remove()
-        end        
+            end
+            self.grower = nil
+        else 
+            self.inst:Remove()
+        end
     end
 end
 

@@ -113,12 +113,11 @@ function Builder:BufferBuild(recipe)
 	self:RemoveIngredients(mats,recipe)
 	self.buffered_builds[recipe] = {}
 	self.buffered_builds[recipe].wetLevel = wetLevel
-	self.inst:PushEvent("bufferbuild", {recipe = GetRecipe(recipe)})
+	self.inst:PushEvent("bufferbuild", {recipe = GetRecipe(recipe), used_jellybrainhat = not self:KnowsRecipeWithoutJellyBrainHat(recipe)})
 end
 
 function Builder:OnUpdate(dt)
 	self:EvaluateTechTrees()
-    self:EvaluateAutoFixers()
 end
 
 function Builder:GiveAllRecipes()
@@ -173,7 +172,10 @@ function Builder:CanBuildAtPoint(pt, recipe)
 	    	onWater = ground.Map:IsWater(testTile) and onWater
 	    	testTile = ground.Map:GetTileAtPoint(x , y, z - minBuffer)
 	    	onWater = ground.Map:IsWater(testTile) and onWater
-	    	return onWater
+	    	
+			if not onWater then
+				return false
+			end
     	else 
     		local testTile = self.inst:GetCurrentTileType(x, y, z)--ground.Map:GetTileAtPoint(x , y, z)
     		local isShore = ground.Map:IsShore(testTile) --testTile == GROUND.OCEAN_SHORE --ground.Map:IsWater(testTile)
@@ -307,67 +309,43 @@ function Builder:CanBuildAtPoint(pt, recipe)
         end
     end
 
+	local min_rad = recipe.min_spacing or 3.2
+
 	if tile == GROUND.IMPASSABLE or (boating and not recipe.aquatic) then
 		return false
-	else
-        if recipe.decor then
-            return true
-        else
-    		local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, 6, nil, {'player', 'fx', 'NOBLOCK'}) -- or we could include a flag to the search?
-    		for k, v in pairs(ents) do
-    			if v ~= self.inst and (not v.components.placer) and v.entity:IsVisible() and not (v.components.inventoryitem and v.components.inventoryitem.owner) then
-    				local min_rad = recipe.min_spacing or 2+1.2
-    				--local rad = (v.Physics and v.Physics:GetRadius() or 1) + 1.25
 
-    				--stupid finalling hack because it's too late to change stuff
-    				if recipe.name == "treasurechest" and v.prefab == "pond" then
-    					min_rad = min_rad + 1
-    				end
+	elseif recipe.decor then
+		return true
 
-    				local dsq = distsq(Vector3(v.Transform:GetWorldPosition()), pt)
-    				if dsq <= min_rad*min_rad then
-    					return false
-    				end
-    			end
-    		end
-        end
+	elseif min_rad ~= 0 then
+		local ents = TheSim:FindEntities(pt.x,pt.y,pt.z, 6, nil, {'player', 'fx', 'NOBLOCK'}) -- or we could include a flag to the search?
+		for k, v in pairs(ents) do
+			if v ~= self.inst and (not v.components.placer) and v.entity:IsVisible() and not (v.components.inventoryitem and v.components.inventoryitem.owner ) then
+				
+				--stupid finalling hack because it's too late to change stuff
+				if recipe.name == "treasurechest" and v.prefab == "pond" then
+					min_rad = min_rad + 1
+				end
+
+				local dsq = distsq(Vector3(v.Transform:GetWorldPosition()), pt)
+				if dsq < min_rad*min_rad then
+					return false
+				end
+			end
+		end
 	end
 
 	return true
-end
-
-function Builder:EvaluateAutoFixers()
-    local pos = self.inst:GetPosition()
-
-    local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, TUNING.RESEARCH_MACHINE_DIST, {"autofixer"})
-
-    local old_fixer = self.current_fixer
-    self.current_fixer = nil
-
-    local fixer_active = false
-    for k, v in pairs(ents) do
-        if v.components.autofixer then
-            if not fixer_active then
-                --activate the first machine in the list. This will be the one you're closest to.
-                v.components.autofixer:TurnOn(self.inst)
-                fixer_active = true
-                self.current_fixer = v
-
-            else
-                --you've already activated a machine. Turn all the other machines off.
-                v.components.autofixer:TurnOff(self.inst)
-            end
-        end
-    end
-    if old_fixer and old_fixer ~= self.current_fixer then
-        old_fixer.components.autofixer:TurnOff(self.inst)
-    end
 end
 
 function Builder:MergeAccessibleTechTrees(tree)
 	for i,v in pairs(self.accessible_tech_trees) do
 		self.accessible_tech_trees[i] = self.accessible_tech_trees[i] + (tree[i] or 0)
 	end
+end
+
+local function is_key_to_city(item)
+	return item.prefab == "key_to_city"
 end
 
 function Builder:EvaluateTechTrees()
@@ -380,6 +358,13 @@ function Builder:EvaluateTechTrees()
 	-- insert our home prototyper in the list since we don't carry it around (and potentially wouldn't hit the radius for FindEntities)
     if interiorSpawner then
         table.insert(ents,interiorSpawner.homeprototyper)
+    end
+
+	-- TheSim:FindEntities is failing to find the key in the backpack sometimes, for whatever reason...
+	local key_to_city = self.inst.components.inventory and self.inst.components.inventory:FindItem(is_key_to_city)
+
+	if key_to_city and not table.contains(ents, key_to_city) then
+        table.insert(ents, key_to_city)
     end
 
 	local old_accessible_tech_trees = deepcopy(self.accessible_tech_trees or TECH.NONE)
@@ -473,7 +458,7 @@ function Builder:AddRecipe(rec)
 end
 
 function Builder:CanLearnRecipe(recipe)
-	return recipe ~= nil and not recipe.nounlock and not self.brainjellyhat
+	return recipe ~= nil and not recipe.nounlock and not self.jellybrainhat
 end
 
 function Builder:UnlockRecipe(recname)
@@ -524,7 +509,7 @@ function Builder:GetIngredients(recname)
                 ingredients[v.type] = amt
             else
                 local amt = math.max(1, RoundUp(v.amount * self.ingredientmod))
-                local items = self.inst.components.inventory:GetItemByName(v.type, amt)
+                local items = self.inst.components.inventory:GetCraftingIngredient(v.type, amt)
                 ingredients[v.type] = items
             end
 		end
@@ -532,14 +517,14 @@ function Builder:GetIngredients(recname)
 	end
 end
 
-function Builder:RemoveIngredients(ingredients,recname)   
+function Builder:RemoveIngredients(ingredients, recname)   
     for item, ents in pairs(ingredients) do    
         if item == "oinc" then
             self.inst.components.shopper:PayMoney(self.inst.components.inventory, ents)
         else
         	for k,v in pairs(ents) do            
         		for i = 1, v do                
-                    self.inst.components.inventory:RemoveItem(k, false):Remove()
+                    self.inst.components.inventory:RemoveItem(k, false, true):Remove()
         		end
         	end
         end
@@ -679,7 +664,7 @@ function Builder:DoBuild(recname, pt, rotation, modifydata)
                 if self.inst.components.inventory then
 					 
                     --self.inst.components.inventory:GiveItem(prod)
-                    self.inst:PushEvent("builditem", {item=prod, recipe = recipe})
+                    self.inst:PushEvent("builditem", {item=prod, recipe = recipe, used_jellybrainhat = not self:KnowsRecipeWithoutJellyBrainHat(recname)})
                     ProfileStatsAdd("build_"..prod.prefab)
 
 
@@ -802,19 +787,25 @@ function Builder:DoBuild(recname, pt, rotation, modifydata)
 end
 
 function Builder:KnowsRecipe(recname)
+	return self.jellybrainhat or self:KnowsRecipeWithoutJellyBrainHat(recname)  
+end
+
+function Builder:KnowsRecipeWithoutJellyBrainHat(recname)
 	local recipe = GetRecipe(recname)
 
-	if recipe and recipe.level.ANCIENT <= self.ancient_bonus 
-              and recipe.level.MAGIC <= self.magic_bonus 
-              and recipe.level.SCIENCE <= self.science_bonus 
-              and recipe.level.OBSIDIAN <= self.obsidian_bonus 
-              and recipe.level.HOME <= self.home_bonus
-              and recipe.level.CITY <= self.city_bonus
-              and recipe.level.LOST <= self.lost_bonus then
+	if recipe
+		and recipe.level.ANCIENT  <= self.ancient_bonus
+		and recipe.level.MAGIC    <= self.magic_bonus
+		and recipe.level.SCIENCE  <= self.science_bonus
+		and recipe.level.OBSIDIAN <= self.obsidian_bonus
+		and recipe.level.HOME     <= self.home_bonus
+		and recipe.level.CITY     <= self.city_bonus
+		and recipe.level.LOST     <= self.lost_bonus
+	then
 		return true
 	end
 
-    -- if the recipe is from a crafting station, but player is not at the crafting station, cut it out.
+	-- if the recipe is from a crafting station, but player is not at the crafting station, cut it out.
     local crafting_station_pass = true
     if recipe then
         for i,level in pairs(recipe.level)do
@@ -826,7 +817,7 @@ function Builder:KnowsRecipe(recname)
         end
     end
 
-	return self.freebuildmode or self.jellybrainhat or (self:IsBuildBuffered(recname) or table.contains(self.recipes, recname) and crafting_station_pass)
+	return self.freebuildmode or (self:IsBuildBuffered(recname) or table.contains(self.recipes, recname) and crafting_station_pass)
 end
 
 
@@ -846,7 +837,7 @@ function Builder:CanBuild(recname)
                     return false
                 end
             else
-                if not self.inst.components.inventory:Has(iv.type, amt) then
+                if not self.inst.components.inventory:Has(iv.type, amt, true) then
                     return false
                 end
             end

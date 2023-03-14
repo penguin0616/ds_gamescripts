@@ -61,12 +61,16 @@ function c_sel()
     return GetDebugEntity()
 end
 
-function c_select(inst)
+function c_select(inst, noselect)
     if not inst then
         inst = ConsoleWorldEntityUnderMouse()
     end
-    print("Selected "..tostring(inst or "<nil>") )
-    SetDebugEntity(inst)
+    
+    if not noselect then
+        print("Selected "..tostring(inst or "<nil>") )
+        SetDebugEntity(inst)
+    end
+
     return inst
 end
 
@@ -566,8 +570,28 @@ function c_save()
     GetPlayer().components.autosaver:DoSave()
 end
 
--- Regenerates the world.
-function c_regenerateworld()
+-- Regenerates the current world.
+function c_regeneratecurrentworld()
+    if not GetPlayer() then return end
+
+    GetPlayer().profile:Save(function()
+        SaveGameIndex:EraseCurrent(function() 
+            scheduler:ExecuteInTime(0.1, function()
+                local function OnProfileSaved()
+                    TheFrontEnd:Fade(false, 0.5, function () 
+                        StartNextInstance({reset_action=RESET_ACTION.LOAD_SLOT, save_slot = SaveGameIndex:GetCurrentSaveSlot()})
+                    end )
+                end
+                
+                -- Record the start of a new game
+                Profile:Save(OnProfileSaved)
+            end)
+        end, false)
+    end)
+end
+
+-- Regenerates all worlds in the saveslot.
+function c_regenerateallworlds()
     if not GetPlayer() then return end
 
     GetPlayer().profile:Save(function()
@@ -587,6 +611,16 @@ function c_regenerateworld()
             end)
         end)
     end)
+end
+
+function c_regeneratecave()
+    local entrance = c_select(nil, true)
+    
+    if not (entrance and entrance.cavenum ~= nil) then print(">> You need to hover the cave entrance.") return end
+
+    local num = entrance.cavenum
+
+    SaveGameIndex:ResetCave(num)
 end
 
 -- Rollback to the last save / reloads frontend

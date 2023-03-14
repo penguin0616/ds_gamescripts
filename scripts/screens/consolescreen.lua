@@ -277,8 +277,9 @@ local COMMAND_TESTS = {
 	"c_erupt", "c_nexterupt", "c_hurricane", "c_prefabexists", "c_treasuretest", "c_spawntreasure", "c_floats", "c_octoking",
 	"c_sounddebug", "c_sounddebug", "c_repeatlastcommand", "c_packim", "c_mapstats", "c_playslots", "c_selectnear", "c_reload",
 	"c_skipdays", "c_setlightningflashenabled", "c_kraken", "c_removeallwithtags", "c_removeall", "c_tryexitblackroom", 
-	"c_interiorinfo", "c_revealmap", "c_circle", "c_skip", "c_setboathealt ","c_save", "c_regenerateworld", "c_reset", 
+	"c_interiorinfo", "c_revealmap", "c_circle", "c_skip", "c_setboathealt ","c_save", "c_regenerateallworlds", "c_reset",  
 	"c_freecrafting", "c_domesticatedbeefalo", "c_mat", "c_mats", "c_material", "c_materials", "c_swapcharacter", "c_testteleportato",
+	"c_regeneratecurrentworld", "c_regeneratecave",
 }
 
 function ConsoleScreen:SuggestCompletion(down, key)

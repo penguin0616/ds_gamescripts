@@ -142,7 +142,7 @@ local function onfar(inst)
 end
 
 local function testfn(testinst)
-    return not testinst:HasTag("flying")
+    return not testinst:HasTag("flying") and not testinst:HasTag("notraptrigger")
 end
 
 local function disarm(inst, doer)
