@@ -184,7 +184,7 @@ local function OnGetItemFromPlayer(inst, giver, item)
 	local sanityloss = math.clamp(inst.coins/2.5, 5, 40) -- Max out at 100 coins.
 	giver.components.sanity:DoDelta(-sanityloss)
 
-	PickPrize(inst)
+	PickPrize(inst, item)
 	StartSpinning(inst)
 end
 

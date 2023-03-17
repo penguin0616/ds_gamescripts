@@ -1,3 +1,6 @@
+-- The price cannot be random, as it determines the SWAP_SIGN override symbol in shop_pedestals.lua, SetCost function.
+-- Available prices: [1, 2, 3, 4, 5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500]
+
 local SHOPTYPES = {
 
     DEFAULT = {
@@ -112,7 +115,7 @@ local SHOPTYPES = {
         { "icestaff",           "oinc", 30 },
         { "firestaff",          "oinc", 30 },
         { "amulet",             "oinc", 50 },
-        { "blueamulet",         "oinc", 50 },
+        { "blueamulet",         "oinc", 30 },
         { "purpleamulet",       "oinc", 50 },
         { "livinglog",          "oinc", 5  },
         { "armorslurper",       "oinc", 20 },
@@ -123,7 +126,7 @@ local SHOPTYPES = {
 
     pig_shop_weapons = {
         { "spear",              "oinc", 3  },
-        { "halberd",            "oinc", 15 },
+        { "halberd",            "oinc", 10 },
         { "cutlass",            "oinc", 50 },
         { "trap_teeth",         "oinc", 10 },
         { "birdtrap",           "oinc", 20 },

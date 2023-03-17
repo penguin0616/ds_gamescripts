@@ -3,8 +3,6 @@ local assets=
 	Asset("ANIM", "anim/ice.zip"),
 }
 
-local names = {"f1","f2","f3"}
-
 local function onsave(inst, data)
 	data.anim = inst.animname
 end
@@ -24,7 +22,7 @@ local function onperish(inst)
             player.components.moisture:DoDelta(2*stacksize)
         end
         inst:Remove()
-    elseif inst.components.inventoryitem:GetContainer() then
+    elseif inst.components.inventoryitem:GetContainer() or inst:HasTag("aquatic") then
         inst:Remove()
     else
         inst.components.inventoryitem.canbepickedup = false
@@ -112,9 +110,6 @@ local function commonfn(Sim)
     
     inst.AnimState:SetBank("ice")
     inst.AnimState:SetBuild("ice")
-    inst.animname = names[math.random(#names)]
-    inst.AnimState:PlayAnimation(inst.animname)
-    -- MakeInventoryFloatable(inst, inst.animname.."_water", inst.animname)
 
     inst:AddComponent("smotherer")
 
@@ -169,6 +164,10 @@ local function icefn(Sim)
     inst:AddComponent("bait")
     inst:AddTag("molebait")
 
+    inst.animname = "ice".. math.random(3)
+    inst.AnimState:PlayAnimation(inst.animname)
+    MakeInventoryFloatable(inst, inst.animname.."_water", inst.animname)
+
     inst:ListenForEvent("onhitground", onhitground_ice)
     
     return inst
@@ -182,6 +181,10 @@ local function hailfn(Sim)
     inst.components.edible.healthvalue = 0
     inst.components.edible.hungervalue = TUNING.CALORIES_TINY/8
     inst.components.edible.foodtype = "ELEMENTAL"
+
+    inst.animname = "hail".. math.random(3)
+    inst.AnimState:PlayAnimation(inst.animname)
+    MakeInventoryFloatable(inst, inst.animname.."_water", inst.animname)
     
     inst:ListenForEvent("onhitground", onhitground_hail)
 

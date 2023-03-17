@@ -132,7 +132,7 @@ local function fn(Sim)
     inst.AnimState:SetBank("jungletreeseed")
     inst.AnimState:SetBuild("jungletreeseed")
     inst.AnimState:PlayAnimation("idle")
-    
+    MakeInventoryFloatable(inst, "idle_water", "idle")
 
     --inst:AddComponent("edible")
     --inst.components.edible.foodtype = "WOOD"

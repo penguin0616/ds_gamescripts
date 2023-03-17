@@ -480,7 +480,7 @@ function RegisterInventoryItemAtlas(atlas, imagename)
 	if atlas ~= nil and imagename ~= nil then
 		if inventoryItemAtlasLookup[imagename] ~= nil then
 			if inventoryItemAtlasLookup[imagename] ~= atlas then
-				print("RegisterInventoryItemAtlas: Image '" .. imagename .. "' is already registered to atlas '" .. atlas .."'")
+				print("RegisterInventoryItemAtlas: Image '" .. imagename .. "' is already registered to atlas '" .. inventoryItemAtlasLookup[imagename] .."'")
 			end
 		else
 			inventoryItemAtlasLookup[imagename] = atlas

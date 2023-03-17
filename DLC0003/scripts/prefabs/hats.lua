@@ -1055,9 +1055,11 @@ function MakeHat(name)
 			local ccm = GetWorld().components.colourcubemanager
 			ccm:SetOverrideColourCube("images/colour_cubes/bat_vision_on_cc.tex", 1)
 
-			if owner.HUD and owner.HUD.batview then
-				owner.HUD.batview:StartSonar()
-			end
+			inst:DoTaskInTime(0, function()
+				if owner.HUD and owner.HUD.batview then
+					owner.HUD.batview:StartSonar()
+				end
+			end)
 		end
 	end
 
@@ -1668,34 +1670,34 @@ function MakeHat(name)
 
 		local equipper = inst and inst.components.equippable and inst.components.equippable.equipper
 
-
 		if TheCamera.interior then
-			if equipper and equipper.components.talker then
+			if equipper and equipper:HasTag("pirate") then
 				equipper.components.talker:Say(GetString(equipper.prefab, "ANNOUNCE_WOODLEGSHAT_INDOORS"))
 			end
-		else
 
-			if equipper and not equipper:HasTag("player") and math.random() > 0.66 then
-				--don't always give treasure if not the player.
-				return
-			end
+			return
+		end
 
-			local pos = inst:GetPosition()
-			local offset = FindGroundOffset(pos, math.random() * 2 * math.pi, math.random(25, 30), 18)
+		if equipper and not equipper:HasTag("pirate") and math.random() > 0.66 then
+			-- Don't always give a treasure if it's not used by Woodlegs.
+			return
+		end
 
-			if offset then
-				local spawn_pos = pos + offset
-			    local tile = GetVisualTileType(spawn_pos:Get())
-	    		local is_water = GetMap():IsWater(tile)
-	    		local treasure = SpawnPrefab("buriedtreasure")
+		local pos = inst:GetPosition()
+		local offset = FindGroundOffset(pos, math.random() * 2 * math.pi, math.random(25, 30), 18)
 
-	    		treasure.Transform:SetPosition(spawn_pos:Get())
-	    		treasure:SetRandomTreasure()
+		if offset then
+			local spawn_pos = pos + offset
+		    local tile = GetVisualTileType(spawn_pos:Get())
+    		local is_water = GetMap():IsWater(tile)
+    		local treasure = SpawnPrefab("buriedtreasure")
 
-	    		if equipper then
-	    			inst.components.equippable.equipper:PushEvent("treasureuncover")
-	    		end
-			end
+    		treasure.Transform:SetPosition(spawn_pos:Get())
+    		treasure:SetRandomTreasure()
+
+    		if equipper and equipper:HasTag("pirate") then
+    			inst.components.equippable.equipper:PushEvent("treasureuncover")
+    		end
 		end
 	end
 

@@ -3413,7 +3413,28 @@ local states=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
         },
-    },    
+    },
+
+    State{
+        name = "give",
+        
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("give") 
+        end,
+        
+        timeline =
+        {
+            TimeEvent(13*FRAMES, function(inst)
+                inst:PerformBufferedAction()
+            end),
+        },        
+
+        events=
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
+        },
+    },
 
     State{
         name = "catchonfire",

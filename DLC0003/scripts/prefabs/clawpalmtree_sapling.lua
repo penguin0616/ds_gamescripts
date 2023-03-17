@@ -35,7 +35,7 @@ local function restartgrowing(inst)
 end
 
 local function digup(inst, digger)
-    inst.components.lootdropper:DropLoot()
+    inst.components.lootdropper:SpawnLootPrefab("twigs")
     inst:Remove()
 end
 
@@ -53,7 +53,6 @@ local function plant(inst, growtime)
     inst.SoundEmitter:PlaySound("dontstarve/wilson/plant_tree")
 
     inst:AddComponent("lootdropper")
-    inst.components.lootdropper:SetLoot({"twigs"})
 
     inst:AddComponent("workable")
     inst.components.workable:SetWorkAction(ACTIONS.DIG)
@@ -130,6 +129,8 @@ local function fn()
     MakeBlowInHurricane(inst, TUNING.WINDBLOWN_SCALE_MIN.MEDIUM, TUNING.WINDBLOWN_SCALE_MAX.MEDIUM)
 
     --MakeInventoryFloatable(inst, "idle_water", "idle")
+
+    inst:AddTag("plant")
 
     inst.AnimState:SetBank("clawling")
     inst.AnimState:SetBuild("clawling")

@@ -486,9 +486,13 @@ function LocoMotor:PushAction(bufferedaction, run, try_instant)
             self:GoToPoint(bufferedaction.pos, bufferedaction, run)
         end
     -- Notes(DiogoW): Hack... This is not a good place to do this, but it fixes a very annoying bug, so...
-    elseif bufferedaction.action == ACTIONS.USEDOOR and bufferedaction.target:HasTag("interior_door") then
-        local pos = OffsetDoorPosition(bufferedaction.target:GetPosition())
-        self:GoToPoint(pos, bufferedaction, run)
+    elseif 
+           bufferedaction.action == ACTIONS.USEDOOR and
+           bufferedaction.target:HasTag("interior_door") and
+           not bufferedaction.target:HasTag("chamber_entrance")
+        then
+            local pos = OffsetDoorPosition(bufferedaction.target:GetPosition())
+            self:GoToPoint(pos, bufferedaction, run)
     elseif bufferedaction.action.instant then
         self.inst:PushBufferedAction(bufferedaction)
     else

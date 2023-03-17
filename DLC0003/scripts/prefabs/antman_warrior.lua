@@ -130,6 +130,14 @@ local function SetNormalAnt(inst)
     inst.components.talker:StopIgnoringAll()
 end
 
+local function returntointeriorscene(inst)
+    local aporkalypse = GetAporkalypse()
+
+    if not (aporkalypse ~= nil and aporkalypse:IsActive()) then
+        inst.Light:Enable(false)
+    end 
+end
+
 local function common()
 	local inst = CreateEntity()
 	local trans = inst.entity:AddTransform()
@@ -260,6 +268,8 @@ local function common()
             TransformToNormal(inst)
         end 
     end)
+
+    inst.returntointeriorscene = returntointeriorscene
 
     return inst
 end

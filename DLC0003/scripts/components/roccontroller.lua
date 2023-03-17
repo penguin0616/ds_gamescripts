@@ -14,6 +14,7 @@ local LEGDIST = TUNING.ROC_LEGDSIT
 local LEG_WALKDIST = 4
 local LEG_WALKDIST_BIG = 6
 local LAND_PROX = 15 --7
+local DISTANCE_FROM_WATER_OR_IMPASSABLE = 8
 
 local RocController = Class(function(self, inst)
     self.inst = inst    
@@ -263,7 +264,7 @@ function RocController:OnUpdate(dt)
 		onvalidtiles = false
 	end
 
-	if IsPointCloseToWaterOrImpassable(px, py, pz, 15) then
+	if IsPointCloseToWaterOrImpassable(px, py, pz, DISTANCE_FROM_WATER_OR_IMPASSABLE) then
 		onvalidtiles = false
 	end
 

@@ -86,7 +86,7 @@ local function fn(Sim)
     
     inst:AddComponent("burnable")
     --inst.components.burnable:SetFXLevel(2)
-    inst.components.burnable:AddBurnFX("campfirefire", Vector3() )
+    inst.components.burnable:AddBurnFX("campfirefire", Vector3(0, 0.4, 0))
     inst:ListenForEvent("onextinguish", onextinguish)
     inst:ListenForEvent("onignite", onignite)
 

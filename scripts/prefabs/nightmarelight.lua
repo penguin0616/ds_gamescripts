@@ -164,7 +164,12 @@ local function changestate(inst, data)
     if statefn then
         spawnfx(inst)
         inst.rockstate = data.newphase
-        inst:DoTaskInTime(math.random() * 2, statefn)
+
+        if POPULATING then
+            statefn(inst, true)
+        else
+            inst:DoTaskInTime(math.random() * 2, statefn)
+        end
     end
 end
 

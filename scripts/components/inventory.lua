@@ -363,6 +363,9 @@ function Inventory:DropItem(item, wholestack, randomdir, pos)
         if dropped.components.inventoryitem then
             dropped.components.inventoryitem:OnDropped(randomdir)
         end
+
+        dropped.prevcontainer = nil
+        dropped.prevslot = nil
         
         self.inst:PushEvent("dropitem", {item = dropped})
     end
@@ -495,12 +498,12 @@ function Inventory:GiveItem( inst, slot, screen_src_pos, skipsound )
         if inst.prevcontainer.inst.components.inventoryitem and inst.prevcontainer.inst.components.inventoryitem.owner == self.inst and inst.prevcontainer:IsOpen() and inst.prevcontainer:GetItemInSlot(inst.prevslot) == nil then
             if inst.prevcontainer:GiveItem(inst, inst.prevslot, false) then
                 return true
-            else
-                inst.prevcontainer = nil
-                inst.prevslot = nil
-                slot = nil
             end
         end
+
+        inst.prevcontainer = nil
+        inst.prevslot = nil
+        slot = nil
     end
 
     if slot then
@@ -533,6 +536,7 @@ function Inventory:GiveItem( inst, slot, screen_src_pos, skipsound )
                 if self.itemslots[slot].components.stackable:IsFull() then
                     leftovers = inst
                     inst.prevslot = nil
+                    inst.prevcontainer = nil
                 else
                     leftovers = self.itemslots[slot].components.stackable:Put(inst, screen_src_pos)
                 end
@@ -623,6 +627,8 @@ function Inventory:Equip(item, old_to_active)
 			and item.components.inventoryitem.owner.components.inventoryitem then
         item.prevcontainer = item.components.inventoryitem.owner.components.container
         item.prevslot = item.components.inventoryitem.owner.components.container:GetItemSlot(item)
+    else
+        item.prevcontainer = nil
     end
     -----
 
@@ -686,6 +692,7 @@ function Inventory:RemoveItem(item, wholestack, checkallcontainers)
         local dec = item.components.stackable:Get()
         dec.components.inventoryitem:OnRemoved()
         dec.prevslot = prevslot
+        dec.prevcontainer = nil
         return dec
     else
         for k,v in pairs(self.itemslots) do
@@ -697,7 +704,9 @@ function Inventory:RemoveItem(item, wholestack, checkallcontainers)
                     item.components.inventoryitem:OnRemoved()
                 end
                 
-				item.prevslot = prevslot
+                item.prevslot = prevslot
+                item.prevcontainer = nil
+
                 return item
                 
             end
@@ -713,7 +722,6 @@ function Inventory:RemoveItem(item, wholestack, checkallcontainers)
         for k,v in pairs(self.equipslots) do
             if v == item then
                 self:Unequip(k)
-                item.components.inventoryitem:OnRemoved()
                 ret = v
             end
         end
@@ -723,6 +731,7 @@ function Inventory:RemoveItem(item, wholestack, checkallcontainers)
             if ret.components.inventoryitem and ret.components.inventoryitem.OnRemoved then
                 ret.components.inventoryitem:OnRemoved()
 				ret.prevslot = prevslot
+                ret.prevcontainer = nil
                 return ret
             end
         else
@@ -1034,6 +1043,15 @@ function Inventory:UseItemFromInvTile(item)
                 self.inst.components.locomotor:PushAction(actions[1], true)
             end
         end
+    end
+end
+
+function Inventory:DropItemFromInvTile(item, single)
+    if not self.inst.sg:HasStateTag("busy") and item and self.inst.components.playercontroller ~= nil then
+        local buffaction = BufferedAction(self.inst, nil, ACTIONS.DROP, item, self.inst:GetPosition())
+        buffaction.options.wholestack = not (single and item.components.stackable ~= nil and item.components.stackable:IsStack())
+		buffaction.options.instant = self.inst.sg ~= nil and self.inst.sg:HasStateTag("overridelocomote")
+        self.inst.components.locomotor:PushAction(buffaction, true)
     end
 end
 

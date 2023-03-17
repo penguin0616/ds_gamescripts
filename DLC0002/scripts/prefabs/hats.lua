@@ -1227,8 +1227,8 @@ function MakeHat(name)
 
 		local equipper = inst and inst.components.equippable and inst.components.equippable.equipper
 
-		if equipper and not equipper:HasTag("player") and math.random() > 0.66 then
-			--don't always give treasure if not the player.
+		if equipper and not equipper:HasTag("pirate") and math.random() > 0.66 then
+			-- Don't always give a treasure if it's not used by Woodlegs.
 			return
 		end
 
@@ -1244,7 +1244,7 @@ function MakeHat(name)
     		treasure.Transform:SetPosition(spawn_pos:Get())
     		treasure:SetRandomTreasure()
 
-    		if equipper then
+    		if equipper and equipper:HasTag("pirate") then
     			inst.components.equippable.equipper:PushEvent("treasureuncover")
     		end
 		end

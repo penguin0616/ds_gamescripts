@@ -35,9 +35,7 @@ local events=
 	end),
 
 	EventHandler("death", function(inst)
-		if not inst.onwater then
-			inst.sg:GoToState("death")
-		end
+		inst.sg:GoToState("death")
 	end),
 
 	CommonHandlers.OnLocomote(false,true),

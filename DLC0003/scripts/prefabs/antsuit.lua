@@ -45,6 +45,7 @@ local function fn(Sim)
     inst.AnimState:SetBank("antsuit")
     inst.AnimState:SetBuild("antsuit")
     inst.AnimState:PlayAnimation("anim")
+    MakeInventoryFloatable(inst, "idle_water", "anim")
     
     inst:AddComponent("inspectable")
     
@@ -57,8 +58,7 @@ local function fn(Sim)
 
     inst:AddComponent("equippable")
     inst.components.equippable.equipslot = EQUIPSLOTS.BODY
-    inst.components.equippable.insulated = true
-    
+
     inst.components.equippable:SetOnEquip( onequip )
     inst.components.equippable:SetOnUnequip( onunequip )
     

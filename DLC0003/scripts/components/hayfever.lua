@@ -2,10 +2,14 @@ local Hayfever = Class(function(self, inst)
     self.inst = inst
     self.enabled = false
     self.sneezed = false
-    self.nextsneeze  = self:GetNextSneezTime()
+    self.nextsneeze  = self:GetNextSneezTimeInitial()
 end)
 
 function Hayfever:GetNextSneezTime()
+    return math.random(10, 40)
+end
+
+function Hayfever:GetNextSneezTimeInitial()
     return math.random(60, 80)
 end
 
@@ -108,7 +112,7 @@ function Hayfever:Disable()
         self.inst:PushEvent("updatepollen", {sneezetime = nil})  
         self.inst.components.talker:Say(GetString(self.inst.prefab, "ANNOUNCE_HAYFEVER_OFF"))
 
-        self:SetNextSneezeTime(self:GetNextSneezTime())
+        self:SetNextSneezeTime(self:GetNextSneezTimeInitial())
     end
 
     self.enabled = false

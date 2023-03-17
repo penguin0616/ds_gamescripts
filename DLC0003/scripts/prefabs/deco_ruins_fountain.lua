@@ -41,12 +41,14 @@ local function loadpostpass(inst,ents, data)
 end
 
 local function ShouldAcceptItem(inst, item)
+    if item:HasTag("irreplaceable") then return false end
+
     if not inst:HasTag("vortex") then
         local can_accept = item.components.currency or item.prefab == "goldnugget"
     
         return can_accept 
     else
-        return true         
+        return true
     end
 end
 

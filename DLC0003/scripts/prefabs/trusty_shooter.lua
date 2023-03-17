@@ -262,6 +262,12 @@ local function OnProjectileLaunch(inst, attacker, target, proj)
     end
 end
 
+local function onremove(inst)
+    local item = inst.components.inventory:RemoveItemBySlot(1)
+    local owner  = inst.components.inventoryitem.owner or inst 
+    inst.components.inventory:DropItem(item, true, true, owner:GetPosition())
+end
+
 local function fn()
     local inst = CreateEntity()
     local trans = inst.entity:AddTransform()
@@ -320,6 +326,8 @@ local function fn()
     end
 
     inst:ListenForEvent("trade", OnTakeAmmo)
+
+    inst:ListenForEvent("onremove", onremove)
 
     inst.CanTakeItem = CanTakeAmmo
 

@@ -362,7 +362,7 @@ local function rock_flintless_low()
 	inst.MiniMapEntity:SetIcon( "rock_flintless.png" )
 
 	inst:AddComponent("named")
-	inst.components.named:SetName(STRINGS.NAMES["PIG_RUINS_ARTICHOKE"])
+	inst.components.named:SetName(STRINGS.NAMES["ROCK_FLINTLESS"])
 	inst.components.lootdropper:SetChanceLootTable('rock_flintless_low')
 	inst.components.workable:SetWorkLeft(TUNING.ROCKS_MINE_LOW)
 
@@ -540,7 +540,7 @@ end
 
 local function pig_ruins_artichoke()
 	local inst = baserock_fn(Sim)
-	inst.AnimState:SetBank("rock")
+	inst.AnimState:SetBank("ruins_artichoke")
 	inst.AnimState:SetBuild("ruins_artichoke")
 	inst.AnimState:PlayAnimation("full")
 	inst.MiniMapEntity:SetIcon( "ruins_artichoke.png" )
@@ -549,7 +549,7 @@ local function pig_ruins_artichoke()
     inst.AnimState:SetMultColour(color, color, color, 1)
 
 	inst:AddComponent("named")
-	inst.components.named:SetName(STRINGS.NAMES["ROCK_FLINTLESS"])
+	inst.components.named:SetName(STRINGS.NAMES["PIG_RUINS_ARTICHOKE"])
 	inst.components.lootdropper:SetChanceLootTable('ruins_artichoke')
 
 	return inst
