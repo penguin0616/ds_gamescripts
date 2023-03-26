@@ -63,9 +63,12 @@ function Builder:BufferBuild(recipe)
 	local mats = self:GetIngredients(recipe)
 	local wetLevel = self:GetIngredientWetness(mats)	
 	self:RemoveIngredients(mats)
+
+	local used_jellybrainhat = not self:KnowsRecipeWithoutJellyBrainHat(recipe)
+
 	self.buffered_builds[recipe] = {}
 	self.buffered_builds[recipe].wetLevel = wetLevel
-	self.inst:PushEvent("bufferbuild", {recipe = GetRecipe(recipe), used_jellybrainhat = not self:KnowsRecipeWithoutJellyBrainHat(recipe)})
+	self.inst:PushEvent("bufferbuild", {recipe = GetRecipe(recipe), used_jellybrainhat = used_jellybrainhat})
 end
 
 function Builder:OnUpdate(dt)

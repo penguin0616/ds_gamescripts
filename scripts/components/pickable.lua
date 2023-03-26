@@ -146,8 +146,6 @@ function Pickable:Fertilize(fertilizer)
 	self:MakeEmpty()
 end
 
-
-
 function Pickable:OnSave()
 	
 	local data = { 

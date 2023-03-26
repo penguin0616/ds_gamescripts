@@ -51,6 +51,10 @@ local function MakeFx(name, bank, build, anim, sound, sounddelay, tint, tintalph
         inst.persists = false
         inst:ListenForEvent("animover", inst.Remove)
 
+        if t.fn then
+            t.fn(inst)
+        end
+
         return inst
     end
     return Prefab("common/"..name, fn, assets)

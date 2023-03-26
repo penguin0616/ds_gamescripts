@@ -73,6 +73,10 @@ local function MakeFx(t)
             inst:Remove() 
         end)
 
+        if t.fn then
+            t.fn(inst)
+        end
+
         return inst
     end
     return Prefab("common/fx/"..t.name, fn, assets)

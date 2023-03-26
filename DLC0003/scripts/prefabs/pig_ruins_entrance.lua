@@ -829,10 +829,10 @@ local function mazemaker(inst, dungeondef)
                 elseif not southexitopen then                
                     table.insert(addprops, { name = relic, x_offset = -depth/2+2, z_offset =  0, addtags={"trggerdarttraps"}} )
                     table.insert(addprops, { name = "pig_ruins_light_beam", x_offset = -depth/2+2, z_offset =  0} )
-                elseif not eastexitopen then
+                elseif not westexitopen then
                     table.insert(addprops, { name = relic, x_offset = 0, z_offset = width/2-2, addtags={"trggerdarttraps"}} )                
                     table.insert(addprops, { name = "pig_ruins_light_beam",  x_offset = 0, z_offset = width/2-2} )
-                elseif not westexitopen then
+                elseif not eastexitopen then
                     table.insert(addprops, { name = relic, x_offset = 0, z_offset = -width/2+2, addtags={"trggerdarttraps"}} )                
                     table.insert(addprops, { name = "pig_ruins_light_beam", x_offset = 0, z_offset = -width/2+2} )
                 end     

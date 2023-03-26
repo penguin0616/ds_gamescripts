@@ -117,12 +117,18 @@ local function fn(Sim)
         function(section)
             if section == 0 then
                 inst.components.burnable:Extinguish() 
-                anim:PlayAnimation("dead") 
-                RemovePhysicsColliders(inst)             
+                anim:PlayAnimation("dead")
+                RemovePhysicsColliders(inst)
 
                 if inst.queued_charcoal then
-                    SpawnPrefab("charcoal").Transform:SetPosition(inst.Transform:GetWorldPosition())
+                    local charcoal = SpawnPrefab("charcoal")
+                    charcoal.Transform:SetPosition(inst.Transform:GetWorldPosition())
                     inst.queued_charcoal = nil
+
+                    local interior = GetInteriorSpawner():getPropInterior(inst)
+                    if interior then
+                        GetInteriorSpawner():AddPrefabToInterior(charcoal, interior)
+                    end
                 else
                     SpawnPrefab("ash").Transform:SetPosition(inst.Transform:GetWorldPosition())
                 end

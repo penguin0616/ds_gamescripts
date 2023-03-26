@@ -386,6 +386,10 @@ function notriding(inst)
 	return not inst.components.rider or not inst.components.rider:IsRiding() 
 end
 
+function driving(inst)
+	return inst.components.driver and inst.components.driver:GetIsDriving()
+end
+
 function PlayerController:GetActionButtonAction()
 	if self.actionbuttonoverride then
 		return self.actionbuttonoverride(self.inst)
@@ -430,6 +434,7 @@ function PlayerController:GetActionButtonAction()
 																		(guy.components.stewer and guy.components.stewer.done) or
 																		(guy.components.crop and guy.components.crop:IsReadyForHarvest()) or
 																		(guy.components.harvestable and guy.components.harvestable:CanBeHarvested()) or
+																		(guy.components.breeder and guy.components.breeder:CanBeHarvested(self.inst)) or
 																		(guy.components.trap and guy.components.trap.issprung) or
 																		(guy.components.dryer and guy.components.dryer:IsDone()) or
 																		(guy.components.activatable and guy.components.activatable.inactive) or 
@@ -452,7 +457,7 @@ function PlayerController:GetActionButtonAction()
 			elseif notriding(self.inst) and  pickup.components.activatable and pickup.components.activatable.inactive then
 				action = ACTIONS.ACTIVATE
 			elseif pickup.components.inventoryitem and pickup.components.inventoryitem.canbepickedup then 
-				if pickup:HasTag("aquatic") and not (self.inst.components.driver and self.inst.components.driver:GetIsDriving()) then
+				if pickup:HasTag("aquatic") and not driving(self.inst) then
 					action = ACTIONS.RETRIEVE
 				else
 					action = ACTIONS.PICKUP
@@ -466,6 +471,8 @@ function PlayerController:GetActionButtonAction()
 			elseif notriding(self.inst) and pickup.components.dryer and pickup.components.dryer:IsDone() then
 				action = ACTIONS.HARVEST
 			elseif notriding(self.inst) and pickup.components.stewer and pickup.components.stewer.done then
+				action = ACTIONS.HARVEST
+			elseif driving(self.inst) and pickup.components.breeder and pickup.components.breeder:CanBeHarvested(self.inst) then
 				action = ACTIONS.HARVEST
 			elseif pickup.components.drivable and not pickup.components.drivable.driver then 
 				action = ACTIONS.MOUNT

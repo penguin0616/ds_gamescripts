@@ -816,17 +816,8 @@ local events=
       EventHandler ("sanity_stun", 
         function (inst, data)
             if not inst.components.inventory:IsItemNameEquipped("earmuffshat") then
-                inst.sanity_stunned = true
-                inst.sg:GoToState("sanity_stun")
+                inst.sg:GoToState("sanity_stun", data.duration)
                 inst.components.sanity:DoDelta(-TUNING.SANITY_LARGE)
-
-                inst:DoTaskInTime(data.duration, function()  
-                    if inst.sg.currentstate.name == "sanity_stun" then
-                        inst.sg:GoToState("idle")
-                        inst.sanity_stunned = false
-                        inst:PushEvent("sanity_stun_over")
-                    end
-                end)
             end
         end),
       EventHandler("cower", 
@@ -6676,18 +6667,34 @@ State{
 
     State{
         name = "sanity_stun",
-        tags = { "busy" },
+        tags = { "busy", },
         
-        onenter = function(inst)
+        onenter = function(inst, duration)
+            inst.components.playercontroller:Enable(false)
             inst.components.locomotor:Stop()
+
             inst.AnimState:PlayAnimation("idle_sanity_pre", false)
             inst.AnimState:PushAnimation("idle_sanity_loop", true)
+
+            inst.sanity_stunned = true
+
+            inst.sg:SetTimeout(duration)
         end,
 
-        events=
+        ontimeout = function(inst)
+            inst.sg:GoToState("idle")
+        end,
+
+        events =
         {
             EventHandler("animqueueover", function(inst) inst.sg:GoToState("idle") end ),
         },
+
+        onexit = function(inst)
+            inst.components.playercontroller:Enable(true)
+            inst.sanity_stunned = false
+            inst:PushEvent("sanity_stun_over")
+        end
     },
 }
 

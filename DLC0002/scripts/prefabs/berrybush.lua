@@ -384,6 +384,7 @@ local function coffeebushfn(Sim)
 
 	inst.components.pickable:SetUp("coffeebeans", TUNING.BERRY_REGROW_TIME)
 	inst.components.pickable:SetReverseSeasons(true)
+	inst.components.pickable.highfertilizerconsumer = true
 	inst.spawnsperd = false
 
 	inst:AddTag("fire_proof")

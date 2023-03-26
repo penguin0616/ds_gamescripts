@@ -117,6 +117,10 @@ local function spoilfn(inst)
 	end
 end
 
+local function cancollectfn(inst)
+	return not inst.AnimState:IsCurrentAnimation("smelting_pst")
+end
+
 local function donecookfn(inst)
 	if not inst:HasTag("burnt") then
 		inst.AnimState:PlayAnimation("smelting_pst")
@@ -301,6 +305,7 @@ local function fn(Sim)
     inst.components.melter.ondonecooking = donecookfn
     inst.components.melter.onharvest = harvestfn
     inst.components.melter.onspoil = spoilfn
+    inst.components.melter.cancollect = cancollectfn
     
     inst:AddComponent("container")
     inst.components.container.itemtestfn = itemtest

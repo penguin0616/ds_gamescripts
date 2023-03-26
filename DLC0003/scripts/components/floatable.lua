@@ -99,7 +99,7 @@ function Floatable:OnHitWater(skipcrocodogtest)
 	self.inst.PushEvent("hitwater")
 	self.inst:AddTag("aquatic")
 
-	if self.inst.components.burnable then
+	if self.inst.components.burnable and not self.inst.components.burnable.burntonwater then
 		self.inst.components.burnable:Extinguish()
 	end
 

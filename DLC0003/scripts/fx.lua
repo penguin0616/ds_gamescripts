@@ -36,7 +36,7 @@ local FX =
 	    sound = "dontstarve/common/shrine/sadwork_fire",
 	    sound2 = "dontstarve/common/shrine/sadwork_explo",
 	    sounddelay2 = 26/30,
-	    fn = function() GetClock():DoLightningLighting(.25) end,
+	    fnc = function() GetClock():DoLightningLighting(.25) end,
 	    fntime = 26/30
     },
     {
@@ -47,7 +47,7 @@ local FX =
 	    sound = "dontstarve/common/shrine/sadwork_fire",
 	    sound2 = "dontstarve/common/shrine/firework_explo",
 	    sounddelay2 = 26/30,
-	    fn = function() GetClock():DoLightningLighting(1) end,
+	    fnc = function() GetClock():DoLightningLighting(1) end,
 	    fntime = 26/30
     },
     {
@@ -684,6 +684,7 @@ local FX =
 	    build = "hacking_tall_grass_fx", 
 	    anim = "idle",
 	    dlc = true,
+		tint = Vector3(.6, .7, .6),
     },	
 	{
 		name = "circle_puff_fx",

@@ -284,6 +284,7 @@ function Inv:Rebuild()
 	end
 
 	self.rebuild_pending = false
+	self.rebuild_snapping = false
 end
 
 function Inv:OnUpdate(dt)

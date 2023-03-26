@@ -118,6 +118,10 @@ function DefaultBurntStructureFn(inst)
        inst.components.stewer:StopCooking("fire") 
        inst:RemoveComponent("stewer")
     end
+    if inst.components.melter then
+       inst.components.melter:StopCooking("fire") 
+       inst:RemoveComponent("melter")
+    end
     if inst.components.harvestable then
         inst.components.harvestable:StopGrowing()
         inst:RemoveComponent("harvestable")

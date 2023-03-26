@@ -2,6 +2,7 @@ local InventoryItem = Class(function(self, inst)
     self.inst = inst
     self.owner = nil
     self.canbepickedup = true
+    self.canbepickedupwhileburning = false
     self.onpickupfn = nil    
     self.isnew = true
     self.nobounce = false
@@ -324,7 +325,7 @@ function InventoryItem:CollectInventoryActions(doer, actions)
 end
 
 function InventoryItem:CollectSceneActions(doer, actions)
-    if self.canbepickedup and doer.components.inventory and not (self.inst.components.burnable and self.inst.components.burnable:IsBurning()) and not self.inst:HasTag("sunken") then
+    if self.canbepickedup and doer.components.inventory and (self.canbepickedupwhileburning or not (self.inst.components.burnable and self.inst.components.burnable:IsBurning())) and not self.inst:HasTag("sunken") then
         if self.inst:HasTag("aquatic") and not (doer.components.driver and doer.components.driver:GetIsDriving()) then
             table.insert(actions, ACTIONS.RETRIEVE)
         else

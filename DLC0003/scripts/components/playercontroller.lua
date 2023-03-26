@@ -479,6 +479,10 @@ function notriding(inst)
 	return not inst.components.rider or not inst.components.rider:IsRiding() 
 end
 
+function driving(inst)
+	return inst.components.driver and inst.components.driver:GetIsDriving()
+end
+
 function PlayerController:GetToolAction(tool)
 
 	--bug catching (has to go before combat)
@@ -507,6 +511,24 @@ function PlayerController:GetToolAction(tool)
 	if projectile then
 		return BufferedAction(self.inst, projectile, ACTIONS.CATCH)
 	end
+
+	local has_active_item = self.inst.components.inventory:GetActiveItem() ~= nil
+
+	local door
+
+	if ACTIONS.USEDOOR.mount_enabled or notriding(self.inst) then
+		rad = 4
+		door = FindEntity(self.inst, rad, function(guy)
+			if guy.components.door and not guy.components.door.disabled and (not guy.components.burnable or not guy.components.burnable:IsBurning()) then
+				return true
+			end
+		end, nil, notags)
+
+		-- Prioritize doors if we are holding something or we are really close to the door.
+		if door and (has_active_item or self.inst:IsNear(door, 2)) then
+			return BufferedAction(self.inst, door, ACTIONS.USEDOOR)
+		end
+	end
 	
 	rad = self.directwalking and 3 or 6
 	--pickup
@@ -514,8 +536,10 @@ function PlayerController:GetToolAction(tool)
 																	(tool and tool.components.tool and guy.components.workable and guy.components.workable.workable and guy.components.workable.workleft > 0 and tool.components.tool:CanDoAction(guy.components.workable.action)) or
 																	(guy.components.pickable and guy.components.pickable:CanBePicked() and guy.components.pickable.caninteractwith )  or
 																	(guy.components.stewer and guy.components.stewer.done) or
+																	(guy.components.melter and guy.components.melter:CanBeHarvested()) or
 																	(guy.components.crop and guy.components.crop:IsReadyForHarvest()) or
 																	(guy.components.harvestable and guy.components.harvestable:CanBeHarvested()) or
+																	(guy.components.breeder and guy.components.breeder:CanBeHarvested(self.inst)) or
 																	(guy.components.trap and guy.components.trap.issprung) or
 																	(guy.components.mine and guy.components.mine.issprung) or																	
 																	(guy.components.dryer and guy.components.dryer:IsDone()) or
@@ -527,7 +551,6 @@ function PlayerController:GetToolAction(tool)
 																	(tool and tool.components.dislodger and guy.components.dislodgeable and guy.components.dislodgeable:CanBeDislodged())
 																	end, nil, notags)
 
-	local has_active_item = self.inst.components.inventory:GetActiveItem() ~= nil
 	if pickup then --  and not has_active_item 
 		local action = nil
 		
@@ -540,7 +563,7 @@ function PlayerController:GetToolAction(tool)
 		elseif notriding(self.inst) and pickup.components.activatable and pickup.components.activatable.inactive then
 			action = ACTIONS.ACTIVATE
 		elseif pickup.components.inventoryitem and pickup.components.inventoryitem.canbepickedup and (not pickup.components.mine or pickup.components.mine.inactive) then 
-			if pickup:HasTag("aquatic") and not (self.inst.components.driver and self.inst.components.driver:GetIsDriving()) then
+			if pickup:HasTag("aquatic") and not driving(self.inst) then
 				action = ACTIONS.RETRIEVE
 			else
 				action = ACTIONS.PICKUP
@@ -554,6 +577,10 @@ function PlayerController:GetToolAction(tool)
 		elseif notriding(self.inst) and pickup.components.dryer and pickup.components.dryer:IsDone() then
 			action = ACTIONS.HARVEST
 		elseif notriding(self.inst) and pickup.components.stewer and pickup.components.stewer.done then
+			action = ACTIONS.HARVEST
+		elseif driving(self.inst) and pickup.components.breeder and pickup.components.breeder:CanBeHarvested(self.inst) then
+			action = ACTIONS.HARVEST
+		elseif notriding(self.inst) and pickup.components.melter and pickup.components.melter:CanBeHarvested() then
 			action = ACTIONS.HARVEST
 		elseif notriding(self.inst) and pickup.components.searchable then 
 			action = ACTIONS.SEARCH
@@ -576,16 +603,8 @@ function PlayerController:GetToolAction(tool)
 		end
 	end
 
-	rad = 4
-	local door = FindEntity(self.inst, rad, function(guy)
-		if guy.components.door and not guy.components.door.disabled and (not guy.components.burnable or not guy.components.burnable:IsBurning()) then
-	    	return true
-		end
-	end, nil, notags)
 	if door then
-		if not self.inst.components.rider or not self.inst.components.rider:IsRiding() then
-			return BufferedAction(self.inst, door, ACTIONS.USEDOOR)
-		end
+		return BufferedAction(self.inst, door, ACTIONS.USEDOOR)
 	end
 end
 

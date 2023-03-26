@@ -1162,6 +1162,13 @@ local function makefn(name, build, fixer, guard_pig, shopkeeper, tags, sex, econ
         return inst
     end
 
+    local function make_mayor_shopkeeper()
+        local inst = make_shopkeeper()
+        inst.components.named:SetName(STRINGS.NAMES.PIGMAN_MAYOR)
+
+        return inst
+    end
+
     --------------------------------------------------------------------------
 
     if name == "pigman_queen" then
@@ -1170,6 +1177,10 @@ local function makefn(name, build, fixer, guard_pig, shopkeeper, tags, sex, econ
 
     if name == "pigman_mayor" then
         return make_mayor
+    end
+
+    if name == "pigman_mayor_shopkeep" then
+        return make_mayor_shopkeeper
     end
 
     if name == "pigman_mechanic" then

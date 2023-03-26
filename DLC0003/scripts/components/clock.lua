@@ -590,6 +590,11 @@ function Clock:OnUpdate(dt)
         end
 
         self.lerptimeleft = self.lerptimeleft - dt
+
+    elseif self.lightning_dirty then
+        -- Hack: The "self:LerpAmbientColour(flash, col, 1)" never reaches the value it should.
+        self.currentColour = self.lerpToColour
+        self.lightning_dirty = false
     end
     
     
@@ -628,6 +633,7 @@ function Clock:OnUpdate(dt)
         else          
             self:LerpAmbientColour(flash, col, 1)
             self.lightning = false
+            self.lightning_dirty = true
             self.last_lightning_time = GetTime()
         end
 
@@ -640,7 +646,7 @@ function Clock:OnUpdate(dt)
         if self:IsNight() and (self.totalEraTime - self.timeLeftInEra) <= 8 and self.last_lightning_time and (GetTime() - self.last_lightning_time) <= dt then
             if self:GetMoonPhase() ~= "full" and not GetWorld():IsCave() then
                 if not self:IsNightVision() then 
-                    self:LerpAmbientColour(GetDuskColour(), self.nightColour, 4) 
+                    self:LerpAmbientColour(GetDuskColour(), self.nightColour, 4)
                 end
             end
         else

@@ -723,9 +723,11 @@ local function OnGustAnimDone(inst)
 		inst.AnimState:PlayAnimation(inst.anims["blown"..tostring(anim)], false)
 	else
 		inst:DoTaskInTime(math.random()/2, function(inst)
-			inst:RemoveEventCallback("animover", OnGustAnimDone)
-			inst.AnimState:PlayAnimation(inst.anims.blown_pst, false)
-			PushSway(inst)
+            if not inst:HasTag("stump") and not inst:HasTag("burnt") then
+                inst.AnimState:PlayAnimation(inst.anims.blown_pst, false)
+                PushSway(inst)
+            end
+            inst:RemoveEventCallback("animover", OnGustAnimDone)
 		end)
 	end
 end

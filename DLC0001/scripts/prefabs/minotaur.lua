@@ -401,7 +401,7 @@ local function OnUpdateObstacleSize(inst)
     local mindist = math.huge
     for i, v in ipairs(TheSim:FindEntities(x, y, z, 2, CHARACTER_MUST_TAGS, CHARACTER_CANT_TAGS)) do
         if v.entity:IsVisible() then
-            local d = v:GetDistanceSqToPoint(x, y, z)
+            local d = v:GetDistanceSqToPoint(Point(x, y, z))
             d = d > 0 and (v.Physics ~= nil and math.sqrt(d) - v.Physics:GetRadius() or math.sqrt(d)) or 0
             if d < mindist then
                 if d <= 0 then
@@ -418,12 +418,13 @@ local function OnUpdateObstacleSize(inst)
         if inst.ischaracterpassthrough then
             inst.ischaracterpassthrough = nil
             inst.Physics:CollidesWith(COLLISION.CHARACTERS)
-            inst.Physics:SetActive(true)
         end
         if radius >= inst.maxradius then
             CancelObstacleTask(inst)
         end
     end
+
+    inst.Physics:SetActive(true)
 end
 
 local function OnChangeToObstacle(inst)

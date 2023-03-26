@@ -45,23 +45,20 @@ local states=
         tags = {"idle", "canrotate"},
         
         onenter = function(inst)
-
             if inst.fx and math.random() < 0.1 then
                 inst.fx.AnimState:PlayAnimation("idle")
             end
 
-            inst.Physics:Stop()
+            inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("idle")
-            
-            end,
-        
-        
+        end,
+
         events=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
-        },        
+        },
     },
-    
+
     State {
         name = "gohome",
         tags = {"busy"},

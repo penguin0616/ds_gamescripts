@@ -148,5 +148,13 @@ local function commonfn()
 	return inst
 end
 
+local function placeTestFn(inst, pt)
+	inst.AnimState:SetLayer(LAYER_BACKGROUND)
+	inst.AnimState:SetSortOrder(3)
+	inst.Transform:SetRotation(45)
+
+	return not IsPointCloseToImpassable(pt.x, pt.y, pt.z, 3)
+end
+
 return Prefab( "common/inventory/telebase", commonfn, assets, prefabs),
-	   MakePlacer( "common/telebase_placer", "staff_purple_base_ground", "staff_purple_base_ground", "idle" ) 
+	   MakePlacer( "common/telebase_placer", "staff_purple_base_ground", "staff_purple_base_ground", "idle", true, nil, nil, nil, nil, placeTestFn) 

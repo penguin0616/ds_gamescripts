@@ -1839,6 +1839,9 @@ function SeasonManager:OnUpdate( dt )
 		self.percent_season = self.target_percent
 		self:UpdateSegs()
 		self.target_percent = nil
+
+		-- We just transitioned in, set us up at approx the right point in the season
+		dt = self:GetDaysIntoSeason() * TUNING.TOTAL_DAY_TIME
 	end
 
 	local pt = GetPlayer():GetPosition()
@@ -2390,7 +2393,6 @@ function SeasonManager:StartMild()
 	if self.mildlength > 0 then
 		self:EnqueueSeasonChange()
 		self:StopHurricaneStorm()
-		self:ApplySummerDSP(5)
 		self:UpdateSegs()
 		self.hurricanetease_start = math.random(6, 15) / 20
 		self.hurricanetease_started = false
@@ -2414,7 +2416,6 @@ function SeasonManager:StartWet()
 
 	if self.wetlength > 0 then
 		self:EnqueueSeasonChange()
-		self:ApplySummerDSP(5)
 		self:UpdateSegs()
 
 		if GetWorld() and GetWorld().components.ambientsoundmixer then
@@ -2437,7 +2438,6 @@ function SeasonManager:StartGreen()
 	if self.greenlength > 0 then
 		self:EnqueueSeasonChange()
 		self:StopHurricaneStorm()
-		self:ApplySummerDSP(5)
 		self:UpdateSegs()
 
 		if GetWorld() and GetWorld().components.ambientsoundmixer then
@@ -2460,7 +2460,6 @@ function SeasonManager:StartDry()
 	if self.drylength > 0 then
 		self:EnqueueSeasonChange()
 		self:StopHurricaneStorm()
-		self:ApplySummerDSP(5)
 		self:UpdateSegs()
 
 		if GetWorld() and GetWorld().components.ambientsoundmixer then

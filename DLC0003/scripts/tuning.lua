@@ -702,6 +702,7 @@ function Tune(overrides)
 	    FISH_FARM_CYCLE_TIME_MIN = seg_time * 8,
 	    FISH_FARM_CYCLE_TIME_MAX = seg_time * 12,
 	    FISH_FARM_LURE_TEST_TIME = seg_time * 7,
+		BREEDER_PREDATOR_SPAWN_CHANGE = 0.2,
 
 	    BEEHIVE_BEES = 6,
 	    BEEHIVE_RELEASE_TIME = day_time/6,
@@ -1315,6 +1316,7 @@ function Tune(overrides)
 		PERISH_PRESERVED = 20*total_day_time*perish_warp,
 		PERISH_SUPERSLOW = 40*total_day_time*perish_warp,
 
+		DRY_SUPERFAST = total_day_time/4,
 		DRY_FAST = total_day_time,
 		DRY_MED = 2*total_day_time,
 
@@ -2506,11 +2508,13 @@ function Tune(overrides)
 		HYDRO_FOOD_BONUS_DRY = 1, -- player base speed plus this, 6 is normal walk speed
 		HYDRO_FOOD_BONUS_DRY_RATE = 3, -- player base speed plus this, 6 is normal walk speed
 		HYDRO_FOOD_BONUS_SURF = 2, -- player base speed plus this, 6 is normal walk speed
-		HYDRO_FOOD_BONUS_COOL_RATE = 3,
+		HYDRO_FOOD_BONUS_COOL_RATE = 8, -- eating fish5
+		HYDRO_PREPAREDFOOD_BONUS_COOL_RATE = 12, -- eating tropicalbouillabaisse
 		HYDRO_BONUS_COOL_RATE = 4,
 
 		FOOD_SPEED_BRIEF = 0, -- eating coffeebeans gives you the bonus for this many seconds
 		FOOD_SPEED_AVERAGE = 30, -- eating roasted coffee beans
+		FOOD_SPEED_MED = 60, -- eating tropicalbouillabaisse (effects)
 		FOOD_SPEED_LONG = total_day_time / 2, -- drinking coffee
 
 		SAND_REGROW_TIME = total_day_time*2, -- sand dune regrow time

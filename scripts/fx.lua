@@ -53,7 +53,7 @@ local FX =
 	    sounddelay2 = 26/30,
 	    tint = nil,
 	    tintalpha = nil,
-	    fn = function() GetClock():DoLightningLighting(.25) end,
+	    fnc = function() GetClock():DoLightningLighting(.25) end,
 	    fntime = 26/30
     },    
     {
@@ -66,7 +66,7 @@ local FX =
 	    sounddelay2 = 26/30,
 	    tint = nil,
 	    tintalpha = nil,
-	    fn = function() GetClock():DoLightningLighting(1) end,
+	    fnc = function() GetClock():DoLightningLighting(1) end,
 	    fntime = 26/30
     },    
 

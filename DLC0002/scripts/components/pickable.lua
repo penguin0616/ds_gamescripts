@@ -28,6 +28,8 @@ local Pickable = Class(function(self, inst)
     self.protected = false
     self.wildfirestarter = false
 
+	self.highfertilizerconsumer = false
+
     self.reverseseasons = nil
 
     if SaveGameIndex:GetCurrentMode() == "volcano" or SaveGameIndex:GetCurrentMode() == "shipwrecked" then
@@ -163,40 +165,16 @@ function Pickable:MakeWitherable()
 	self.inst:AddTag("witherable")
 end
 
--- Notes(DiogoW): Deprecated.
 function Pickable:Rejuvenate(fertilizer)
-	if self.inst.components.burnable then
-        self.inst.components.burnable:StopSmoldering()
-    end
-
-	if self.protected_cycles ~= nil then
-		self.protected_cycles = self.protected_cycles + fertilizer.components.fertilizer.withered_cycles
-	else
-		self.protected_cycles = fertilizer.components.fertilizer.withered_cycles
-	end
-
-	if self.protected_cycles >= 1 then
+	if self.protected_cycles >= 0 then
 		self.withered = false
 		self.inst:RemoveTag("withered")
 		self.witherable = false
 		self.inst:RemoveTag("witherable")
 		self.shouldwither = true
-		self:MakeEmpty()
 
-		-- self.inst:DoTaskInTime(TUNING.TOTAL_DAY_TIME*7, function() 
-		-- 	if self.shouldwither then
-		-- 		self.witherable = true
-		-- 		self.shouldwither = false
-		-- 		if not self.withered and GetSeasonManager:GetTemperature() > self.wither_temp then
-		-- 			self.withered = true
-		--     		self.wither_time = GetTime()
-		--     		self:MakeBarren()
-		--     		while self.protected_cycles >= 1 do
-		--     			self.protected_cycles = self.protected_cycles - 1
-		--     		end
-		--     	end
-		-- 	end
-		-- end)
+		self.cycles_left = self.max_cycles
+		self:MakeEmpty()
 	else
 		GetPlayer():PushEvent("insufficientfertilizer")
 	end
@@ -338,24 +316,21 @@ function Pickable:Fertilize(fertilizer, doer)
         fertilizer.components.stackable:Get(1):Remove()
     end
 
-    local fertilize_cycles = fertilizer.components.fertilizer ~= nil and fertilizer.components.fertilizer.withered_cycles or 0
+	local fertilize_cycles = fertilizer.components.fertilizer ~= nil and fertilizer.components.fertilizer.withered_cycles or 0
 
     self.protected_cycles = (self.protected_cycles or 0) + fertilize_cycles
 
-    if self.protected_cycles >= 1 then
-        if self.withered or self.shouldwither then
-            self.withered = false
-            self.inst:RemoveTag("withered")
-            self.witherable = false
-            self.inst:RemoveTag("witherable")
-            self.shouldwither = true
-        end
+	if not self.highfertilizerconsumer then
+		self.protected_cycles = math.max(self.protected_cycles, 0)
+	end
 
-        self.cycles_left = self.max_cycles
-        self:MakeEmpty()
-    else
-        doer:PushEvent("insufficientfertilizer")
-    end
+	if self.withered then
+		self:Rejuvenate(fertilizer)
+		return
+	end
+
+	self.cycles_left = self.max_cycles
+	self:MakeEmpty()
 end
 
 function Pickable:OnSave()

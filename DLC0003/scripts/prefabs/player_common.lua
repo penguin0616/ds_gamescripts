@@ -474,6 +474,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
 		--inst:AddComponent("vehiclecontroller")
 
 		inst:AddComponent("sanitymonsterspawner")
+		inst:AddComponent("flotsamspawner_basegame")
 		inst:AddComponent("autosaver")
 
 		---------------------------------
@@ -728,6 +729,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
 			end)
 
 		inst:ListenForEvent("working", OnWork)
+		inst:ListenForEvent("hacking", OnWork)
 		--set up the UI root entity
 		--HUD:SetMainCharacter(inst)
 

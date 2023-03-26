@@ -162,7 +162,9 @@ local function fxfn()
     inst.AnimState:SetBuild("cloak_fx")
     inst.AnimState:PlayAnimation("idle",true)
 
-    inst:AddTag("fx")
+    inst:AddTag("FX")
+    inst:AddTag("NOBLOCK")
+    inst:AddTag("NOCLICK")
 
     for i=1,14 do
         inst.AnimState:Hide("fx"..i)

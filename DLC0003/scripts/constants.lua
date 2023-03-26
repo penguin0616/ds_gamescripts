@@ -312,7 +312,8 @@ SW_ICONS =
 }
 
 PORK_ICONS = 
-{
+{	
+	["cutgrass"] = "cutgrass_green",
 	["log"] = "log_rainforest",
 	["snakeskin"] = "snakeskin_scaly",
 	["snake"] = "snake_scaly",

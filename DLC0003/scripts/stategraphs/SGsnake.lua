@@ -7,6 +7,7 @@ end
 local actionhandlers =
 {
 	ActionHandler(ACTIONS.EAT, "eat"),
+	ActionHandler(ACTIONS.HARVEST, "eat"),
 	ActionHandler(ACTIONS.LAVASPIT, "spit"),
 	ActionHandler(ACTIONS.GOHOME, "gohome"),
 }

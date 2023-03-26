@@ -491,3 +491,25 @@ end
 function GetInventoryItemAtlas(imagename)
 	return inventoryItemAtlasLookup[imagename] or "images/inventoryimages.xml"
 end
+
+local function isWaterOrImpassable(map, tile)
+	return map:IsWater(tile) or tile == GROUND.IMPASSABLE
+end
+
+function IsPointCloseToWaterOrImpassable(x, y, z, radius)
+    local map = GetWorld().Map
+    
+    for i = -radius, radius, 1 do
+        if isWaterOrImpassable(map, map:GetTileAtPoint(x - radius, y, z + i)) or isWaterOrImpassable(map, map:GetTileAtPoint(x + radius, y, z + i)) then
+            return true
+        end
+    end
+
+    for i = -(radius - 1), radius - 1, 1 do
+        if isWaterOrImpassable(map, map:GetTileAtPoint(x + i, y, z - radius)) or isWaterOrImpassable(map, map:GetTileAtPoint(x + i, y, z + radius)) then
+            return true
+        end
+    end
+
+    return false
+end

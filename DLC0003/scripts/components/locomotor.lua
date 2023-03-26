@@ -520,7 +520,11 @@ function LocoMotor:GoToEntity(inst, bufferedaction, run)
     self.slowing = false
     
     if bufferedaction and bufferedaction.distance then
-		self.arrive_dist = bufferedaction.distance
+        --NOTE: use actual physics (ignoring physicsradiusoverride)
+        --      as fallback if bufferedaction.distance is too small
+        self.arrive_dist = ARRIVE_STEP + (inst.Physics ~= nil and inst.Physics:GetRadius() or 0) + (self.inst.Physics ~= nil and self.inst.Physics:GetRadius() or 0)
+        self.arrive_dist = math.max(self.arrive_dist, bufferedaction.distance)
+
 	else
         self.arrive_dist = ARRIVE_STEP
 

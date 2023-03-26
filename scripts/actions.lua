@@ -726,12 +726,12 @@ end
 ACTIONS.INVESTIGATE.fn = function(act)
     local investigatePos = act.doer.components.knownlocations and act.doer.components.knownlocations:GetLocation("investigate")
     if investigatePos then
-        act.doer.components.knownlocations:RememberLocation("investigate", nil, true)
+        act.doer.components.knownlocations:RememberLocation("investigate", nil)
         --try to get a nearby target
         if act.doer.components.combat then
             act.doer.components.combat:TryRetarget()
         end
-		return true
+        return true
     end
 end
 

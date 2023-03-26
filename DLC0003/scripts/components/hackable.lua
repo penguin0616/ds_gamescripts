@@ -531,6 +531,8 @@ function Hackable:Hack(hacker, numworks, shear_mult, from_shears)
             self.onhackedfn(self.inst, hacker, self.hacksleft, from_shears)
         end
 
+		hacker:PushEvent("hacking", {target = self.inst})
+
         if(self.hacksleft <= 0) then         
 			if self.transplanted then
 				if self.cycles_left ~= nil then

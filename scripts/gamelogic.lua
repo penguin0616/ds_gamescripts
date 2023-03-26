@@ -75,7 +75,7 @@ local function DoAgeWorld()
 end
 
 local function KeepAlive()
-	if global_loading_widget then 
+	if global_loading_widget and global_loading_widget.is_enabled then 
 		global_loading_widget:ShowNextFrame()
 		TheSim:RenderOneFrame()
 		global_loading_widget:ShowNextFrame()
@@ -92,7 +92,10 @@ local function LoadAssets(asset_set)
 	
 	if LOAD_UPFRONT_MODE then return end
 	
-	ShowLoading()
+	-- The Adventure Mode needs to show a title instead of background images.
+	if SaveGameIndex:GetCurrentMode() ~= "adventure" then
+		ShowLoading()
+	end
 	
 	assert(asset_set)
 	Settings.current_asset_set = asset_set
@@ -954,8 +957,7 @@ function DoInitGame(playercharacter, savedata, profile, next_world_playerdata, f
 				max.task = max:StartThread(function()	max.components.maxwelltalker:DoTalk() end) 
 				--PlayNIS("maxwellintro", savedata.map.maxwell)
 			end
-			
-			
+
 			local title = STRINGS.UI.SANDBOXMENU.ADVENTURELEVELS[SaveGameIndex:GetSlotLevelIndexFromPlaylist()]
 			local subtitle = STRINGS.UI.SANDBOXMENU.CHAPTERS[SaveGameIndex:GetSlotWorld()]
 			local showtitle = SaveGameIndex:GetCurrentMode() == "adventure" and title

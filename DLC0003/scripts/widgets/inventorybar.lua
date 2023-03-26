@@ -314,6 +314,10 @@ function Inv:Rebuild()
 		--local offset = #self.inv >= num and 1 or 0 --math.ceil((#self.inv - num)/2)
 		local offset = 1 + #self.inv - num
 
+		if offset <= 0 then -- Wheeler with backpacks with more than 12 slots.
+			x = self.inv[1]:GetPosition().x
+		end
+
 		for k = 1, num do
 			local slot = InvSlot(k, HUD_ATLAS, "inv_slot.tex", self.owner, new_backpack.components.container)
 			self.backpackinv[k] = self.bottomrow:AddChild(slot)
@@ -323,8 +327,9 @@ function Inv:Rebuild()
 			if offset > 0 then
 				slot:SetPosition(self.inv[offset+k-1]:GetPosition().x,0,0)
 			else
+				-- Wheeler with backpacks with more than 12 slots.
 				slot:SetPosition(x,0,0)
-				x = x + W + SEP
+				x = x + W + SEP + (k % 5 == 0 and INTERSEP - SEP or 0)
 			end
 			
 			local item = new_backpack.components.container:GetItemInSlot(k)
@@ -383,6 +388,7 @@ function Inv:Rebuild()
 	end
 
 	self.rebuild_pending = false
+	self.rebuild_snapping = false
 end
 
 function Inv:OnUpdate(dt)

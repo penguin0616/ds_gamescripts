@@ -33,6 +33,13 @@ function Repairable:Repair(doer, repair_item)
 
         self.inst.components.health:DoDelta(repair_item.components.repairer.healthrepairvalue)
 
+    elseif self.inst.components.boathealth then
+        if self.inst.components.boathealth:GetPercent() >= 1 then
+            return false
+        end
+
+        self.inst.components.boathealth:DoDelta(repair_item.components.repairer.healthrepairvalue, "repair", repair_item, true)
+
     elseif self.inst.components.workable ~= nil and self.inst.components.workable.workleft ~= nil then
         if not self.inst.components.workable.workable or self.inst.components.workable.workleft >= self.inst.components.workable.maxwork then
             return false
@@ -53,13 +60,6 @@ function Repairable:Repair(doer, repair_item)
         end
 
         self.inst.components.finiteuses:Repair(repair_item.components.repairer.finiteusesrepairvalue)
-
-    elseif self.inst.components.boathealth then
-        if self.inst.components.boathealth:GetPercent() >= 1 then
-            return false
-        end
-
-        self.inst.components.boathealth:DoDelta(repair_item.components.repairer.healthrepairvalue, "repair", repair_item, true)
 
     else
         -- Not repairable.

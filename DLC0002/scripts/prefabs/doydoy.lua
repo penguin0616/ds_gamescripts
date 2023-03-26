@@ -187,9 +187,14 @@ local function OnDropped(inst)
 	local isbaby = inst:HasTag("baby")
 	local isteen = inst:HasTag("teen")
 
+	inst:AddTag("mating")
+
 	if not inst:GetIsOnWater() then
+		if not inst.components.sleeper then
+			inst:AddComponent("sleeper")
+		end
+
 		inst.components.sleeper:GoToSleep()
-		inst:AddTag("mating")
 
 		inst.onwater = false
 	else
@@ -198,6 +203,7 @@ local function OnDropped(inst)
 			splash.Transform:SetPosition(inst.Transform:GetWorldPosition())
 			inst:Remove()
 		else
+			inst:RemoveComponent("sleeper")
 			inst.onwater = true
 			inst.components.inventoryitem.canbepickedup = true
 

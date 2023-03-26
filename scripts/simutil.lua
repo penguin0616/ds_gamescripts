@@ -325,3 +325,25 @@ end
 function GetInventoryItemAtlas(imagename)
 	return inventoryItemAtlasLookup[imagename] or "images/inventoryimages.xml"
 end
+
+local function isImpassable(map, tile)
+	return tile == GROUND.IMPASSABLE
+end
+
+function IsPointCloseToImpassable(x, y, z, radius)
+    local map = GetWorld().Map
+    
+    for i = -radius, radius, 1 do
+        if isImpassable(map, map:GetTileAtPoint(x - radius, y, z + i)) or isImpassable(map, map:GetTileAtPoint(x + radius, y, z + i)) then
+            return true
+        end
+    end
+
+    for i = -(radius - 1), radius - 1, 1 do
+        if isImpassable(map, map:GetTileAtPoint(x + i, y, z - radius)) or isImpassable(map, map:GetTileAtPoint(x + i, y, z + radius)) then
+            return true
+        end
+    end
+
+    return false
+end

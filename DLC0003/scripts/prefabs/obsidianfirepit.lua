@@ -114,9 +114,17 @@ local function fn(Sim)
             inst.components.burnable:Extinguish()
 
             if inst.queued_charcoal then
-                inst.components.lootdropper:SpawnLootPrefab("charcoal")
-                inst.components.lootdropper:SpawnLootPrefab("charcoal")
                 inst.queued_charcoal = nil
+
+                local interior = GetInteriorSpawner():getPropInterior(inst)
+
+                for i=1, 2 do
+                    local charcoal = inst.components.lootdropper:SpawnLootPrefab("charcoal")
+
+                    if interior then
+                        GetInteriorSpawner():AddPrefabToInterior(charcoal, interior)
+                    end
+                end
             end
         else
             if not inst.components.burnable:IsBurning() then

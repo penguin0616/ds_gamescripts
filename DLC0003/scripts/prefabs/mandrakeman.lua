@@ -23,7 +23,7 @@ local MAX_TARGET_SHARES = 5
 local SHARE_TARGET_DIST = 30
 
 local function ontalk(inst, script)
-	inst.SoundEmitter:PlaySound("dontstarve/creatures/bunnyman/idle_med")
+    inst.SoundEmitter:PlaySound("dontstarve_DLC003/creatures/elderdrake/dissy")
 end
 
 local function CalcSanityAura(inst, observer)

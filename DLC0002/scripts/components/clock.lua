@@ -440,8 +440,12 @@ function Clock:OnUpdate(dt)
         end
 
         self.lerptimeleft = self.lerptimeleft - dt
+
+    elseif self.lightning_dirty then
+        -- Hack: The "self:LerpAmbientColour(flash, col, 1)" never reaches the value it should.
+        self.currentColour = self.lerpToColour
+        self.lightning_dirty = false
     end
-    
     
     if self.lightning then
         
@@ -478,6 +482,7 @@ function Clock:OnUpdate(dt)
         else          
             self:LerpAmbientColour(flash, col, 1)
             self.lightning = false
+            self.lightning_dirty = true
             self.last_lightning_time = GetTime()
         end
 
