@@ -233,6 +233,10 @@ local function onload(inst, data)
 	end
 end
 
+local function CanBeDislodgedFn(inst)
+	return inst.components.workable and inst.components.workable.workleft >= TUNING.ROCKS_MINE*(2/3)
+end
+
 local function baserock_fn(Sim)
 	local inst = CreateEntity()
 	local trans = inst.entity:AddTransform()
@@ -387,12 +391,7 @@ local function pig_ruins_head()
 	inst:AddComponent("dislodgeable")
 	inst.components.dislodgeable:SetUp("relic_3",1)
 	inst.components.dislodgeable:SetOnDislodgedFn(ondislodged)
-	inst.components.dislodgeable.canbedislodgedfn = function() 
-			if inst.components.workable and inst.components.workable.workleft < TUNING.ROCKS_MINE*(2/3) then
-				return false
-			end
-			return true
-		end
+	inst.components.dislodgeable:SetCanBeDislodgedFn(CanBeDislodgedFn)
 
 	inst.components.inspectable.nameoverride = nil
 
@@ -434,14 +433,9 @@ local function pig_ruins_pig()
 	inst:AddComponent("dislodgeable")
 	inst.components.dislodgeable:SetUp("goldnugget",2)
 	inst.components.dislodgeable:SetOnDislodgedFn(ondislodged)
+	inst.components.dislodgeable:SetCanBeDislodgedFn(CanBeDislodgedFn)
+	
     inst.OnEntityWake = onwake
-	inst.components.dislodgeable.canbedislodgedfn = function() 
-			if inst.components.workable and inst.components.workable.workleft < TUNING.ROCKS_MINE*(2/3) then
-				return false
-			end
-			return true
-		end
-
 	inst.components.inspectable.nameoverride = nil
 
 	return inst
@@ -464,15 +458,10 @@ local function pig_ruins_ant()
 	inst:AddComponent("dislodgeable")
 	inst.components.dislodgeable:SetUp("goldnugget",2)
 	inst.components.dislodgeable:SetOnDislodgedFn(ondislodged)
+	inst.components.dislodgeable:SetCanBeDislodgedFn(CanBeDislodgedFn)
 
     inst.OnEntityWake = onwake
 
-	inst.components.dislodgeable.canbedislodgedfn = function() 
-			if inst.components.workable and inst.components.workable.workleft < TUNING.ROCKS_MINE*(2/3) then
-				return false
-			end
-			return true
-		end
 	return inst
 end
 
@@ -495,12 +484,7 @@ local function pig_ruins_idol()
 	inst:AddComponent("dislodgeable")
 	inst.components.dislodgeable:SetUp("relic_1",1)
 	inst.components.dislodgeable:SetOnDislodgedFn(ondislodged)
-	inst.components.dislodgeable.canbedislodgedfn = function() 
-			if inst.components.workable and inst.components.workable.workleft < TUNING.ROCKS_MINE*(2/3) then
-				return false
-			end
-			return true
-		end
+	inst.components.dislodgeable:SetCanBeDislodgedFn(CanBeDislodgedFn)
 
 	inst.components.inspectable.nameoverride = nil
 
@@ -526,12 +510,7 @@ local function pig_ruins_plaque()
 	inst:AddComponent("dislodgeable")
 	inst.components.dislodgeable:SetUp("relic_2",1)
 	inst.components.dislodgeable:SetOnDislodgedFn(ondislodged)
-	inst.components.dislodgeable.canbedislodgedfn = function() 
-			if inst.components.workable and inst.components.workable.workleft < TUNING.ROCKS_MINE*(2/3) then
-				return false
-			end
-			return true
-		end
+	inst.components.dislodgeable:SetCanBeDislodgedFn(CanBeDislodgedFn)
 
 	inst.components.inspectable.nameoverride = nil
 
@@ -606,12 +585,7 @@ local function pig_ruins_truffle()
 	inst:AddComponent("dislodgeable")
 	inst.components.dislodgeable:SetUp("relic_5",1)
 	inst.components.dislodgeable:SetOnDislodgedFn(ondislodged)
-	inst.components.dislodgeable.canbedislodgedfn = function() 
-			if inst.components.workable and inst.components.workable.workleft < TUNING.ROCKS_MINE*(2/3) then
-				return false
-			end
-			return true
-		end
+	inst.components.dislodgeable:SetCanBeDislodgedFn(CanBeDislodgedFn)
 
 	return inst
 end
@@ -635,12 +609,7 @@ local function pig_ruins_sow()
 	inst:AddComponent("dislodgeable")
 	inst.components.dislodgeable:SetUp("relic_4",1)
 	inst.components.dislodgeable:SetOnDislodgedFn(ondislodged)
-	inst.components.dislodgeable.canbedislodgedfn = function() 
-			if inst.components.workable and inst.components.workable.workleft < TUNING.ROCKS_MINE*(2/3) then
-				return false
-			end
-			return true
-		end
+	inst.components.dislodgeable:SetCanBeDislodgedFn(CanBeDislodgedFn)
 
 	return inst
 end

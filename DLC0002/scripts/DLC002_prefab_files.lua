@@ -572,7 +572,6 @@ local PREFABFILES = {
   "wildbore",
   "wildborehouse",
   "willow",
-  "willowfire",
   "wilson",
   "wind_conch",
   "windswirl",

@@ -531,6 +531,7 @@ return {
 		BOOK_TENTACLES = "Looks like kindling to me!",
 		BOOK_GARDENING = "Ughh, who cares?",
 		BOOK_BRIMSTONE = "That's my favorite book!",
+		BOOK_METEOR = "I'll burn through this book!",
 		BOOK_SLEEP = "Bo-oring!",
 		LUCY = "We could be good friends, you and I.",
 		BALLOONS_EMPTY = "I could fill them with flammable gas.",

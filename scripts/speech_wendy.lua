@@ -270,6 +270,7 @@ return {
 		BOOK_GARDENING = "Imagine, a rolling field of red flowers...",
 		BOOK_SLEEP = "Does it bestow an eternal slumber?",
 		BOOK_BRIMSTONE = "The tome to end it all...",
+		BOOK_METEOR = "Reading is a dangerous thing.",
 		LUCY = "Hello... 'Lucy'. I'd like you to meet my sister.",
 		BALLOONS_EMPTY = "These look as deflated as I feel...",
 		SPEAR_WATHGRITHR = "It seems a tad dramatic.",

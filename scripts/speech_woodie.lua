@@ -505,15 +505,6 @@ return {
 		GREENSTAFF = "This'll help me dismantle stuff!",
 		POTTEDFERN = "It shows my love of plant life.",
 
-		BOOK_BIRDS = "I already know more than enough aboot those things.",
-        BOOK_TENTACLES = "They don't have tentacles in Canada.",
-        BOOK_GARDENING = "Does it grow trees?",
-        BOOK_SLEEP = "The perfect book for a full moon.",
-        BOOK_BRIMSTONE = "I know better than to mess with that, eh.",
-
-		WATHGRITHRHAT = "Pretty snappy looking.",
-		SPEAR_WATHGRITHR = "Who needs a spear when you got ol'Luce?",
-
 		THULECITE = "It's the wood of the caves!",
 		ARMORRUINS = "That'll stop the hurt.",
 		RUINS_BAT = "Metal on a stick.",
@@ -548,7 +539,9 @@ return {
 		BOOK_GARDENING = "Does it grow trees?",
 		BOOK_SLEEP = "The perfect book for a full moon.",
 		BOOK_BRIMSTONE = "I know better than to mess with that, eh.",
+		BOOK_METEOR = "That there ain't right.",
 		BALLOONS_EMPTY = "Are those balloons?",
+		WATHGRITHRHAT = "Pretty snappy looking.",
 		SPEAR_WATHGRITHR = "Who needs a spear when you've got ol' Luce?",
 		WAXWELLJOURNAL = "Trees made into... paper? No wonder it's cursed.",
 

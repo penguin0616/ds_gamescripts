@@ -335,6 +335,10 @@ local states=
 				end
 			end),
 		},
+
+		onexit = function(inst)
+			inst.SoundEmitter:KillSound("mating_dance_LP")
+		end,
 	},
 
 	State{

@@ -317,8 +317,7 @@ local states=
 			inst.AnimState:PlayAnimation("mate_dance_pst")
 			inst.SoundEmitter:PlaySound("dontstarve_DLC002/creatures/doy_doy/mate_dance_post")
 		end,
-		
-		
+
 		timeline = 
 		{
 			TimeEvent(15*FRAMES, function(inst) inst.SoundEmitter:KillSound("mating_dance_LP") end),
@@ -335,6 +334,10 @@ local states=
 				end
 			end),
 		},
+
+		onexit = function(inst)
+			inst.SoundEmitter:KillSound("mating_dance_LP")
+		end,
 	},
 
 	State{

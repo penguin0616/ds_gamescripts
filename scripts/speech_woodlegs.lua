@@ -1672,6 +1672,7 @@ return
 		BOOK_GARDENING = "Th'dirt's only good fer buryin' me treasure.",
 		BOOK_SLEEP = "It'll put ye into a cursed slumber.",
 		BOOK_BRIMSTONE = "It'll spell me doom, mark me words!",
+		BOOK_METEOR = "Devil magic thet summons demons from th'sky!",
 
 		WATHGRITHRHAT = "'Tis no hat fer this ol'sea dog.",
 		SPEAR_WATHGRITHR = "Aye, it's sharp!",

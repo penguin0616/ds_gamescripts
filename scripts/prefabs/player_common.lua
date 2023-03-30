@@ -342,7 +342,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
             end)  
         
         inst:ListenForEvent( "gotnewitem", function(it, data) 
-                if data.slot and not data.toactiveitem then
+                if data.slot ~= nil or data.toactiveitem ~= nil then
                 	Print(VERBOSITY.DEBUG, "gotnewitem: ["..data.item.prefab.."]") 
                     inst.SoundEmitter:PlaySound("dontstarve/HUD/collect_resource")
                 end

@@ -89,6 +89,16 @@ function Hayfever:OnLoad(data, newents)
     end
 end
 
+function Hayfever:OnProgress()
+    if self.enabled then
+        self.inst:PushEvent("updatepollen", {sneezetime = nil})  
+        self:SetNextSneezeTime(self:GetNextSneezTimeInitial())
+    end
+
+    self.enabled = false
+    self.inst:StopUpdatingComponent(self) 
+end
+
 function Hayfever:Enable()
     if not self.hayfeverimune then
         if GetWorld():IsWorldGenOptionNever("hayfever") then

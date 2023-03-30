@@ -21,6 +21,10 @@ local function OnEquip(inst, owner)
     owner.AnimState:Hide("ARM_normal") 
 end
 
+local function OnHitOwner(inst)
+    inst.AnimState:PlayAnimation("idle")
+end
+
 local function OnPutInInventory(inst)
     inst.AnimState:PlayAnimation("idle")
 
@@ -62,7 +66,7 @@ end
 
 local function OnHit(inst, owner, target)
     if owner == target then
-        OnDropped(inst)
+        OnHitOwner(inst)
     else
         ReturnToOwner(inst, owner)
     end

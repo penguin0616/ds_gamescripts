@@ -210,7 +210,7 @@ return {
 	ANNOUNCE_TAXDAY = "Time to go collect my taxes.",
 
 	ANNOUNCE_HOUSE_DOOR = "I can't expand without a permit!",
-	ANNOUNCE_ROOM_STUCK = "If I did that, I be stuck here forever.",
+	ANNOUNCE_ROOM_STUCK = "If I did that, I'd be stuck here forever.",
 	ANNOUNCE_NOTHING_FOUND = "It's not picking up anything. I must be too far away.",
 
 	ANNOUNCE_SUITUP = "For Science!",
@@ -294,6 +294,7 @@ return {
         BOOK_GARDENING = "I see no farm in reading that.",
         BOOK_SLEEP = "Strange, it's just 500 pages of telegraph codes.",
         BOOK_BRIMSTONE = "The beginning was dull, but got better near the end.",
+		BOOK_METEOR = "The foreword just says \"hope you like dragoons.\"",
 
 		WATHGRITHRHAT = "Pretty fancy hat, that.",
 		SPEAR_WATHGRITHR = "It feels very stabby.",
@@ -2438,7 +2439,7 @@ return {
 
         SNAKE_AMPHIBIOUS = "Agh! Stay away!", 
         
-        GASMASKHAT = "Now I can breath anywhere.",
+        GASMASKHAT = "Now I can breathe anywhere.",
         PITHHAT = "Pithy.", 
         
         BILL = 

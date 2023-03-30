@@ -1546,6 +1546,7 @@ return {
 		BOOK_GARDENING = "Hmm. Sounds suspiciously like work.",
 		BOOK_SLEEP = "I don't need a book to fall asleep.",
 		BOOK_BRIMSTONE = "Gnarly.",
+		BOOK_METEOR = "I've got a bad feeling about this.",
 
 		WATHGRITHRHAT = "Aww, there's a little pony on it.",
 		SPEAR_WATHGRITHR = "Why can't we all just get along?",
@@ -2210,9 +2211,9 @@ return {
 
         NETTLE =
         {
-        	WITHERED = "This soil is over-cooking it.",
-        	MOIST = "Ah, it's keeps moist with a marinade.",
-        	EMPTY = "I do hope it grows back.",
+        	WITHERED = "Nah. Not the right dirt for it.",
+        	MOIST = "Water really makes it happy.",
+        	EMPTY = "It'll grow back eventually.",
         	DEFAULT = "Whew! That's a strong smell.",
         },
 

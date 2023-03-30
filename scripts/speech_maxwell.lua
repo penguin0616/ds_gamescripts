@@ -530,6 +530,7 @@ return {
 		BOOK_GARDENING = "It's not wise to toy with forces beyond your comprehension.",
 		BOOK_SLEEP = "I haven't slept in... ages.",
 		BOOK_BRIMSTONE = "It's a novel, er... novel.",
+		BOOK_METEOR = "Reading strange books has always worked out for me before.",
 		LUCY = "Ah. How have you been, Lucy.",
 		BALLOONS_EMPTY = "Those look much too jovial for my liking.",
 		WATHGRITHRHAT = "Well... it's no crown.",

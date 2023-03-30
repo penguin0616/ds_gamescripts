@@ -690,16 +690,15 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
 			end)
 
 		inst:ListenForEvent( "gotnewitem", function(it, data)
-				if data.slot and not data.toactiveitem then
-					Print(VERBOSITY.DEBUG, "gotnewitem: ["..data.item.prefab.."]")
-					if inst.components.driver and inst.components.driver:GetIsDriving() then 
-						inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/HUD_water_collect_resource")
-					else 
-						inst.SoundEmitter:PlaySound("dontstarve/HUD/collect_resource")
-					end 	
-					
+			if data.slot ~= nil or data.toactiveitem ~= nil then
+				Print(VERBOSITY.DEBUG, "gotnewitem: ["..data.item.prefab.."]")
+				if inst.components.driver and inst.components.driver:GetIsDriving() then 
+					inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/HUD_water_collect_resource")
+				else 
+					inst.SoundEmitter:PlaySound("dontstarve/HUD/collect_resource")
 				end
-			end)
+			end
+		end)
 
 		inst:ListenForEvent( "equip", function(it, data)
 				Print(VERBOSITY.DEBUG, "equip: ["..data.item.prefab.."]")

@@ -6,6 +6,8 @@ local trace = function() end
 
 local START_DRAG_TIME = (1/30)*8
 
+local ACTION_REPEAT_COOLDOWN = 0.2
+local INVENTORY_ACTIONHOLD_REPEAT_COOLDOWN = 0.8
 
 local PlayerController = Class(function(self, inst)
     self.inst = inst
@@ -16,6 +18,8 @@ local PlayerController = Class(function(self, inst)
     self.draggingonground = false
     self.startdragtestpos = nil
     self.startdragtime = nil
+
+	self.heldactioncooldown = 0
 
 	self.inst:ListenForEvent("buildstructure", function(inst, data) self:OnBuild() end, GetPlayer())
 
@@ -658,6 +662,50 @@ function PlayerController:UsingMouse()
 	end
 end
 
+function PlayerController:ClearActionHold()
+    self.actionholding = false
+    self.actionholdtime = nil
+    self.lastheldaction = nil
+    self.lastheldactiontime = nil
+    self.actionrepeatfunction = nil
+end
+
+local ACTIONHOLD_CONTROLS = {CONTROL_PRIMARY, CONTROL_SECONDARY, CONTROL_CONTROLLER_ALTACTION, CONTROL_INVENTORY_USEONSELF, CONTROL_INVENTORY_USEONSCENE}
+local function IsAnyActionHoldButtonHeld()
+    for i, v in ipairs(ACTIONHOLD_CONTROLS) do
+        if TheInput:IsControlPressed(v) then
+            return true
+        end
+    end
+    return false
+end
+
+function PlayerController:RepeatHeldAction()
+	--print(self.lastheldaction)
+	if self.lastheldaction and self.lastheldaction:IsValid() and (self.lastheldactiontime == nil or GetTime() - self.lastheldactiontime < 1) then
+		self.lastheldactiontime = GetTime()
+		if self.heldactioncooldown == 0 then
+			self.heldactioncooldown = ACTION_REPEAT_COOLDOWN
+			self:DoAction(self.lastheldaction)
+		end
+	elseif self.actionrepeatfunction and (self.lastheldactiontime == nil or GetTime() - self.lastheldactiontime < 1) then
+		self.lastheldactiontime = GetTime()
+		if self.heldactioncooldown == 0 then
+			self.heldactioncooldown = INVENTORY_ACTIONHOLD_REPEAT_COOLDOWN
+			--#V2C: #HACK use temp override flag since we don't know where
+			--            the bufferedaction may come from, but we know it
+			--            will be pushed to locomotor.
+			self:actionrepeatfunction()
+		end
+	else
+		self:ClearActionHold()
+	end
+end
+
+function PlayerController:CooldownHeldAction(dt)
+    self.heldactioncooldown = dt ~= nil and math.max(self.heldactioncooldown - dt, 0) or 0
+end
+
 function PlayerController:OnUpdate(dt)
 		
 --print("-------------",GetPlayer():GetPosition())
@@ -669,6 +717,10 @@ function PlayerController:OnUpdate(dt)
 			self.startdragtime = nil
 		end
 	end
+
+	if self.actionholding and not (self:IsEnabled() and IsAnyActionHoldButtonHeld()) then
+        self:ClearActionHold()
+    end
 	
 	local controller_mode = TheInput:ControllerAttached()
 
@@ -824,6 +876,12 @@ function PlayerController:OnUpdate(dt)
 		end
 	end
 
+	if not self.actionholding and self.actionholdtime and IsAnyActionHoldButtonHeld() then
+		if GetTime() - self.actionholdtime > START_DRAG_TIME then
+			self.actionholding = true
+		end
+	end
+
     if self.startdragtime and not self.draggingonground and TheInput:IsControlPressed(CONTROL_PRIMARY) then
         local now = GetTime()
         if now - self.startdragtime > START_DRAG_TIME then
@@ -832,11 +890,16 @@ function PlayerController:OnUpdate(dt)
         end
     end
 
-	if self.draggingonground and TheFrontEnd:GetFocusWidget() ~= self.inst.HUD then
-		TheFrontEnd:LockFocus(false)
-		self.draggingonground = false
-		
-		self.inst.components.locomotor:Stop()
+	if TheFrontEnd:GetFocusWidget() ~= self.inst.HUD then
+		if self.draggingonground then
+			TheFrontEnd:LockFocus(false)
+			self.draggingonground = false
+			
+			self.inst.components.locomotor:Stop()
+
+		elseif self.actionholding then
+			self:ClearActionHold()
+		end
 	end
 
 	if not self.inst.sg:HasStateTag("busy") then
@@ -855,6 +918,12 @@ function PlayerController:OnUpdate(dt)
 	        self:DoDirectWalking(dt)
 		end
     end
+
+	self:CooldownHeldAction(dt)
+
+	if self.actionholding then
+		self:RepeatHeldAction()
+	end
     
     --do automagic control repeats
 	if self.inst.sg:HasStateTag("idle") then
@@ -1274,14 +1343,23 @@ end
 
 
 function PlayerController:DoAction(buffaction)
+	if buffaction == nil or
+        (buffaction.invobject ~= nil and not buffaction.invobject:IsValid()) or
+        (buffaction.target ~= nil and not buffaction.target:IsValid()) or
+		(buffaction.doer ~= nil and not buffaction.doer:IsValid())
+	then
+		self.actionholdtime = nil
+
+		return
+	end
+
     if buffaction then
-    
         if self.inst.bufferedaction then
             if self.inst.bufferedaction.action == buffaction.action and self.inst.bufferedaction.target == buffaction.target then
                 return;
             end
         end
-        
+
         if buffaction.target then
             if not buffaction.target.components.highlight then
 				buffaction.target:AddComponent("highlight")
@@ -1303,10 +1381,15 @@ function PlayerController:DoAction(buffaction)
                     self.inst.components.inventory:SetActiveItem(nil)
                 end
         end
+
+		if not buffaction.action.instant and buffaction.action.valid_hold_action and buffaction:IsValid() then
+			self.lastheldaction = buffaction
+		else
+			self.actionholdtime = nil
+		end
         
         self.inst.components.locomotor:PushAction(buffaction, true)
-    end    
-
+    end
 end
 
 
@@ -1346,6 +1429,8 @@ function PlayerController:OnLeftClick(down)
         self.inst.inbed.components.bed:StopSleeping()
         return
     end
+
+	self.actionholdtime = GetTime()
     
     local action = self:GetLeftMouseAction()
     if action then
@@ -1410,6 +1495,8 @@ function PlayerController:OnRightClick(down)
         self.inst.inbed.components.bed:StopSleeping()
         return
     end
+
+	self.actionholdtime = GetTime()
     
     local action = self:GetRightMouseAction()
 

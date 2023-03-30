@@ -585,6 +585,7 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli)
             self.inst.SoundEmitter:PlaySound(redirect_combat.hurtsound)
         end		
  		blocked = true
+		
     end	
 		
 	local boating = false 
@@ -634,7 +635,7 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli)
 			end
 		end
 	else
-		self.inst:PushEvent("blocked", {attacker = attacker, weapon = weapon})		
+		self.inst:PushEvent("blocked", {attacker = attacker, weapon = weapon, redirected=redirect_combat ~= nil})		
 	end
 
 	return not blocked

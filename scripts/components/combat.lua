@@ -395,7 +395,7 @@ function Combat:GetAttacked(attacker, damage, weapon)
             end
         end
     else
-        self.inst:PushEvent("blocked", {attacker = attacker})
+		self.inst:PushEvent("blocked", {attacker = attacker, weapon = weapon, redirected=redirect_combat ~= nil})		
     end
     
     return not blocked

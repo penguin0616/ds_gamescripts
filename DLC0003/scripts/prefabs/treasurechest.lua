@@ -397,7 +397,7 @@ local function chest(style, aquatic)
 		inst:ListenForEvent( "onbuilt", onbuilt)
 		MakeSnowCovered(inst, 0.01)	
 
-		if style ~= "water_chest" and style ~= "root_chest" then
+		if not aquatic and style ~= "root_chest" then
 			MakeSmallBurnable(inst, nil, nil, true)
 			MakeSmallPropagator(inst)
 		end

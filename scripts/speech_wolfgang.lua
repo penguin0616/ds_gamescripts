@@ -547,6 +547,7 @@ return {
 		BOOK_GARDENING = "Wolfgang prefers growing muscle mass to flowers.",
 		BOOK_SLEEP = "Wolfgang's eyes feel heavy, like dumbbells.",
 		BOOK_BRIMSTONE = "Tiny book scares Wolfgang!",
+		BOOK_METEOR = "Book make very hot rain.",
 		LUCY = "Wolfgang loves a sharp missus.",
 		BALLOONS_EMPTY = "Wolfgang will make balloon muscles.",
 		SPEAR_WATHGRITHR = "Is a fine weapon.",
@@ -2896,7 +2897,7 @@ return {
 		-------------Wormwood Specific-------
 		
 		COMPOSTWRAP = "Is very mighty poop.",
-		POISONBALM = "Wolfgang does not feat poison! But will take just in case!",
+		POISONBALM = "Wolfgang does not fear poison! But will take just in case!",
         ARMOR_BRAMBLE = "Mighty Wolfgang does not need armor!",
         TRAP_BRAMBLE = "Is sharp plant for hurting feets.",
 

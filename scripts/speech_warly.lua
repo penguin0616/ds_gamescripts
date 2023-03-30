@@ -1641,7 +1641,7 @@ return{
 
 		ARMORCACTUS = "If the enemies are pricked half as much as I was making it, it's worth it.",
 		BIGFISHINGROD = "A prime ingredient-catcher.",
-		--BOOK_METEOR = "There's not a single recipe to be found within.",
+		BOOK_METEOR = "There's not a single recipe to be found within.",
 		BRAINJELLYHAT = "I can feel inspiration seeping into me! Wait, that's brain juice.",
 		BUOY = "A beacon to light my way.",
 		COCONUT_HALVED = "Delectable.",
@@ -2225,9 +2225,9 @@ return{
 
         NETTLE =
         {
-        	WITHERED = "Nah. Not the right dirt for it.",
-        	MOIST = "Water really makes it happy.",
-        	EMPTY = "It'll grow back eventually.",
+        	WITHERED = "This soil is over-cooking it.",
+        	MOIST = "Ah, it's keeps moist with a marinade.",
+        	EMPTY = "I do hope it grows back.",
         	DEFAULT = "Ah. Smells like eucalyptus.",
         },
 

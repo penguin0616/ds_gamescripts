@@ -1,6 +1,8 @@
 local NIGHT_COLOR = Point(0/255,   0/255,   0/255)
 local FULLMOON_COLOR = Point(84/255,  122/255, 156/255)
 
+local LERP_BACK_LIGHTINING_TIME = 1
+
 local Clock = Class(function(self, inst)
 
 	self.daysegs = TUNING.DAY_SEGS_DEFAULT
@@ -592,12 +594,14 @@ function Clock:OnUpdate(dt)
         self.lerptimeleft = self.lerptimeleft - dt
 
     elseif self.lightning_dirty then
-        -- Hack: The "self:LerpAmbientColour(flash, col, 1)" never reaches the value it should.
-        self.currentColour = self.lerpToColour
+        if self.totallerptime == LERP_BACK_LIGHTINING_TIME then
+            -- Hack: The "self:LerpAmbientColour(flash, col, LERP_BACK_LIGHTINING_TIME)" never reaches the value it should.
+            self.currentColour = self.lerpToColour
+        end
+
         self.lightning_dirty = false
     end
-    
-    
+
     if self.lightning then
         
         self.lightningtime = self.lightningtime + dt
@@ -631,7 +635,7 @@ function Clock:OnUpdate(dt)
         if self.lightningtime < (1/30)*1 then 
             TheSim:SetAmbientColour(flash.x,flash.y,flash.z)
         else          
-            self:LerpAmbientColour(flash, col, 1)
+            self:LerpAmbientColour(flash, col, LERP_BACK_LIGHTINING_TIME)
             self.lightning = false
             self.lightning_dirty = true
             self.last_lightning_time = GetTime()

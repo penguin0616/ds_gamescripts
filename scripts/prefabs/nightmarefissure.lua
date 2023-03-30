@@ -158,12 +158,7 @@ local function phasechange(inst, data)
     if statefn then
         spawnfx(inst)
         inst.state = data.newphase
-
-        if POPULATING then
-            statefn(inst, true)
-        else
-            inst:DoTaskInTime(math.random() * 2, statefn)
-        end
+        inst:DoTaskInTime(math.random() * 2, statefn)
     end
 end
 

@@ -440,6 +440,7 @@ return {
 		BOOK_GARDENING = "Why should we read about flowers when we can just pick them?",
 		BOOK_SLEEP = "It's... beddy-bye time...",
 		BOOK_BRIMSTONE = "We don't like how this one ends!",
+		BOOK_METEOR = "I'm not a good reader, but he is!",
 		LUCY = "If we talks to it will it talk back?",
 		BALLOONS_EMPTY = "Is there going to be a party?!",
 		SPEAR_WATHGRITHR = "Pointy ouchies!",

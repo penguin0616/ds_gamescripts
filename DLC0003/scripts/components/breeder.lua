@@ -166,6 +166,8 @@ function Breeder:CollectSceneActions(doer, actions)
 end
 
 function Breeder:Harvest(harvester)
+    if harvester == nil or not self:CanBeHarvested(harvester) then return end
+
     self.inst.SoundEmitter:PlaySound("dontstarve_DLC002/creatures/seacreature_movement/splash_small")
     self.inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/fish_farm/harvest")
 

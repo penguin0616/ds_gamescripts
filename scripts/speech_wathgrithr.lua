@@ -1313,6 +1313,7 @@ return {
         BOOK_GARDENING = "But can it tend the garden of mine soul?",
         BOOK_SLEEP = "Where's the drama? The suspense?",
         BOOK_BRIMSTONE = "This tome is brimming with Hel's fire!",
+		BOOK_METEOR = "Read a passage and call forth Ragnarok!",
 
 		--- CAPY DLC ------------------------------------------------------------------------------------------------
 

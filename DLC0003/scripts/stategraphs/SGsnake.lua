@@ -287,7 +287,7 @@ local states=
         onenter = function(inst, noanim)
 			if noanim then
                 inst.AnimState:SetBank("snake")
-                inst.sg:GoToState("idle")
+                inst.sg:GoToState("taunt") -- Default State.
                 return
             end
 
@@ -318,7 +318,7 @@ local states=
         onenter = function(inst, noanim)
 			if noanim then
                 inst.AnimState:SetBank("snake_water")
-                inst.sg:GoToState("idle")
+                inst.sg:GoToState("taunt") -- Default State.
                 return
             end
 

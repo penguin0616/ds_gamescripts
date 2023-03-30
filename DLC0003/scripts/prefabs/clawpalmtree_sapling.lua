@@ -101,12 +101,6 @@ local function test_ground(inst, pt)
     return false
 end
 
-local function describe(inst)
-    if inst.growtime then
-        return "PLANTED"
-    end
-end
-
 local function OnSave(inst, data)
     if inst.growtime then
         data.growtime = inst.growtime - GetTime()
@@ -120,35 +114,43 @@ local function OnLoad(inst, data)
 end
 
 local function fn()
-    local inst = CreateEntity()
-    inst.entity:AddTransform()
-    inst.entity:AddAnimState()
-    inst.entity:AddSoundEmitter()
-
+	local inst = CreateEntity()
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddSoundEmitter()
     MakeInventoryPhysics(inst)
-    MakeBlowInHurricane(inst, TUNING.WINDBLOWN_SCALE_MIN.MEDIUM, TUNING.WINDBLOWN_SCALE_MAX.MEDIUM)
-
-    --MakeInventoryFloatable(inst, "idle_water", "idle")
-
-    inst:AddTag("plant")
+    MakeBlowInHurricane(inst, TUNING.WINDBLOWN_SCALE_MIN.LIGHT, TUNING.WINDBLOWN_SCALE_MAX.LIGHT)
 
     inst.AnimState:SetBank("clawling")
     inst.AnimState:SetBuild("clawling")
     inst.AnimState:PlayAnimation("idle_planted")
 
     inst.AnimState:SetScale(.7, .7, .7)
+    
+    --MakeInventoryFloatable(inst, "idle_water", "idle")
 
-    inst:AddComponent("inspectable")
-    inst.components.inspectable.getstatus = describe
+    inst:AddTag("plant")
+    inst:AddTag("cattoy")
+    inst:AddComponent("tradable")
 
     inst:AddComponent("stackable")
-    inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
-    
-    MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
-    inst:ListenForEvent("onignite", stopgrowing)
-    inst:ListenForEvent("onextinguish", restartgrowing)
-    MakeSmallPropagator(inst)
+	inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
 
+    inst:AddComponent("inspectable")
+    
+    inst:AddComponent("fuel")
+    inst.components.fuel.fuelvalue = TUNING.SMALL_FUEL
+
+    inst:AddComponent("appeasement")
+    inst.components.appeasement.appeasementvalue = TUNING.WRATH_SMALL
+    
+	MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
+    MakeSmallPropagator(inst)
+    inst.components.burnable:MakeDragonflyBait(3)
+
+	inst:ListenForEvent("onignite", stopgrowing)
+    inst:ListenForEvent("onextinguish", restartgrowing)
+    
     inst:AddComponent("inventoryitem")
     
     inst:AddComponent("deployable")

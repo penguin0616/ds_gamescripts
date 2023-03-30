@@ -530,6 +530,7 @@ return {
 		BOOK_TENTACLES = "What prevents me from using this?",
 		BOOK_GARDENING = "Much more than a collection of facts.",
 		BOOK_BRIMSTONE = "Oh, I do wish I could access its power.",
+		BOOK_METEOR = "Includes a formula on mastering control over volcanic eruptions.",
 		BOOK_SLEEP = "Is this ink imbued with dark fuel?! Fascinating!",
 		LUCY = "Strange waves of energy are emanating from it.",
 		BALLOONS_EMPTY = "Balloons? Here?",

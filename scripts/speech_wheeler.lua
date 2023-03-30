@@ -523,6 +523,7 @@ return {
 		BOOK_TENTACLES = "I'm guessing it's not a children's book.",
 		BOOK_GARDENING = "I'm not digging this one.",
 		BOOK_BRIMSTONE = "Feel good story of the year.",
+		BOOK_METEOR = "Who comes up with this stuff?",
 		BOOK_SLEEP = "A sleeper hit.",
 		LUCY = "You look different. Different is good.",
 		BALLOONS_EMPTY = "Too bad they weren't 100 times bigger and attached to a basket.",
@@ -1156,7 +1157,7 @@ return {
 		PLANT_NORMAL =
 		{
 			GENERIC = "I believe the name for that is \"plant\".",
-			GROWING = "It's growing! I guess I'm not a totally incompetant gardener.",
+			GROWING = "It's growing! I guess I'm not a totally incompetent gardener.",
 			READY = "Harvest time!",
 			WITHERED = "If you can't take the heat, get out of the garden.",
 		},
@@ -1420,7 +1421,7 @@ return {
 		CLOTHSAIL = "Nice cloth. It makes good material for a hot air balloon too.",
 		COCONUT = 
 		{
-		    GENERIC = "A tough coconut to crack",
+		    GENERIC = "A tough coconut to crack.",
 		    PLANTED = "Coconutty little guy.",
 		},
 		COCONUT_COOKED = "Looks good. It'd look better flying from the Pew-matic.",
@@ -1529,7 +1530,7 @@ return {
 		STUNGRAY = "Swell. The most horrible parts of skunks and sting-rays put together.",
 		SUPERTELESCOPE = "I can almost see all the danger from here.",
 		SWORDFISH = "Swell. A swimming swashbuckler.",
-		TELESCOPE = "I could see farther that this if I was up in my balloon.",
+		TELESCOPE = "I could see farther than this if I was up in my balloon.",
 		TIGERSHARK = "I still like you better than a dog.",
 		TIGERSHARKSHADOW = "Lurking adventure.",
 		TOUCAN = "If you can fly with that big beak, maybe you can handle flying a person.",
@@ -1578,7 +1579,7 @@ return {
 		OX = "You'd think the water would wash away all its stink.",
 		PEACOCK = "Pretty. Pretty conceded.",
 		SEAGULL_WATER = "You have wings, why aren't you flying!?",
-		SNAKE_POISON = "You're poison does nothing to endear you to me.",
+		SNAKE_POISON = "Your poison does nothing to endear you to me.",
 		SOLOFISH = "Should've been a catfish. I might've taken pity on you.",
 		SPOILED_FISH = "Mmm... smells like my home cooking.",
 		TWISTER = "Swell. Now the wind is alive.",

@@ -559,7 +559,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, customfn, 
 			end)
 
 		inst:ListenForEvent( "gotnewitem", function(it, data)
-				if data.slot and not data.toactiveitem then
+				if data.slot ~= nil or data.toactiveitem ~= nil then
 					Print(VERBOSITY.DEBUG, "gotnewitem: ["..data.item.prefab.."]")
 					if inst.components.driver and inst.components.driver:GetIsDriving() then 
 						inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/HUD_water_collect_resource")
