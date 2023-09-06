@@ -65,6 +65,7 @@ local function PickupAction(inst)
                     item.components.inventoryitem and
                     not item.components.inventoryitem:IsHeld() and
                     item.components.inventoryitem.canbepickedup and
+                    item.components.container == nil and
                     item:IsOnValidGround() and
                     not item:HasTag("trap") and 
                     not item:HasTag("irreplaceable")

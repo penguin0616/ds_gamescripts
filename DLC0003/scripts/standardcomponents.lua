@@ -118,6 +118,10 @@ function DefaultBurntStructureFn(inst)
        inst.components.stewer:StopCooking("fire") 
        inst:RemoveComponent("stewer")
     end
+    if inst.components.melter then
+       inst.components.melter:StopCooking("fire") 
+       inst:RemoveComponent("melter")
+    end
     if inst.components.harvestable then
         inst.components.harvestable:StopGrowing()
         inst:RemoveComponent("harvestable")
@@ -438,7 +442,7 @@ function MakeSpecialGhostPhysics(inst, mass, rad)
     inst.Physics:SetDamping(5)
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
     inst.Physics:ClearCollisionMask()
-    inst.Physics:CollidesWith(GetWorldCollision())
+    inst.Physics:CollidesWith(COLLISION.GROUND)
     inst.Physics:CollidesWith(COLLISION.CHARACTERS)
     inst.Physics:CollidesWith(COLLISION.WAVES)
 end
@@ -480,6 +484,7 @@ function ChangeToUndergroundCharacterPhysics(inst)
     inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
     inst.Physics:ClearCollisionMask()
     inst.Physics:CollidesWith(GetWorldCollision())
+    inst.Physics:CollidesWith(GetWaterCollision())
     inst.Physics:CollidesWith(COLLISION.OBSTACLES)
     inst.Physics:CollidesWith(COLLISION.INTWALL)
 end

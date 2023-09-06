@@ -98,12 +98,14 @@ local actionhandlers =
         end
     ),
     ActionHandler(ACTIONS.TRAVEL, "doshortaction"),
-    ActionHandler(ACTIONS.LIGHT, "give"),
+    ActionHandler(ACTIONS.LIGHT, "catchonfire"),
     ActionHandler(ACTIONS.ADDFUEL, "doshortaction"),
     ActionHandler(ACTIONS.ADDWETFUEL, "doshortaction"),
     ActionHandler(ACTIONS.LAUNCH, "dolongaction"),
     ActionHandler(ACTIONS.RETRIEVE, "dolongaction"),
-    ActionHandler(ACTIONS.REPAIR, "dolongaction"),
+    ActionHandler(ACTIONS.REPAIR, function(inst, action)
+        return action.target:HasTag("repairshortaction") and "doshortaction" or "dolongaction"
+    end),
     ActionHandler(ACTIONS.REPAIRBOAT, "dolongaction"),
     ActionHandler(ACTIONS.READ, "book"),
     ActionHandler(ACTIONS.READMAP, "map"),
@@ -360,7 +362,7 @@ local events=
         end
     end),
 
-  EventHandler("coast",
+    EventHandler("coast",
         function(inst)
             inst.sg:GoToState("idle")
     end),
@@ -373,6 +375,10 @@ local events=
         end
     end),
 
+    EventHandler("transform_to_werewilba", function(inst, data)
+        TheCamera:SetDistance(14)
+        inst.sg:GoToState("werewilba_boat_transform")
+    end),
 
    EventHandler("locomote", function(inst)
 
@@ -1043,16 +1049,8 @@ local states=
      State{
         name = "dolongaction",
         tags = {"doing", "busy", "boating"},
-        
-        timeline=
-        {
-            TimeEvent(4*FRAMES, function( inst )
-                inst.sg:RemoveStateTag("busy")
-            end),
-        },
-        
+
         onenter = function(inst, timeout)
-            --inst.components.driver:SplitFromVehicle()
             local targ = inst:GetBufferedAction() and inst:GetBufferedAction().target or nil
             if targ then targ:PushEvent("startlongaction") end
             
@@ -1064,11 +1062,27 @@ local states=
             inst.AnimState:PushAnimation("build_loop", true)
         end,
         
-        ontimeout= function(inst)
+        timeline =
+        {
+            TimeEvent(4 * FRAMES, function(inst)
+                inst.sg:RemoveStateTag("busy")
+            end),
+        },
+
+        ontimeout = function(inst)
+            inst.SoundEmitter:KillSound("make")
             inst.AnimState:PlayAnimation("build_pst")
-            inst.sg:GoToState("idle", false)
             inst:PerformBufferedAction()
         end,
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
         
         onexit= function(inst)
             inst.SoundEmitter:KillSound("make")
@@ -1683,7 +1697,7 @@ local states=
             
             TimeEvent(14*FRAMES, function(inst)
                 if inst.prefab ~= "woodie" and
-                    (TheInput:IsMouseDown(MOUSEBUTTON_LEFT) or TheInput:IsControlPressed(CONTROL_ACTION) or TheInput:IsControlPressed(CONTROL_CONTROLLER_ACTION)) and 
+                    (TheInput:IsControlPressed(CONTROL_PRIMARY) or TheInput:IsControlPressed(CONTROL_ACTION) or TheInput:IsControlPressed(CONTROL_CONTROLLER_ACTION)) and 
                     inst.sg.statemem.action and 
                     inst.sg.statemem.action:IsValid() and 
                     inst.sg.statemem.action.target and 
@@ -2005,12 +2019,113 @@ local states=
                     inst.components.driver.vehicle.components.boathealth:DoDelta(-1, "combat")
                     inst.components.beaverness:SetPercent(0)
                 end 
-                inst.sg:GoToState("werebeaver_death_boat")  -- This state is in SGWilson, the stategraph gets switch when the boat dies 
+                inst.sg:GoToState("werebeaver_death_boat")
             end ),
         } 
     },
 
-   
+    State{
+        name = "werebeaver_death_boat",
+        tags = {"busy"},
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.last_death_position = inst:GetPosition()
+			SpawnPlayerSkeletonHidden(inst:GetPosition())
+            inst.AnimState:SetBuild("werebeaver_boat_death") --This animation is in it's own build and bank because?
+            inst.AnimState:SetBank("werebeaver_boat_death") -- It gets set back in the resurrectable component, kind of ugly 
+            inst.AnimState:PlayAnimation("boat_death")
+            inst.SoundEmitter:PlaySound("dontstarve_DLC002/characters/woody/warebeaver_sinking_death")
+        end,
+
+        onexit= function(inst) 
+            inst.DynamicShadow:Enable(true) 
+        end,
+
+        timeline=
+        {
+            TimeEvent(70*FRAMES, function(inst)
+                inst.DynamicShadow:Enable(false)
+            end),
+        },
+    },
+
+    State{
+        name = "werewilba_boat_transform",
+        tags = {"busy"},
+        onenter = function(inst)
+            inst:TransformToWere()
+            inst.Physics:Stop()
+            inst.components.playercontroller:Enable(false)
+            inst.AnimState:PlayAnimation("transform_pre")
+            inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/werewilba/transform_1")
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                 if inst.components.driver and inst.components.driver:GetIsDriving() then
+                    inst.AnimState:SetBuild("werewilba")
+                    inst.AnimState:SetBank("wilson")
+                    inst.were = true -- To get the wilba build back.
+                    inst.components.resurrectable.cantdrown = true 
+                    inst.components.driver.vehicle.components.boathealth:SetHealth(0)
+                    inst.components.driver.vehicle.components.boathealth:DoDelta(-1, "combat")
+                end
+            end ),
+        },
+
+        timeline=
+        {
+            TimeEvent(34*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(35*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube(nil) 
+            end), 
+            TimeEvent(36*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(37*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube(nil) 
+            end), 
+            TimeEvent(41*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(42*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube(nil) 
+            end),
+            TimeEvent(43*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(44*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube(nil) 
+            end),                                                
+            TimeEvent(48*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(49*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube(nil) 
+            end),                                                
+            TimeEvent(64*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(65*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube(nil) 
+            end),            
+            TimeEvent(71*FRAMES, function(inst)
+                GetWorld().components.colourcubemanager:SetOverrideColourCube("images/colour_cubes/beaver_vision_cc.tex") 
+            end),
+            TimeEvent(105*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/werewilba/bark") 
+            end),
+            TimeEvent(139*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/werewilba/breath_out") 
+            end),
+
+            TimeEvent(151*FRAMES, function(inst) 
+                inst.SoundEmitter:PlaySound("dontstarve_DLC003/characters/werewilba/transform_2") 
+            end),
+        },
+    },
 
     State{
         name = "quicktele",
@@ -2039,7 +2154,7 @@ local states=
     },  
 
 
-     State{
+    State{
         name = "give",
         tags = {"boating"},
         
@@ -2050,17 +2165,44 @@ local states=
         end,
         
         timeline =
-        {
-            TimeEvent(13*FRAMES, function(inst)
-                inst:PerformBufferedAction()
-            end),
-        },        
+            {
+                TimeEvent(13*FRAMES, function(inst)
+                    inst:PerformBufferedAction()
+                end),
+            },        
 
         events=
+            {
+                EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
+            },
+    },
+
+    State{
+        name = "catchonfire",
+        tags = { "igniting" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("light_fire")
+            inst.AnimState:PushAnimation("light_fire_pst", false)
+        end,
+
+        timeline =
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
+            TimeEvent(13 * FRAMES, function(inst)
+                inst:PerformBufferedAction()
+            end),
         },
-    },   
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },
 
     State{
         name = "book",
@@ -2910,13 +3052,16 @@ local states=
         tags = {"doing", "playing", "boating"},
         
         onenter = function(inst)
-           -- inst.components.driver:SplitFromVehicle()
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("flute")
-            local ba = inst:GetBufferedAction()
-            inst.AnimState:OverrideSymbol("pan_flute01", ba.invobject.flutebuild or "pan_flute", ba.invobject.flutesymbol or "pan_flute01")
+
+            inst.sg.statemem.flute = inst:GetBufferedAction().invobject
+
+            inst.AnimState:OverrideSymbol("pan_flute01", inst.sg.statemem.flute.flutebuild or "pan_flute", inst.sg.statemem.flute.flutesymbol or "pan_flute01")
+
             inst.AnimState:Hide("ARM_carry") 
             inst.AnimState:Show("ARM_normal")
+
             if inst.components.inventory.activeitem and inst.components.inventory.activeitem.components.instrument then
                 inst.components.inventory:ReturnActiveItem()
             end
@@ -2933,18 +3078,18 @@ local states=
         timeline=
         {
             TimeEvent(30*FRAMES, function(inst)
-                local ba = inst:GetBufferedAction()
-				if ba then
-	                if ba.invobject and ba.invobject.components.instrument and ba.invobject.components.instrument.sound then
-    	                inst.SoundEmitter:PlaySound(ba.invobject.components.instrument.sound, "flute")
-        	        elseif ba.invobject and ba.invobject.components.instrument and ba.invobject.components.instrument.sound_noloop then
-            	        inst.SoundEmitter:PlaySound(ba.invobject.components.instrument.sound_noloop)
-                	else
-                    	inst.SoundEmitter:PlaySound("dontstarve/wilson/flute_LP", "flute")
-	                end
-				end
+                local instrument = inst.sg.statemem.flute and inst.sg.statemem.flute:IsValid() and inst.sg.statemem.flute.components.instrument or nil
+            
+                if instrument and instrument.sound then
+                    inst.SoundEmitter:PlaySound(instrument.sound, "flute")
+                elseif instrument and instrument.sound_noloop then
+                    inst.SoundEmitter:PlaySound(instrument.sound_noloop)
+                else
+                    inst.SoundEmitter:PlaySound("dontstarve/wilson/flute_LP", "flute")
+                end
                 inst:PerformBufferedAction()
             end),
+
             TimeEvent(85*FRAMES, function(inst)
                 inst.SoundEmitter:KillSound("flute")
             end),
@@ -2963,19 +3108,22 @@ local states=
         tags = {"doing", "playing", "boating"},
         
         onenter = function(inst)
-            --inst.components.driver:SplitFromVehicle()
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("horn")
-            local ba = inst:GetBufferedAction()
-            inst.AnimState:OverrideSymbol("horn01", ba.invobject.hornbuild or "horn", ba.invobject.hornsymbol or "horn01")
-            --inst.AnimState:Hide("ARM_carry") 
+
+            inst.sg.statemem.horn = inst:GetBufferedAction().invobject
+
+            inst.AnimState:OverrideSymbol("horn01", inst.sg.statemem.horn.hornbuild or "horn", inst.sg.statemem.horn.hornsymbol or "horn01")
+
             inst.AnimState:Show("ARM_normal")
+
             if inst.components.inventory.activeitem and inst.components.inventory.activeitem.components.instrument then
                 inst.components.inventory:ReturnActiveItem()
             end
         end,
         
         onexit = function(inst)
+            inst.SoundEmitter:KillSound("horn")
             if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) then
                 inst.AnimState:Show("ARM_carry") 
                 inst.AnimState:Hide("ARM_normal")
@@ -2985,11 +3133,12 @@ local states=
         timeline=
         {
             TimeEvent(21*FRAMES, function(inst)
-                local ba = inst:GetBufferedAction()
-                if ba.invobject and ba.invobject.components.instrument and ba.invobject.components.instrument.sound then
-                    inst.SoundEmitter:PlaySound(ba.invobject.components.instrument.sound)
-                elseif ba.invobject and ba.invobject.components.instrument and ba.invobject.components.instrument.sound_noloop then
-                    inst.SoundEmitter:PlaySound(ba.invobject.components.instrument.sound_noloop)
+                local instrument = inst.sg.statemem.horn and inst.sg.statemem.horn:IsValid() and inst.sg.statemem.horn.components.instrument or nil
+            
+                if instrument and instrument.sound then
+                    inst.SoundEmitter:PlaySound(instrument.sound, "horn")
+                elseif instrument and instrument.sound_noloop then
+                    inst.SoundEmitter:PlaySound(instrument.sound_noloop)
                 else
                     inst.SoundEmitter:PlaySound("dontstarve/common/horn_beefalo")
                 end
@@ -3074,6 +3223,7 @@ local states=
         end,
         
         onexit = function(inst)
+            inst.SoundEmitter:KillSound("fan")
             if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) then
                 inst.AnimState:Show("ARM_carry") 
                 inst.AnimState:Hide("ARM_normal")
@@ -3130,7 +3280,7 @@ local states=
             end),
             
             TimeEvent(14*FRAMES, function(inst)
-                    if (TheInput:IsMouseDown(MOUSEBUTTON_LEFT) or TheInput:IsControlPressed(CONTROL_ACTION) or TheInput:IsControlPressed(CONTROL_CONTROLLER_ACTION)) and 
+                    if (TheInput:IsControlPressed(CONTROL_PRIMARY) or TheInput:IsControlPressed(CONTROL_ACTION) or TheInput:IsControlPressed(CONTROL_CONTROLLER_ACTION)) and 
                     inst.sg.statemem.action and 
                     inst.sg.statemem.action:IsValid() and 
                     inst.sg.statemem.action.target and 

@@ -127,7 +127,7 @@ local function fn(Sim)
     --inst.Transform:SetFourFaced()
     inst.Transform:SetScale(0.5, 0.5, 0.5)
 
-    MakePoisonableCharacter(inst)
+    MakePoisonableCharacter(inst, "beefalo_body")
     MakeCharacterPhysics(inst, 100, .75)
     
     inst:AddTag("beefalo")

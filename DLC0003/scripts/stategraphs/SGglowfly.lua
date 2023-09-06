@@ -67,13 +67,15 @@ local events=
 
 
 local function spawnRabidBeetle(inst)
-    local pos = Vector3(inst.Transform:GetWorldPosition() )
+    if not inst.sg:HasStateTag("death") then
+        local pos = Vector3(inst.Transform:GetWorldPosition() )
 
-    local bug = SpawnPrefab("rabid_beetle")
-    if bug then
-        bug.Transform:SetPosition(pos.x,pos.y,pos.z)
-        bug.sg:GoToState("hatch")
-    end 
+        local bug = SpawnPrefab("rabid_beetle")
+        if bug then
+            bug.Transform:SetPosition(pos.x,pos.y,pos.z)
+            bug.sg:GoToState("hatch")
+        end
+    end
 end
 
 local states=
@@ -242,13 +244,17 @@ local states=
             inst.Physics:Stop()
             spawnRabidBeetle(inst)
             inst.AnimState:PlayAnimation("cocoon_idle_pst")
-            inst.persist = false
+            inst.persists = false
         end,
         
         events=
         {
             EventHandler("animover", function(inst) inst:Remove() end),
-        },        
+        },
+
+        onexit = function(inst)
+            inst:Remove()
+        end,
     },
 
     State{
@@ -257,13 +263,17 @@ local states=
 
         onenter = function(inst)           
             inst.AnimState:PlayAnimation("cocoon_idle_pst")
-            inst.persist = false
+            inst.persists = false
         end,
         
         events=
         {
             EventHandler("animover", function(inst) inst:Remove() end),
-        },        
+        },
+
+        onexit = function(inst)
+            inst:Remove()
+        end,
     },
 
     State{
@@ -284,7 +294,7 @@ local states=
 
     State{
         name = "cocoon_death",
-        tags = {"cocoon", "busy"},
+        tags = {"cocoon", "busy", "death"},
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("cocoon_death")

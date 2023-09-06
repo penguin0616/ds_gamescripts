@@ -170,6 +170,16 @@ function LocoMotor:GetRunSpeed()
     end
 end
 
+function LocoMotor:GetFasterOnRoad()
+    if self.inst.components.rider ~= nil then
+        local mount = self.inst.components.rider:IsRiding() and self.inst.components.rider:GetMount() or nil
+        if mount ~= nil then
+            return mount.components.locomotor.fasteronroad
+        end
+    end
+    return self.fasteronroad
+end
+
 function LocoMotor:GetBonusSpeed()
     return self.bonusspeed
 end
@@ -274,7 +284,7 @@ function LocoMotor:GetSpeedMultiplier()
     local wind_speed = 1
     local sm = GetSeasonManager()
 
-    if sm and sm:IsHurricaneStorm() then
+    if sm and sm:IsHurricaneStorm() and not self.inst:HasTag("windspeedimmune") then
             --get a wind speed adjustment
         local wind = GetWorld().components.worldwind
         local windangle = self.inst.Transform:GetRotation() - wind:GetWindAngle()
@@ -328,7 +338,7 @@ function LocoMotor:UpdateGroundSpeedMultiplier()
     local ground = GetWorld()
     local x,y,z = self.inst.Transform:GetWorldPosition()
 
-	local oncreep = ground ~= nil and ground.GroundCreep:OnCreep(x, y, z) and self.triggerscreep
+	local oncreep = ground ~= nil and ground.GroundCreep:OnCreep(x, y, z) and self.triggerscreep and not self.inst:GetIsOnWater()
     local onflood = ground ~= nil and ground.Flooding ~= nil and ground.Flooding:OnFlood(x, y, z)
     local boating = self.inst.components.driver and self.inst.components.driver:GetIsDriving() 
     
@@ -344,7 +354,7 @@ function LocoMotor:UpdateGroundSpeedMultiplier()
 		self.groundspeedmultiplier = self.slowmultiplier
 	else
         self.wasoncreep = false
-		if self.fasteronroad then
+		if self:GetFasterOnRoad() then
             --print(self.inst, "UpdateGroundSpeedMultiplier check road" )
 			if RoadManager and RoadManager:IsOnRoad( x,0,z ) then
 				self.groundspeedmultiplier = self.fastmultiplier
@@ -447,7 +457,11 @@ function LocoMotor:GoToEntity(inst, bufferedaction, run)
     self.slowing = false 
     
     if bufferedaction and bufferedaction.distance then
-		self.arrive_dist = bufferedaction.distance
+        --NOTE: use actual physics (ignoring physicsradiusoverride)
+        --      as fallback if bufferedaction.distance is too small
+        self.arrive_dist = ARRIVE_STEP + (inst.Physics ~= nil and inst.Physics:GetRadius() or 0) + (self.inst.Physics ~= nil and self.inst.Physics:GetRadius() or 0)
+        self.arrive_dist = math.max(self.arrive_dist, bufferedaction.distance)
+
 	else
         self.arrive_dist = ARRIVE_STEP
 

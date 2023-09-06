@@ -123,13 +123,14 @@ local function fn(Sim)
 	inst:AddComponent("tradable")
 
 	MakePoisonableCharacter(inst)
-	MakeCharacterPhysics(inst, 1, .25)
+	MakeAmphibiousCharacterPhysics(inst, 1, .25)
 	inst.Physics:SetCollisionGroup(COLLISION.FLYERS)
 	inst.Physics:ClearCollisionMask()
 	inst.Physics:CollidesWith(GetWorldCollision())
 	inst.Physics:CollidesWith(COLLISION.INTWALL)
 	
 	inst:AddComponent("inventoryitem")
+	inst.components.inventoryitem.nosink = true
 
 	if SaveGameIndex:IsModeShipwrecked() then
 		inst.AnimState:SetBuild("butterfly_tropical_basic")

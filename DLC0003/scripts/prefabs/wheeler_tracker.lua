@@ -207,13 +207,14 @@ local function on_unequip(inst, owner)
     DeactivateTracking(inst)
 end
 
-local function can_take_item(inst)        
+local function can_take_item(inst, item)
+    
     if inst.components.inventory:IsFull() then -- If there's an item, replace it
         local trade_item = inst.components.inventory:RemoveItemBySlot(1)
         GetPlayer().components.inventory:GiveActiveItem(trade_item)
     end
 
-    return true--not inst.components.inventory:IsFull()
+    return true
 end
 
 local  function on_lose_item(inst, data)
@@ -240,6 +241,12 @@ local function on_take_item(inst, data)
         inst.tracked_item = TrackNext(inst, data.item)
         ActivateTracking(inst)
     end
+end
+
+local function onremove(inst)
+    local item = inst.components.inventory:RemoveItemBySlot(1)
+    local owner  = inst.components.inventoryitem.owner or inst 
+    inst.components.inventory:DropItem(item, true, true, owner:GetPosition())
 end
 
 local function fn(Sim)
@@ -272,6 +279,7 @@ local function fn(Sim)
     inst:ListenForEvent("trade", on_take_item)
 
     inst:AddComponent("trader")
+    inst.components.trader.acceptnontradable = true
     inst.components.trader:SetAcceptTest(can_take_item)
     
     inst.TakeItem = function(inst, item)
@@ -292,6 +300,8 @@ local function fn(Sim)
 
     inst:ListenForEvent("exitinterior",  function() refreshoninterior() end, GetWorld())
     inst:ListenForEvent("enterinterior", function() refreshoninterior() end, GetWorld())
+
+    inst:ListenForEvent("onremove", onremove)
 
     inst:AddComponent("characterspecific")
     inst.components.characterspecific:SetOwner("wheeler")

@@ -306,17 +306,23 @@ end
 
 local function orange(inst)
     local inst = commonfn(inst)
-        inst.AnimState:PlayAnimation("orangeamulet")
-        -- inst.components.inspectable.nameoverride = "unimplemented"
-        -- inst:AddComponent("useableitem")
-        -- inst.components.useableitem:SetOnUseFn(unimplementeditem)
-        inst.components.equippable:SetOnEquip( onequip_orange )
-        inst.components.equippable:SetOnUnequip( onunequip_orange )
+    inst.AnimState:PlayAnimation("orangeamulet")
+    -- inst.components.inspectable.nameoverride = "unimplemented"
+    -- inst:AddComponent("useableitem")
+    -- inst.components.useableitem:SetOnUseFn(unimplementeditem)
+    inst.components.equippable:SetOnEquip( onequip_orange )
+    inst.components.equippable:SetOnUnequip( onunequip_orange )
 
-        inst:AddComponent("finiteuses")
-        inst.components.finiteuses:SetOnFinished( onfinished )
-        inst.components.finiteuses:SetMaxUses(TUNING.ORANGEAMULET_USES)
-        inst.components.finiteuses:SetUses(TUNING.ORANGEAMULET_USES)
+    inst:AddComponent("finiteuses")
+    inst.components.finiteuses:SetOnFinished( onfinished )
+    inst.components.finiteuses:SetMaxUses(TUNING.ORANGEAMULET_USES)
+    inst.components.finiteuses:SetUses(TUNING.ORANGEAMULET_USES)
+
+    inst:AddComponent("repairable")
+    inst.components.repairable.repairmaterial = "nightmare"
+    inst.components.repairable.announcecanfix = false
+
+    inst:AddTag("repairshortaction")
 
     return inst
 end

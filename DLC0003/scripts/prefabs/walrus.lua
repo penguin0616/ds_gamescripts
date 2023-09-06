@@ -108,7 +108,7 @@ local function create()
     inst.Transform:SetFourFaced()
     inst.Transform:SetScale(1.5,1.5,1.5)
 
-    MakePoisonableCharacter(inst)
+    MakePoisonableCharacter(inst, "pig_torso")
     MakeCharacterPhysics(inst, 50, .5)    
      
     anim:SetBank("walrus")

@@ -179,6 +179,10 @@ local function onunequip_orange(inst, owner)
     if inst.task then inst.task:Cancel() inst.task = nil end
 end
 
+local function returntointeriorscene_yellow(inst)
+    inst.Light:Enable(false)
+end
+
 ---YELLOW
 local function onequip_yellow(inst, owner) 
     owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "yellowamulet")
@@ -322,6 +326,12 @@ local function orange(inst)
     inst.components.finiteuses:SetMaxUses(TUNING.ORANGEAMULET_USES)
     inst.components.finiteuses:SetUses(TUNING.ORANGEAMULET_USES)
 
+    inst:AddComponent("repairable")
+    inst.components.repairable.repairmaterial = "nightmare"
+    inst.components.repairable.announcecanfix = false
+
+    inst:AddTag("repairshortaction")
+
     return inst
 end
 
@@ -346,6 +356,9 @@ local function yellow(inst)
     inst.components.fueled.fueltype = "NIGHTMARE"
     inst.components.fueled:InitializeFuelLevel(TUNING.YELLOWAMULET_FUEL)
     inst.components.fueled:SetDepletedFn(onfinished)
+
+    inst.returntointeriorscene = returntointeriorscene_yellow
+
     return inst
 end
 

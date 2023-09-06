@@ -16,6 +16,8 @@ end)
 
 -- Translates prefabs to their cooked prefab for when they are not in default form (cookedXXX or XXX_cooked)
 local special_cooked_prefabs = {
+	["trunk_summer"] = "trunk_cooked",
+	["trunk_winter"] = "trunk_cooked",
 	["fish_raw"] = "fish_med_cooked",
 }
 
@@ -193,6 +195,14 @@ function LootDropper:GetAllLoot()
 	return total_loot
 end
 
+local function InsertOincs(loots, num, type)
+	if num > 0 then
+		for n=1, num do
+			table.insert(loots, type)
+		end
+	end
+end
+
 function LootDropper:GenerateLoot()
 	local loots = {}
 	
@@ -262,14 +272,25 @@ function LootDropper:GenerateLoot()
 			if self.inst:HasTag("burnt") then
 				amt = math.ceil( (v.amount * TUNING.BURNT_HAMMER_LOOT_PERCENT) * percent)
 			end
-			for n = 1, amt do
-				table.insert(loots, v.type)
+			
+			if v.type == "oinc" then
+				local oinc100 = math.floor(amt / 100)
+				local oinc10  = math.floor((amt - (oinc100 * 100)) / 10)
+				local oinc    = amt - (oinc100 * 100) - (oinc10 * 10)
+				
+				InsertOincs(loots, oinc100, "oinc100")
+				InsertOincs(loots, oinc10,  "oinc10" )
+				InsertOincs(loots, oinc,    "oinc"   )
+			else
+				for n = 1, amt do
+					table.insert(loots, v.type)
+				end
 			end
 		end
+	end
 
-		if self.inst:HasTag("burnt") and math.random() < .4 then
-			table.insert(loots, "charcoal") -- Add charcoal to loot for burnt structures
-		end
+	if self.inst:HasTag("burnt") and math.random() < .4 then
+		table.insert(loots, "charcoal") -- Add charcoal to loot for burnt structures and trees.
 	end
 	
 	return loots
@@ -338,7 +359,7 @@ end
 
 function LootDropper:SpawnLootPrefab(lootprefab, pt)
 	if lootprefab then
-		if GetWorld().getworldgenoptions and  GetWorld().getworldgenoptions(GetWorld())[lootprefab] and GetWorld().getworldgenoptions(GetWorld())[lootprefab] == "never" then
+		if GetWorld():IsWorldGenOptionNever(lootprefab) then
 			return
 		end
 		local loot = SpawnPrefab(lootprefab)

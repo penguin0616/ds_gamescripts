@@ -20,10 +20,6 @@ local function onthrown(inst, thrower, pt, time_to_target)
     shadow.Transform:SetPosition(pt:Get())
     shadow:shrink(time_to_target, 2, 0.5)
 
-    local smoke =  SpawnPrefab("collapse_small")
-    local x, y, z = inst.Transform:GetWorldPosition()
-    y = y + 1
-
 	inst.UpdateTask = inst:DoPeriodicTask(FRAMES, function()
 		local pos = inst:GetPosition()
 		if pos.y <= 0.3 then

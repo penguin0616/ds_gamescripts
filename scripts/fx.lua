@@ -53,7 +53,7 @@ local FX =
 	    sounddelay2 = 26/30,
 	    tint = nil,
 	    tintalpha = nil,
-	    fn = function() GetClock():DoLightningLighting(.25) end,
+	    fnc = function() GetClock():DoLightningLighting(.25) end,
 	    fntime = 26/30
     },    
     {
@@ -66,7 +66,7 @@ local FX =
 	    sounddelay2 = 26/30,
 	    tint = nil,
 	    tintalpha = nil,
-	    fn = function() GetClock():DoLightningLighting(1) end,
+	    fnc = function() GetClock():DoLightningLighting(1) end,
 	    fntime = 26/30
     },    
 
@@ -313,7 +313,7 @@ local FX =
 	    name = "groundpound_fx", 
 	    bank = "bearger_ground_fx", 
 	    build = "bearger_ground_fx", 
-	    sound = "dontstarve_DLC001/creatures/bearger/dustpoof",
+	    --sound = "dontstarve_DLC001/creatures/bearger/dustpoof",
     	anim = "idle",	  
     },    
 	{
@@ -350,6 +350,42 @@ local FX =
         build = "sand_puff",
         anim = "forage_out",
         sound = "dontstarve/common/deathpoof",
+    },
+	{
+        name = "minotaur_blood1",
+        bank = "rook_rhino_blood_fx",
+        build = "rook_rhino_blood_fx",
+        anim = "blood1",
+        sound = "ancientguardian_rework/minotaur2/blood_splurt_small",
+        nofaced = true,
+        fn = function(inst)
+            inst.AnimState:SetMultColour(1, 1, 1, .5)
+            inst.Transform:SetTwoFaced()
+        end,
+    },
+    {
+        name = "minotaur_blood2",
+        bank = "rook_rhino_blood_fx",
+        build = "rook_rhino_blood_fx",
+        anim = "blood2",
+        sound = "ancientguardian_rework/minotaur2/blood_splurt_small",
+        nofaced = true,
+        fn = function(inst)
+            inst.AnimState:SetMultColour(1, 1, 1, .5)
+            inst.Transform:SetTwoFaced()
+        end,
+    },
+    {
+        name = "minotaur_blood3",
+        bank = "rook_rhino_blood_fx",
+        build = "rook_rhino_blood_fx",
+        anim = "blood3",
+        sound = "ancientguardian_rework/minotaur2/blood_splurt_small",
+        nofaced = true,
+        fn = function(inst)
+            inst.AnimState:SetMultColour(1, 1, 1, .5)
+            inst.Transform:SetTwoFaced()
+        end,
     },
 }
 

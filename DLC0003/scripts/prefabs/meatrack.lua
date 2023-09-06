@@ -81,19 +81,19 @@ local function getstatus(inst)
 end
 
 local function onstartdrying(inst, build)
-	print("onstartdrying", build)
+	--print("onstartdrying", build)
 	if not inst:HasTag("burnt") then
 	    inst.AnimState:PlayAnimation("drying_pre")
 		inst.AnimState:PushAnimation("drying_loop", true)
 	    inst.AnimState:OverrideSymbol("swap_dried", "meat_rack_food", build)
-	    print("setting override symbol to ",build)
+	    --print("setting override symbol to ",build)
 	end
 end
 
 local function setdone(inst, product)
 	if not inst:HasTag("burnt") then
 	    inst.AnimState:PlayAnimation("idle_full")
-	    print("setting override symbol to ", product)
+	    --print("setting override symbol to ", product)
 	    inst.AnimState:OverrideSymbol("swap_dried", "meat_rack_food", product)
 	end
 end

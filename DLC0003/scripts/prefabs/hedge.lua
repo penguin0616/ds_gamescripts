@@ -28,6 +28,11 @@ local function resolveanimtoplay(inst, percent)
     end
 end
 
+-- NOTES(DiogoW): Things that add walls to the path finder appear with a wrong visual rotation when
+-- entering/exiting interiors. I have no idea why.
+local function FixUpRotation(inst)
+    inst.Transform:SetRotation(inst.Transform:GetRotation())
+end
 
 function MakeHedgeType(data)
 
@@ -378,9 +383,7 @@ function MakeHedgeType(data)
         inst.components.fixable.reconstructedanims ={play ="place", push = "growth1" }
         inst.components.fixable.reconstructionprefab = data.name
 
-		inst:ListenForEvent("endinteriorcam", function()
-			inst.Transform:SetRotation(inst.Transform:GetRotation())
-		end, GetWorld())
+        inst:ListenForEvent("entitywake", FixUpRotation)
 
 		inst.OnSave = onsave
 	    inst.OnLoad = onload
@@ -394,6 +397,10 @@ function MakeHedgeType(data)
 
 		inst.shave = shave
 		inst.setAgeTask = setAgeTask
+
+		MakeMediumBurnable(inst, nil, nil, true)
+        MakeMediumPropagator(inst)
+        inst:ListenForEvent("burntup", inst.Remove)
 
 		inst:AddComponent("shearable")
 		inst.components.shearable:SetProduct("clippings", 2)

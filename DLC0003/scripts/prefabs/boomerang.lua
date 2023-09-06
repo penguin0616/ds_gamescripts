@@ -26,7 +26,9 @@ local function OnHitOwner(inst)
     inst.components.floatable:SetAnimationFromPosition()
 end
 
-local function OnDropped(inst)
+local function OnPutInInventory(inst)
+    inst.AnimState:PlayAnimation("idle")
+
     inst.components.projectile:Stop()
     inst.Physics:Stop()
 end
@@ -96,6 +98,7 @@ local function fn(Sim)
     inst:AddTag("thrown")
     
     inst:AddComponent("weapon")
+    inst.components.weapon.projectilelaunchsymbol = "swap_object"
     inst.components.weapon:SetDamage(TUNING.BOOMERANG_DAMAGE)
     inst.components.weapon:SetRange(TUNING.BOOMERANG_DISTANCE, TUNING.BOOMERANG_DISTANCE+2)
     -------
@@ -118,8 +121,7 @@ local function fn(Sim)
     inst.components.projectile:SetLaunchOffset(Vector3(0, 0.2, 0))
     
     inst:AddComponent("inventoryitem")
-    inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
-    inst.components.inventoryitem:SetOnPutInInventoryFn(OnDropped)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
     
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(OnEquip)

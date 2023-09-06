@@ -103,9 +103,9 @@ function Vineable:OnSave()
 	local data = { 
 		vined = self.vined,
 	}
-	print("HAS TASK?",self.inst.regrowtask)
+	--print("HAS TASK?",self.inst.regrowtask)
 	if self.inst.regrowtask then
-		print("SAVING GROW TASK TIME",self.inst.regrowtaskinfo)
+		--print("SAVING GROW TASK TIME",self.inst.regrowtaskinfo)
 		data.regrowtimeleft = self.inst:TimeRemainingInTask(self.inst.regrowtaskinfo)
 		self.inst.regrowtask:Cancel()
 		self.inst.regrowtask = nil

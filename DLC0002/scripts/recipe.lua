@@ -5,8 +5,12 @@ Ingredient = Class(function(self, type, amount, atlas)
     self.type = type
     self.amount = amount
 	self.atlas = (atlas and resolvefilepath(atlas))
-					or resolvefilepath("images/inventoryimages.xml")
 end)
+
+function Ingredient:GetAtlas(imagename)
+	self.atlas = self.atlas or resolvefilepath(GetInventoryItemAtlas(imagename))
+	return self.atlas
+end
 
 local num = 0
 Recipes = {} -- Don't use this directly, call GetAllRecipes instead
@@ -42,8 +46,6 @@ Recipe = Class(function(self, name, ingredients, tab, level, game_type, placer, 
     self.ingredients   = ingredients
     self.product       = name
     self.tab           = tab
-
-    self.atlas         = resolvefilepath("images/inventoryimages.xml")
 
     self.image         = name .. ".tex"
 
@@ -105,8 +107,12 @@ Recipe = Class(function(self, name, ingredients, tab, level, game_type, placer, 
             sortrecipe(self,self.game_type, name) 
         end
     end
-
 end)
+
+function Recipe:GetAtlas()
+	self.atlas = self.atlas or resolvefilepath(GetInventoryItemAtlas(self.image))
+	return self.atlas
+end
 
 function Recipe:GetLevel()
     return self.level

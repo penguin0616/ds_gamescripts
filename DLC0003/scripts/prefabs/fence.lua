@@ -19,12 +19,6 @@ local function IsNearOtherWall(other, pt, min_spacing_sq)
     return IsNearOther(other, pt, min_spacing_sq)
 end
 
-function IsPassableAtPoint(x, y, z)
-    local tile = GetWorld().Map:GetTileAtPoint(x, y, z)
-    return tile ~= GROUND.IMPASSABLE and
-        tile ~= GROUND.INVALID
-end
-
 function IsDeployPointClear(pt, inst, min_spacing, min_spacing_sq_fn, near_other_fn)
     local min_spacing_sq = min_spacing ~= nil and min_spacing * min_spacing or nil
     near_other_fn = near_other_fn or IsNearOther
@@ -371,6 +365,16 @@ end
 
 -------------------------------------------------------------------------------
 
+-- NOTES(DiogoW): Things that add walls to the path finder appear with a wrong visual rotation when
+-- entering/exiting interiors. I have no idea why.
+local function FixUpRotation(inst)
+    inst.Transform:SetRotation(inst.Transform:GetRotation())
+
+    if inst.dooranim then
+        inst.dooranim.Transform:SetRotation(inst.Transform:GetRotation())
+    end
+end
+
 local function onsave(inst, data)
     local rot = CalcRotationEnum(inst.Transform:GetRotation(), inst.isdoor)
     data.rot = rot > 0 and rot or nil    
@@ -524,13 +528,7 @@ local function MakeWall(name, builds, isdoor, klaussackkeyid)
             inst.highlightchildren = {inst.dooranim}
         end
 
-        inst:ListenForEvent("endinteriorcam", function()
-            inst.Transform:SetRotation(inst.Transform:GetRotation())
-
-            if inst.dooranim then    
-                inst.dooranim.Transform:SetRotation(inst.Transform:GetRotation())
-            end
-        end, GetWorld()) 
+        inst:ListenForEvent("entitywake", FixUpRotation)
 
         inst.builds = builds
 
@@ -590,9 +588,10 @@ local function MakeWallAnim(name, builds, isdoor)
 
         inst:AddTag("FX")
         inst:AddTag("nointerpolate")
+        inst:AddTag("INTERIOR_LIMBO_IMMUNE")
 
         if isdoor then
-            inst.AnimState:Hide("mouseover")            
+            inst.AnimState:Hide("mouseover")
         end
 
         MakeSnowCovered(inst)

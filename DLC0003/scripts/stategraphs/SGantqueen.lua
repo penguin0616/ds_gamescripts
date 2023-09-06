@@ -133,7 +133,11 @@ local states=
         {
             TimeEvent(5*FRAMES, function (inst)  inst.SoundEmitter:PlaySound("dontstarve_DLC003/creatures/boss/antqueen/atk_3_breath_in") end),
             TimeEvent(22*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC003/creatures/boss/antqueen/insane_LP","insane") end),
-            TimeEvent(25*FRAMES, function(inst) GetPlayer():PushEvent("sanity_stun", {duration = 3.5}) end), 
+            TimeEvent(25*FRAMES, function(inst)
+                if not GetPlayer().components.inventory:IsItemNameEquipped("earmuffshat") then
+                    GetPlayer():PushEvent("sanity_stun", {duration = 3.5})
+                end
+            end), 
         },
 
         events =

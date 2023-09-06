@@ -21,7 +21,6 @@ local function onpickedfn(inst)
     end
 
     local target = FindEntity(inst, 50, function(item) return item:HasTag("platapine") end)
-    print("TUNING.BILL_SPAWN_CHANCE",TUNING.BILL_SPAWN_CHANCE)
     if not target and math.random() < TUNING.BILL_SPAWN_CHANCE then 
         local x, y, z = inst.Transform:GetWorldPosition()
         local bill = SpawnPrefab("bill")
@@ -105,9 +104,10 @@ local function fn(Sim)
     inst:AddComponent("appeasement")
     inst.components.appeasement.appeasementvalue = TUNING.WRATH_SMALL
     
-	--MakeSmallBurnable(inst, TUNING.SMALL_FUEL)
-    --MakeSmallPropagator(inst)
-	MakeNoGrowInWinter(inst)    
+	MakeSmallBurnable(inst, TUNING.MED_BURNTIME)
+    MakeSmallPropagator(inst)
+
+	MakeNoGrowInWinter(inst)
     ---------------------   
 
     inst:ListenForEvent("dusktime", function()

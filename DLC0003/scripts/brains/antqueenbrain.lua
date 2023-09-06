@@ -36,7 +36,7 @@ end
 
 local function SetCoolDown(inst, min, max)
     inst.components.combat:BlankOutAttacks(math.random(min, max), function(inst)
-        if math.random() < 0.3 then
+        if math.random() < 0.3 and not inst.components.health:IsDead() then
             inst.sg:GoToState("taunt")
         end
     end)

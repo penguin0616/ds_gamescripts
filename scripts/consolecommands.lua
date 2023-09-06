@@ -61,12 +61,16 @@ function c_sel()
     return GetDebugEntity()
 end
 
-function c_select(inst)
+function c_select(inst, noselect)
     if not inst then
         inst = ConsoleWorldEntityUnderMouse()
     end
-    print("Selected "..tostring(inst or "<nil>") )
-    SetDebugEntity(inst)
+    
+    if not noselect then
+        print("Selected "..tostring(inst or "<nil>") )
+        SetDebugEntity(inst)
+    end
+
     return inst
 end
 
@@ -185,6 +189,8 @@ function c_mat(recname)
     end
 end
 
+c_mats, c_material, c_materials = c_mat, c_mat, c_mat
+
 function c_pos(inst)
     return inst and Point(inst.Transform:GetWorldPosition())
 end
@@ -208,6 +214,7 @@ end
 function c_goto(dest, inst)
     inst = inst or GetPlayer()
     inst.Transform:SetPosition(dest.Transform:GetWorldPosition())
+    TheCamera:Snap()
     SuUsed("c_goto", true)
 end
 
@@ -563,8 +570,28 @@ function c_save()
     GetPlayer().components.autosaver:DoSave()
 end
 
--- Regenerates the world.
-function c_regenerateworld()
+-- Regenerates the current world.
+function c_regeneratecurrentworld()
+    if not GetPlayer() then return end
+
+    GetPlayer().profile:Save(function()
+        SaveGameIndex:EraseCurrent(function() 
+            scheduler:ExecuteInTime(0.1, function()
+                local function OnProfileSaved()
+                    TheFrontEnd:Fade(false, 0.5, function () 
+                        StartNextInstance({reset_action=RESET_ACTION.LOAD_SLOT, save_slot = SaveGameIndex:GetCurrentSaveSlot()})
+                    end )
+                end
+                
+                -- Record the start of a new game
+                Profile:Save(OnProfileSaved)
+            end)
+        end, false)
+    end)
+end
+
+-- Regenerates all worlds in the saveslot.
+function c_regenerateallworlds()
     if not GetPlayer() then return end
 
     GetPlayer().profile:Save(function()
@@ -584,6 +611,16 @@ function c_regenerateworld()
             end)
         end)
     end)
+end
+
+function c_regeneratecave()
+    local entrance = c_select(nil, true)
+    
+    if not (entrance and entrance.cavenum ~= nil) then print(">> You need to hover the cave entrance.") return end
+
+    local num = entrance.cavenum
+
+    SaveGameIndex:ResetCave(num)
 end
 
 -- Rollback to the last save / reloads frontend
@@ -615,4 +652,53 @@ end
 function c_reload()
     c_save()
     GetPlayer():DoTaskInTime(3, c_reset)
+end
+
+function c_freecrafting()
+    GetPlayer().components.builder:GiveAllRecipes()
+end
+
+function c_domesticatedbeefalo(tendency)
+    tendency = tendency or TENDENCY.RIDER
+
+    local saddle = c_spawn("saddle_race")
+    local beef = c_spawn("beefalo")
+
+    beef.components.hunger:DoDelta(400);
+    beef.components.domesticatable:DeltaTendency(tendency, 1)
+    beef:SetTendency()
+
+    beef.components.domesticatable.domestication = 1
+    beef.components.domesticatable:BecomeDomesticated()
+
+    beef.components.rideable:SetSaddleable(true)
+    beef.components.rideable:SetSaddle(GetPlayer(), saddle)
+end
+
+function c_swapcharacter(character, no_reload)
+    if table.contains(GetActiveCharacterList(), character) then
+        GetPlayer().prefab = character
+
+        if not no_reload then
+            c_reload()
+        end
+    else
+        nolineprint(string.format('>> Character "%s" isn\'t valid...', character))
+    end
+end
+
+function c_testteleportato()
+    local current_mode = SaveGameIndex.data.slots[SaveGameIndex.current_slot].current_mode
+
+    local base
+    if current_mode == "adventure" then 
+        c_give("diviningrod")
+
+        base = c_findnext("teleportato_base")
+        c_goto(base)
+    else
+        base = c_spawn("teleportato_base")
+    end
+
+    base:OnLoad({makecomplete=1})
 end

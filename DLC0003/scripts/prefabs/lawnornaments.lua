@@ -1,21 +1,35 @@
 
 local prefabs = {
     "ash",
-    "collapse_small",
 }
 
-local function onHammered(inst, worker)	
-    SpawnPrefab("collapse_small").Transform:SetPosition(inst.Transform:GetWorldPosition())
+local function onHammered(inst, worker)
+    local x, y, z = inst.Transform:GetWorldPosition()
+    for i=1,math.random(3,4) do
+        local fx = SpawnPrefab("robot_leaf_fx")
+        fx.Transform:SetPosition(x + (math.random()*2) , y+math.random()*0.5, z + (math.random()*2))
+        if math.random() < 0.5 then
+            fx.Transform:SetScale(-1,1,-1)
+        end
+    end
+
     if not inst.components.fixable then
         inst.components.lootdropper:DropLoot()
     end
+    
+    inst.SoundEmitter:PlaySound("dontstarve/common/destroy_straw")
     inst:Remove()
-    inst.SoundEmitter:PlaySound("dontstarve/common/destroy_wood")
 end
-        
+
 local function onHit(inst, worker)
-    inst.AnimState:PlayAnimation("hit")
-    inst.AnimState:PushAnimation("idle")
+	inst.AnimState:PlayAnimation("hit")
+	inst.AnimState:PushAnimation("idle", false)
+
+    local fx = SpawnPrefab("robot_leaf_fx")
+    local x, y, z= inst.Transform:GetWorldPosition()
+    fx.Transform:SetPosition(x, y + math.random()*0.5, z)
+            
+    inst.SoundEmitter:PlaySound("dontstarve_DLC002/common/vine_hack")
 end
 
 local function onBuilt(inst)
@@ -52,7 +66,7 @@ local function MakeLawnornament(n)
         inst:AddComponent("lootdropper")
         inst:AddComponent("workable")
         inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
-        inst.components.workable:SetWorkLeft(2)
+        inst.components.workable:SetWorkLeft(3)
         inst.components.workable:SetOnFinishCallback(onHammered)
         inst.components.workable:SetOnWorkCallback(onHit)
         
@@ -66,8 +80,8 @@ local function MakeLawnornament(n)
         inst:AddComponent("fixable")
         inst.components.fixable:AddRecinstructionStageData("burnt", "topiary0".. n, "topiary0".. n)
 
-        MakeSmallBurnable(inst, nil, nil, true)
-        MakeSmallPropagator(inst)
+        MakeMediumBurnable(inst, nil, nil, true)
+        MakeMediumPropagator(inst)
 
         inst:AddComponent("gridnudger")
 

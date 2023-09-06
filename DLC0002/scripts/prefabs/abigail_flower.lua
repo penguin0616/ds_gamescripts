@@ -50,20 +50,9 @@ local function updateimage(inst)
 			inst.components.inventoryitem:ChangeImageName("abigail_flower2")
 			
             inst.components.floatable:UpdateAnimations("idle_2_water", "idle_2")
-            if inst.components.floatable.onwater then
-                inst.AnimState:PlayAnimation("idle_2_water")
-            else
-                inst.AnimState:PlayAnimation("idle_2")
-            end
 		else
 			inst.components.inventoryitem:ChangeImageName("abigail_flower")
-
             inst.components.floatable:UpdateAnimations("idle_1_water", "idle_1")
-            if inst.components.floatable.onwater then
-                inst.AnimState:PlayAnimation("idle_1_water")
-            else
-                inst.AnimState:PlayAnimation("idle_1")
-            end
 		end
 	end
 end

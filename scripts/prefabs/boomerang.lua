@@ -21,7 +21,11 @@ local function OnEquip(inst, owner)
     owner.AnimState:Hide("ARM_normal") 
 end
 
-local function OnDropped(inst)
+local function OnHitOwner(inst)
+    inst.AnimState:PlayAnimation("idle")
+end
+
+local function OnPutInInventory(inst)
     inst.AnimState:PlayAnimation("idle")
 
     inst.components.projectile:Stop()
@@ -62,7 +66,7 @@ end
 
 local function OnHit(inst, owner, target)
     if owner == target then
-        OnDropped(inst)
+        OnHitOwner(inst)
     else
         ReturnToOwner(inst, owner)
     end
@@ -91,6 +95,7 @@ local function fn(Sim)
     inst:AddTag("thrown")
     
     inst:AddComponent("weapon")
+    inst.components.weapon.projectilelaunchsymbol = "swap_object"
     inst.components.weapon:SetDamage(TUNING.BOOMERANG_DAMAGE)
     inst.components.weapon:SetRange(TUNING.BOOMERANG_DISTANCE, TUNING.BOOMERANG_DISTANCE+2)
     -------
@@ -112,8 +117,7 @@ local function fn(Sim)
     inst.components.projectile:SetOnCaughtFn(OnCaught)
     
     inst:AddComponent("inventoryitem")
-    inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
-    inst.components.inventoryitem:SetOnPutInInventoryFn(OnDropped)
+    inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
     
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(OnEquip)

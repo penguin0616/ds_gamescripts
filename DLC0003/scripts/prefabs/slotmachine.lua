@@ -181,7 +181,8 @@ local function ShouldAcceptItem(inst, item)
 end
 
 local function OnGetItemFromPlayer(inst, giver, item)
-	giver.components.sanity:DoDelta(-TUNING.SANITY_TINY)
+	local sanityloss = math.clamp(inst.coins/2.5, 5, 40) -- Max out at 100 coins.
+	giver.components.sanity:DoDelta(-sanityloss)
 
 	PickPrize(inst, item)
 	StartSpinning(inst)
@@ -217,10 +218,6 @@ end
 
 local function OnFloodedEnd(inst)
 	inst.components.payable:Enable()
-end
-
-local function CalcSanityAura(inst, observer)
-	return -(TUNING.SANITYAURA_MED*(1+(inst.coins/100)))
 end
 
 local function CreateSlotMachine(name)
@@ -271,9 +268,6 @@ local function CreateSlotMachine(name)
 		inst.components.payable:SetAcceptTest(ShouldAcceptItem)
 		inst.components.payable.onaccept = OnGetItemFromPlayer
 		inst.components.payable.onrefuse = OnRefuseItem
-
-		inst:AddComponent("sanityaura")
-    	inst.components.sanityaura.aurafn = CalcSanityAura
 
 		inst:AddComponent("floodable")
 		inst.components.floodable.onStartFlooded = OnFloodedStart

@@ -157,7 +157,7 @@ local actionhandlers =
     ActionHandler(ACTIONS.MANUALEXTINGUISH, "dolongaction"),
     ActionHandler(ACTIONS.RANGEDSMOTHER, "attack"),
 	ActionHandler(ACTIONS.TRAVEL, "doshortaction"),
-    ActionHandler(ACTIONS.LIGHT, "give"),
+    ActionHandler(ACTIONS.LIGHT, "catchonfire"),
     ActionHandler(ACTIONS.UNLOCK, "give"),
     ActionHandler(ACTIONS.TURNOFF, "give"),
     ActionHandler(ACTIONS.TURNON, "give"),
@@ -165,7 +165,9 @@ local actionhandlers =
     ActionHandler(ACTIONS.TOGGLEON, "give"),
     ActionHandler(ACTIONS.ADDFUEL, "doshortaction"),
     ActionHandler(ACTIONS.ADDWETFUEL, "doshortaction"),
-    ActionHandler(ACTIONS.REPAIR, "dolongaction"),
+    ActionHandler(ACTIONS.REPAIR, function(inst, action)
+        return action.target:HasTag("repairshortaction") and "doshortaction" or "dolongaction"
+    end),
     ActionHandler(ACTIONS.REPAIRBOAT, "dolongaction"),
     
     ActionHandler(ACTIONS.READ, "book"),
@@ -471,11 +473,13 @@ local events=
         inst.components.playercontroller:Enable(false)
         if inst.components.rider:IsRiding()then
             inst.sg:GoToState("death_mounted")
-        elseif data.cause == "drowning" then        
+        elseif data.cause == "drowning" then
             inst.sg:GoToState("death_boat")
             local sound_name = inst.soundsname or inst.prefab
-            local path = inst.talker_path_override or "dontstarve_DLC002/characters/"
-            inst.SoundEmitter:PlaySound(path..sound_name.."/sinking_death")
+            local path = inst.talker_path_override or
+            inst.SoundEmitter:PlaySound("dontstarve_DLC002/characters/sinking_death")
+        elseif data.cause == "file_load" then
+            inst.sg:GoToState("death")
         else
             inst.sg:GoToState("death")
             local sound_name = inst.soundsname or inst.prefab
@@ -485,7 +489,9 @@ local events=
             end
         end
 
-        inst.SoundEmitter:PlaySound("dontstarve/wilson/death")
+        if data.cause ~= "file_load" then
+            inst.SoundEmitter:PlaySound("dontstarve/wilson/death")
+        end
     end),
 
     EventHandler("ontalk", function(inst, data)
@@ -670,7 +676,7 @@ local states=
 
     State{
         name = "vacuumedin",
-        tags = {"busy", "vacuum_in", "canrotate"},
+        tags = {"busy", "vacuum", "vacuum_in", "canrotate"},
         onenter = function(inst)
             inst.components.playercontroller:Enable(false)
             inst.AnimState:PlayAnimation("flying_pre")
@@ -684,7 +690,7 @@ local states=
 
      State{
         name = "vacuumedheld",
-        tags = {"busy", "vacuum_held"},
+        tags = {"busy", "vacuum", "vacuum_held"},
         onenter = function(inst)
             inst.components.playercontroller:Enable(false)
             inst.DynamicShadow:Enable(false)
@@ -700,7 +706,7 @@ local states=
 
     State{
         name = "vacuumedout",
-        tags = {"busy", "vacuum_out", "canrotate"},
+        tags = {"busy", "vacuum", "vacuum_out", "canrotate"},
 
         onenter = function(inst, data)
             inst.components.playercontroller:Enable(false)
@@ -1074,35 +1080,6 @@ local states=
         },
     },
 
-     State{
-        name = "werebeaver_death_boat",
-        tags = {"busy"},
-
-        onenter = function(inst)
-            --inst.components.driver:SplitFromVehicle()
-            --inst.components.driver:CombineWithVehicle()
-            inst.components.locomotor:Stop()
-            inst.last_death_position = inst:GetPosition()
-            inst.AnimState:SetBuild("werebeaver_boat_death") --This animation is in it's own build and bank because?
-            inst.AnimState:SetBank("werebeaver_boat_death") -- It gets set back in the resurrectable component, kind of ugly 
-            inst.AnimState:PlayAnimation("boat_death")
-            inst.SoundEmitter:PlaySound("dontstarve_DLC002/characters/woody/warebeaver_sinking_death")
-        end,
-
-        onexit= function(inst) 
-            inst.DynamicShadow:Enable(true) 
-        end,
-
-        timeline=
-        {
-            TimeEvent(70*FRAMES, function(inst)
-                inst.DynamicShadow:Enable(false)
-            end),
-        },
-    },
-
-
-
     State{
         name = "idle",
         tags = {"idle", "canrotate"},
@@ -1292,7 +1269,7 @@ local states=
             
             TimeEvent(14*FRAMES, function(inst)
                 if inst.prefab ~= "woodie" and
-                    (TheInput:IsMouseDown(MOUSEBUTTON_LEFT) or TheInput:IsControlPressed(CONTROL_ACTION) or TheInput:IsControlPressed(CONTROL_CONTROLLER_ACTION)) and 
+                    (TheInput:IsControlPressed(CONTROL_PRIMARY) or TheInput:IsControlPressed(CONTROL_ACTION) or TheInput:IsControlPressed(CONTROL_CONTROLLER_ACTION)) and 
                     inst.sg.statemem.action and 
                     inst.sg.statemem.action:IsValid() and 
                     inst.sg.statemem.action.target and 
@@ -1356,7 +1333,7 @@ local states=
             end),
             
             TimeEvent(14*FRAMES, function(inst)
-                    if (TheInput:IsMouseDown(MOUSEBUTTON_LEFT) or TheInput:IsControlPressed(CONTROL_ACTION) or TheInput:IsControlPressed(CONTROL_CONTROLLER_ACTION)) and 
+                    if (TheInput:IsControlPressed(CONTROL_PRIMARY) or TheInput:IsControlPressed(CONTROL_ACTION) or TheInput:IsControlPressed(CONTROL_CONTROLLER_ACTION)) and 
                     inst.sg.statemem.action and 
                     inst.sg.statemem.action:IsValid() and 
                     inst.sg.statemem.action.target and 
@@ -1671,7 +1648,7 @@ local states=
             end),
             
             TimeEvent(35*FRAMES, function(inst)
-				if (TheInput:IsMouseDown(MOUSEBUTTON_RIGHT) or
+				if (TheInput:IsControlPressed(CONTROL_SECONDARY) or
 				   TheInput:IsControlPressed(CONTROL_ACTION)  or TheInput:IsControlPressed(CONTROL_CONTROLLER_ACTION)) and 
 					inst.sg.statemem.action and 
 					inst.sg.statemem.action.target and 
@@ -2185,16 +2162,8 @@ local states=
     State{
         name = "dolongaction",
         tags = {"doing", "busy"},
-        
-        timeline=
-        {
-            TimeEvent(4*FRAMES, function( inst )
-                inst.sg:RemoveStateTag("busy")
-            end),
-        },
-        
-        onenter = function(inst, timeout)
 
+        onenter = function(inst, timeout)
             local targ = inst:GetBufferedAction() and inst:GetBufferedAction().target or nil
             if targ then targ:PushEvent("startlongaction") end
             
@@ -2206,18 +2175,41 @@ local states=
             inst.AnimState:PushAnimation("build_loop", true)
         end,
         
-        ontimeout= function(inst)
+        timeline =
+        {
+            TimeEvent(4 * FRAMES, function(inst)
+                inst.sg:RemoveStateTag("busy")
+            end),
+        },
+
+        ontimeout = function(inst)
+            inst.SoundEmitter:KillSound("make")
             inst.AnimState:PlayAnimation("build_pst")
-            inst.sg:GoToState("idle", false)
             inst:PerformBufferedAction()
         end,
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
         
         onexit= function(inst)
             inst.SoundEmitter:KillSound("make")
         end,
-        
     },
-    
+
+    State{
+        name = "domediumaction",
+        
+        onenter = function(inst)
+            inst.sg:GoToState("dolongaction", .5)
+        end,
+    },
+
     State{
         name = "bundle",
         tags = { "doing", "busy", "nodangle" },
@@ -2480,10 +2472,14 @@ local states=
         onenter = function(inst)
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("flute")
-            local ba = inst:GetBufferedAction()
-            inst.AnimState:OverrideSymbol("pan_flute01", ba.invobject.flutebuild or "pan_flute", ba.invobject.flutesymbol or "pan_flute01")
+
+            inst.sg.statemem.flute = inst:GetBufferedAction().invobject
+
+            inst.AnimState:OverrideSymbol("pan_flute01", inst.sg.statemem.flute.flutebuild or "pan_flute", inst.sg.statemem.flute.flutesymbol or "pan_flute01")
+
             inst.AnimState:Hide("ARM_carry") 
             inst.AnimState:Show("ARM_normal")
+
             if inst.components.inventory.activeitem and inst.components.inventory.activeitem.components.instrument then
                 inst.components.inventory:ReturnActiveItem()
             end
@@ -2500,18 +2496,18 @@ local states=
         timeline=
         {
             TimeEvent(30*FRAMES, function(inst)
-                local ba = inst:GetBufferedAction()
-                if ba ~= nil then
-                    if ba.invobject and ba.invobject.components.instrument and ba.invobject.components.instrument.sound then
-                        inst.SoundEmitter:PlaySound(ba.invobject.components.instrument.sound, "flute")
-                    elseif ba.invobject and ba.invobject.components.instrument and ba.invobject.components.instrument.sound_noloop then
-                        inst.SoundEmitter:PlaySound(ba.invobject.components.instrument.sound_noloop)
-                    else
-                        inst.SoundEmitter:PlaySound("dontstarve/wilson/flute_LP", "flute")
-                    end
-                    inst:PerformBufferedAction()
+                local instrument = inst.sg.statemem.flute and inst.sg.statemem.flute:IsValid() and inst.sg.statemem.flute.components.instrument or nil
+            
+                if instrument and instrument.sound then
+                    inst.SoundEmitter:PlaySound(instrument.sound, "flute")
+                elseif instrument and instrument.sound_noloop then
+                    inst.SoundEmitter:PlaySound(instrument.sound_noloop)
+                else
+                    inst.SoundEmitter:PlaySound("dontstarve/wilson/flute_LP", "flute")
                 end
+                inst:PerformBufferedAction()
             end),
+
             TimeEvent(85*FRAMES, function(inst)
                 inst.SoundEmitter:KillSound("flute")
             end),
@@ -2533,16 +2529,19 @@ local states=
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("horn")
 
-            local ba = inst:GetBufferedAction()
-            inst.AnimState:OverrideSymbol("horn01", ba.invobject.hornbuild or "horn", ba.invobject.hornsymbol or "horn01")
-            --inst.AnimState:Hide("ARM_carry") 
+            inst.sg.statemem.horn = inst:GetBufferedAction().invobject
+
+            inst.AnimState:OverrideSymbol("horn01", inst.sg.statemem.horn.hornbuild or "horn", inst.sg.statemem.horn.hornsymbol or "horn01")
+
             inst.AnimState:Show("ARM_normal")
+
             if inst.components.inventory.activeitem and inst.components.inventory.activeitem.components.instrument then
                 inst.components.inventory:ReturnActiveItem()
             end
         end,
         
         onexit = function(inst)
+            inst.SoundEmitter:KillSound("horn")
             if inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) then
                 inst.AnimState:Show("ARM_carry") 
                 inst.AnimState:Hide("ARM_normal")
@@ -2552,11 +2551,12 @@ local states=
         timeline=
         {
             TimeEvent(21*FRAMES, function(inst)
-                local ba = inst:GetBufferedAction()
-                if ba.invobject and ba.invobject.components.instrument and ba.invobject.components.instrument.sound then
-                    inst.SoundEmitter:PlaySound(ba.invobject.components.instrument.sound)
-                elseif ba.invobject and ba.invobject.components.instrument and ba.invobject.components.instrument.sound_noloop then
-                    inst.SoundEmitter:PlaySound(ba.invobject.components.instrument.sound_noloop)
+                local instrument = inst.sg.statemem.horn and inst.sg.statemem.horn:IsValid() and inst.sg.statemem.horn.components.instrument or nil
+            
+                if instrument and instrument.sound then
+                    inst.SoundEmitter:PlaySound(instrument.sound, "horn")
+                elseif instrument and instrument.sound_noloop then
+                    inst.SoundEmitter:PlaySound(instrument.sound_noloop)
                 else
                     inst.SoundEmitter:PlaySound("dontstarve/common/horn_beefalo")
                 end
@@ -3364,14 +3364,18 @@ local states=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("run_monkey") end),
 
-            EventHandler("equip", function(inst) 
-                inst.AnimState:Show("TAIL_carry")
-                inst.AnimState:Hide("TAIL_normal")
+            EventHandler("equip", function(inst, data)
+                if data.eslot == EQUIPSLOTS.HANDS then
+                    inst.AnimState:Show("TAIL_carry")
+                    inst.AnimState:Hide("TAIL_normal")
+                end
             end),
 
-            EventHandler("unequip", function(inst) 
-                inst.AnimState:Hide("TAIL_carry")
-                inst.AnimState:Show("TAIL_normal")
+            EventHandler("unequip", function(inst, data)
+                if data.eslot == EQUIPSLOTS.HANDS then 
+                    inst.AnimState:Hide("TAIL_carry")
+                    inst.AnimState:Show("TAIL_normal")
+                end
             end),
         },
     },
@@ -3417,8 +3421,7 @@ local states=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
         },
-    },    
-
+    },
 
     State{
         name = "give",
@@ -3439,8 +3442,35 @@ local states=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
         },
-    },   
-    
+    },
+
+    State{
+        name = "catchonfire",
+        tags = { "igniting" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("light_fire")
+            inst.AnimState:PushAnimation("light_fire_pst", false)
+        end,
+
+        timeline =
+        {
+            TimeEvent(13 * FRAMES, function(inst)
+                inst:PerformBufferedAction()
+            end),
+        },
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },
+
 	State{
         name = "bedroll",
         

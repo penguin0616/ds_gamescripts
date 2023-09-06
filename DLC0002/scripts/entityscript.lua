@@ -898,19 +898,15 @@ end
 
 
 function EntityScript:GetAngleToPoint(x, y, z)
-	if not x then
-		return 0
-	end
-
-    if x and not y and not z then
+    if x == nil then
+        return 0
+    elseif y == nil and z == nil then
         x, y, z = x:Get()
-    end    
-
-    local px, py, pz = self.Transform:GetWorldPosition()
-    local dz = pz - z
-    local dx = x - px
-    local angle = math.atan2(dz, dx) / DEGREES
-    return angle
+    end
+    local x1, y1, z1 = self.Transform:GetWorldPosition()
+	return x1 == x and z1 == z
+		and self.Transform:GetRotation()
+		or math.atan2(z1 - z, x - x1) * RADIANS
 end
 
 function EntityScript:ForceFacePoint(x, y, z)

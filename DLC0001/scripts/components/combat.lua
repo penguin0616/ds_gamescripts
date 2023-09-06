@@ -431,7 +431,7 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli)
             end
         end
     else
-        self.inst:PushEvent("blocked", {attacker = attacker})
+		self.inst:PushEvent("blocked", {attacker = attacker, weapon = weapon, redirected=redirect_combat ~= nil})		
     end
     
     return not blocked
@@ -537,6 +537,10 @@ function Combat:StartAttack()
         self.inst:ForceFacePoint(self.target:GetPosition())
     end
     self.laststartattacktime = GetTime()
+end
+
+function Combat:HasTarget()
+    return self.target ~= nil
 end
 
 function Combat:CanTarget(target)
@@ -670,6 +674,7 @@ function Combat:CalcDamage(target, weapon, multiplier)
             local mount = self.inst.components.rider:GetMount()
             if mount and mount.components.combat then
                 basedamage = mount.components.combat.defaultdamage
+                multiplier = mount.components.combat.damagemultiplier or 1
                 bonus = mount.components.combat.damagebonus or 0
             end
             local saddle = self.inst.components.rider:GetSaddle()

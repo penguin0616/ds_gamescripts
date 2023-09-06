@@ -74,6 +74,11 @@ local function OnIgnite(inst)
     if inst.components.childspawner then
         inst.components.childspawner:ReleaseAllChildren()
     end
+
+    if inst.shake ~= nil then
+        inst.shake:Cancel()
+        inst.shake = nil
+    end
 end
 
 local function ongohome(inst, child)

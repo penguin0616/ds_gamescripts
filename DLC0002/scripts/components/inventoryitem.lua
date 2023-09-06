@@ -2,6 +2,7 @@ local InventoryItem = Class(function(self, inst)
     self.inst = inst
     self.owner = nil
     self.canbepickedup = true
+    self.canbepickedupwhileburning = false
     self.onpickupfn = nil    
     self.isnew = true
     self.nobounce = false
@@ -265,7 +266,7 @@ function InventoryItem:GetImage()
 end
 
 function InventoryItem:GetAtlas()
-	return self.atlasname or "images/inventoryimages.xml"
+    return self.atlasname or GetInventoryItemAtlas(self:GetImage())
 end
 
 function InventoryItem:RemoveFromOwner(wholestack)
@@ -297,7 +298,7 @@ function InventoryItem:CollectInventoryActions(doer, actions)
 end
 
 function InventoryItem:CollectSceneActions(doer, actions)
-    if self.canbepickedup and doer.components.inventory and not (self.inst.components.burnable and self.inst.components.burnable:IsBurning()) then
+    if self.canbepickedup and doer.components.inventory and (self.canbepickedupwhileburning or not (self.inst.components.burnable and self.inst.components.burnable:IsBurning())) then
         if self.inst:HasTag("aquatic") and not (doer.components.driver and doer.components.driver:GetIsDriving()) then
             table.insert(actions, ACTIONS.RETRIEVE)
         else
@@ -325,6 +326,10 @@ function InventoryItem:CollectUseActions(doer, target, actions)
         if self:GetGrandOwner() == doer then
             table.insert(actions, target:HasTag("bundle") and ACTIONS.BUNDLESTORE or ACTIONS.STORE)
         end
+    end
+
+    if target.components.trader and target.components.trader.acceptnontradable then
+        table.insert(actions, ACTIONS.GIVE)
     end
 end
 

@@ -15,7 +15,7 @@ local Aporkalypse = Class(function(self, inst)
     	self.SpawnNightmares,
     	self.SpawnGhosts,
     	self.SpawnFrogRain,
-    	self.SpawnFireRain
+    	self.SpawnFireRain,
 	}
 
 	self.fiesta_active = false
@@ -105,7 +105,7 @@ function Aporkalypse:OnLoad(data)
 		self.fiesta_active = data.fiesta_active
 		self.fiesta_begin_date = data.fiesta_begin_date
 
-		local duration = self.fiesta_duration - math.max(data.fiesta_elapsed or 0, 0)
+		local duration = math.clamp(self.fiesta_duration - (data.fiesta_elapsed or 0), 0, self.fiesta_duration)
 		self.fiesta_task = self.inst:DoTaskInTime(duration, function() self:EndFiesta() end)
 	end
 
@@ -284,10 +284,10 @@ function Aporkalypse:BeginAporkalypse()
 	local seasonmanager = GetSeasonManager()
 	self.current_season = seasonmanager:GetSeason()
 
+	GetClock():SetBloodMoon(true)
+
 	seasonmanager:SetAporkalypseLength(self.first_time and 10000 or TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT)
 	seasonmanager:StartAporkalypse()
-
-	GetClock():SetBloodMoon(true)
 
 	self:ScheduleAporkalypseTasks()
 
@@ -371,7 +371,7 @@ function Aporkalypse:ScheduleHeraldCheck()
 				
 				if herald == nil then
 					if not GetInteriorSpawner():IsPlayerConsideredInside() then
-						self:SpawnRandomInRange("ancient_herald", 1, 1, 10)
+						self:SpawnRandomInRange("ancient_herald", 1, 1, 10, nil, function(inst) inst.sg:GoToState("appear") end)
 					end
 				else
 					herald.components.combat:SuggestTarget(player)
@@ -432,7 +432,7 @@ function Aporkalypse:SpawnInteriorGhosts()
 	self:SpawnInteriorPrefabs("pigghost", 2, 5, {"ghost"})
 end
 
-function Aporkalypse:SpawnRandomInRange(prefab, min_count, max_count, radius, offset_y)
+function Aporkalypse:SpawnRandomInRange(prefab, min_count, max_count, radius, offset_y, prefabpostinit)
 	
 	local objs = {}
 	offset_y = offset_y or 0
@@ -468,6 +468,10 @@ function Aporkalypse:SpawnRandomInRange(prefab, min_count, max_count, radius, of
 				obj = SpawnPrefab(prefab)
 			end
 
+			if prefabpostinit then
+				prefabpostinit(obj)
+			end
+
 			if obj.Physics then
 				obj.Physics:Teleport(spawn_pt:Get())
 			else
@@ -486,63 +490,56 @@ function Aporkalypse:SpawnRandomInRange(prefab, min_count, max_count, radius, of
 	return objs
 end
 
+local function NightmarePostInit(nightmare)
+	-- Injecting this here because I don't wanna change a base game prefab
+	nightmare:ListenForEvent("endaporkalypse",
+		function(eventsender)
+			if nightmare:HasTag("aporkalypse_cleanup") then
+				nightmare:Remove()
+			end
+		end, 
+	GetWorld())
+end
 
 function Aporkalypse:SpawnNightmares()
-	local nightmares = self:SpawnRandomInRange({ "nightmarebeak", "crawlingnightmare"}, 2, 4, 10)
-
-	for k,nightmare in pairs(nightmares) do
-		nightmare:AddTag("aporkalypse_cleanup")
-		
-		-- Injecting this here because I don't wanna change a base game prefab
-		nightmare:ListenForEvent("endaporkalypse",
-	        function(eventsender)
-	            if nightmare:HasTag("aporkalypse_cleanup") then
-	                nightmare:Remove()
-	            end
-	        end, 
-	    GetWorld())
-	end
+	self:SpawnRandomInRange({ "nightmarebeak", "crawlingnightmare"}, 2, 4, 10, nil, NightmarePostInit)
 end
 
 function Aporkalypse:SpawnGhosts()
 	self:SpawnRandomInRange("pigghost", 4, 6, 10)
 end
 
-function Aporkalypse:SpawnFrogRain()
-	local function cancelrain()
-		if self.frograintask then
-			self.frograintask:Cancel()
-			self.frograintask = nil
-		end
-	end
+local function cancelrain(self)
+	
+end
 
-	cancelrain()
+function Aporkalypse:SpawnFrogRain()
+	self:CancelFrogRain()
 
 	local count = 0
 	local max = 5
 
 	self.frograintask = self.inst:DoPeriodicTask(0.2, 
-		function() 
-			local objs = self:SpawnRandomInRange("frog_poison", 1, 4, 8, 35)
-			
-			for k,v in pairs(objs) do
-				v.sg:GoToState("fall")
-			end
+		function()
+			self:SpawnRandomInRange("frog_poison", 1, 4, 8, 35, function(inst) inst.sg:GoToState("fall") end)
 
 			count = count + 1
 			if count >= max then
-				cancelrain()
+				self:CancelFrogRain()
 			end
 		end
 	)
 end
 
+function Aporkalypse:CancelFrogRain()
+	if self.frograintask then
+		self.frograintask:Cancel()
+		self.frograintask = nil
+	end
+end
+
 function Aporkalypse:SpawnFireRain()
-	local objs = self:SpawnRandomInRange("firerain", 1, 4, 6)
-			
-	for k,v in pairs(objs) do
-		v.StartStepWithDelay(v, math.random() * 2)
-	end	
+	self:SpawnRandomInRange("firerain", 1, 4, 6, nil, function(inst) inst:StartStepWithDelay(math.random() * 2) end)
 end
 
 function Aporkalypse:HeraldSpawnAttack()

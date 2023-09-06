@@ -10,6 +10,8 @@ local waterassets=
     Asset("ANIM", "anim/grass_inwater.zip"),
     Asset("ANIM", "anim/reeds_water_build.zip"),
     Asset("SOUND", "sound/common.fsb"),
+
+    Asset("MINIMAP_IMAGE", "reeds_in_water"),
 }
 
 local prefabs =
@@ -58,7 +60,7 @@ local function makefn(water,build,animation)
         local sound = inst.entity:AddSoundEmitter()
     	local minimap = inst.entity:AddMiniMapEntity()
 
-    	minimap:SetIcon( "reeds.png" )
+    	minimap:SetIcon(water and "reeds_in_water.png" or "reeds.png" )
 
         if water then
             MakeObstaclePhysics(inst, .25)

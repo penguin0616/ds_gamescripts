@@ -28,7 +28,7 @@ local function FuelTaken(inst, taker)
 end
 
 local function OnEntityWake(inst)
-    if inst.components.inventoryitem and not inst:HasTag("thrown") then 
+    if inst.components.inventoryitem and inst.components.inventoryitem:IsHeld() and not inst:HasTag("thrown") then
         inst.components.inventoryitem:OnStartFalling()
     end
 end

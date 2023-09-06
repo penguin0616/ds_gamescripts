@@ -133,12 +133,14 @@ local actionhandlers =
     ActionHandler(ACTIONS.UNWRAP, "dolongaction"),
 
 	ActionHandler(ACTIONS.TRAVEL, "doshortaction"),
-    ActionHandler(ACTIONS.LIGHT, "give"),
+    ActionHandler(ACTIONS.LIGHT, "catchonfire"),
     ActionHandler(ACTIONS.UNLOCK, "give"),
     ActionHandler(ACTIONS.TURNOFF, "give"),
     ActionHandler(ACTIONS.TURNON, "give"),
     ActionHandler(ACTIONS.ADDFUEL, "doshortaction"),
-    ActionHandler(ACTIONS.REPAIR, "dolongaction"),
+    ActionHandler(ACTIONS.REPAIR, function(inst, action)
+        return action.target:HasTag("repairshortaction") and "doshortaction" or "dolongaction"
+    end),
     
     ActionHandler(ACTIONS.READ, "book"),
 
@@ -984,7 +986,7 @@ local states=
             
             TimeEvent(14*FRAMES, function(inst)
                 if inst.prefab ~= "woodie" and
-                    (TheInput:IsMouseDown(MOUSEBUTTON_LEFT) or TheInput:IsControlPressed(CONTROL_ACTION) or TheInput:IsControlPressed(CONTROL_CONTROLLER_ACTION)) and 
+                    (TheInput:IsControlPressed(CONTROL_PRIMARY) or TheInput:IsControlPressed(CONTROL_ACTION) or TheInput:IsControlPressed(CONTROL_CONTROLLER_ACTION)) and 
                     inst.sg.statemem.action and 
                     inst.sg.statemem.action:IsValid() and 
                     inst.sg.statemem.action.target and 
@@ -1290,7 +1292,7 @@ local states=
             end),
             
             TimeEvent(35*FRAMES, function(inst)
-				if (TheInput:IsMouseDown(MOUSEBUTTON_RIGHT) or
+				if (TheInput:IsControlPressed(CONTROL_SECONDARY) or
 				   TheInput:IsControlPressed(CONTROL_ACTION)  or TheInput:IsControlPressed(CONTROL_CONTROLLER_ACTION)) and 
 					inst.sg.statemem.action and 
 					inst.sg.statemem.action.target and 
@@ -1799,14 +1801,7 @@ local states=
     State{
         name = "dolongaction",
         tags = {"doing", "busy"},
-        
-        timeline=
-        {
-            TimeEvent(4*FRAMES, function( inst )
-                inst.sg:RemoveStateTag("busy")
-            end),
-        },
-        
+
         onenter = function(inst, timeout)
             inst.sg:SetTimeout(timeout or 1)
             inst.components.locomotor:Stop()
@@ -1816,16 +1811,31 @@ local states=
             inst.AnimState:PushAnimation("build_loop", true)
         end,
         
-        ontimeout= function(inst)
+        timeline =
+        {
+            TimeEvent(4 * FRAMES, function(inst)
+                inst.sg:RemoveStateTag("busy")
+            end),
+        },
+
+        ontimeout = function(inst)
+            inst.SoundEmitter:KillSound("make")
             inst.AnimState:PlayAnimation("build_pst")
-            inst.sg:GoToState("idle", false)
             inst:PerformBufferedAction()
         end,
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
         
         onexit= function(inst)
             inst.SoundEmitter:KillSound("make")
         end,
-        
     },
 
     State{
@@ -2772,7 +2782,34 @@ local states=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
         },
-    },   
+    },
+
+    State{
+        name = "catchonfire",
+        tags = { "igniting" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("light_fire")
+            inst.AnimState:PushAnimation("light_fire_pst", false)
+        end,
+
+        timeline =
+        {
+            TimeEvent(13 * FRAMES, function(inst)
+                inst:PerformBufferedAction()
+            end),
+        },
+
+        events =
+        {
+            EventHandler("animqueueover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },
     
 	State{
         name = "bedroll",

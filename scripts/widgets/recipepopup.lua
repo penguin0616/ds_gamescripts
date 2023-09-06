@@ -62,8 +62,30 @@ local RecipePopup = Class(Widget, function(self, horizontal)
     self.button = self.contents:AddChild(ImageButton(UI_ATLAS, "button.tex", "button_over.tex", "button_disabled.tex"))
     self.button:SetScale(.7,.7,.7)
     self.button:SetOnClick(function() if not DoRecipeClick(self.owner, self.recipe) then self.owner.HUD.controls.crafttabs:Close() end end)
-    
-    
+
+    self.button:SetWhileDown(function()
+        if self.recipe_held then
+            DoRecipeClick(self.owner, self.recipe)
+        end
+    end)
+
+    self.button:SetOnDown(function()
+        if self.last_recipe_click and (GetTime() - self.last_recipe_click) < 1 then
+            self.recipe_held = true
+            self.last_recipe_click = nil
+        end
+    end)
+
+    self.button:SetOnClick(function()
+        self.last_recipe_click = GetTime()
+        if not self.recipe_held then
+            if not DoRecipeClick(self.owner, self.recipe) then
+                self.owner.HUD.controls.crafttabs:Close()
+            end
+        end
+        self.recipe_held = false
+    end)
+
     self.recipecost = self.contents:AddChild(Text(NUMBERFONT, 40))
     self.recipecost:SetHAlign(ANCHOR_LEFT)
     self.recipecost:SetRegionSize(80,50)
@@ -292,14 +314,15 @@ function RecipePopup:Refresh()
     
     for k,v in pairs(recipe.ingredients) do
     
-        local has, num_found = owner.components.inventory:Has(v.type, RoundUp(v.amount * owner.components.builder.ingredientmod))
+        local has, num_found = owner.components.inventory:Has(v.type, RoundUp(v.amount * owner.components.builder.ingredientmod), true)
         
         local item_img = v.type
         if SaveGameIndex:IsModeShipwrecked() and SW_ICONS[item_img] ~= nil then
             item_img = SW_ICONS[item_img]
         end
 
-        local ing = self.contents:AddChild(IngredientUI(v.atlas, item_img ..".tex", v.amount, num_found, has, STRINGS.NAMES[string.upper(v.type)], owner))
+        local imageName = item_img ..".tex"
+        local ing = self.contents:AddChild(IngredientUI(v:GetAtlas(imageName), imageName, v.amount, num_found, has, STRINGS.NAMES[string.upper(v.type)], owner))
         ing:SetPosition(Vector3(offset, 80, 0))
         offset = offset + (w+ half_div)
         self.ing[k] = ing

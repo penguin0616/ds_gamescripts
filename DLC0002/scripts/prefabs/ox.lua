@@ -55,19 +55,13 @@ local sounds =
 }
 
 local function OnEnterMood(inst)
-	if inst.components.beard and inst.components.beard.bits > 0 then
-		inst.AnimState:SetBuild("ox_heat_build")
-		inst.AnimState:SetBank("ox")
-		inst:AddTag("scarytoprey")
-	end
+	inst.AnimState:SetBuild("ox_heat_build")
+	inst:AddTag("scarytoprey")
 end
 
 local function OnLeaveMood(inst)
-	if inst.components.beard and inst.components.beard.bits > 0 then
-		inst.AnimState:SetBuild("ox_build")
-		inst.AnimState:SetBank("ox")
-		inst:RemoveTag("scarytoprey")
-	end
+	inst.AnimState:SetBuild("ox_build")
+	inst:RemoveTag("scarytoprey")
 end
 
 local function Retarget(inst)
@@ -94,7 +88,7 @@ local function KeepTarget(inst, target)
 		end
 	end
 
-    return not table.contains({GROUND.OCEAN_SHALLOW, GROUND.OCEAN_MEDIUM, GROUND.OCEAN_DEEP}, inst.components.tiletracker.tile)
+    return not table.contains({GROUND.OCEAN_MEDIUM, GROUND.OCEAN_DEEP}, inst.components.tiletracker.tile)
 end
 
 local function OnNewTarget(inst, data)
@@ -117,11 +111,14 @@ local function GetStatus(inst)
 end
 
 local function OnWaterChange(inst, onwater)
-	if onwater then
-		inst.sg:GoToState("submerge")
-	else
-		inst.sg:GoToState("emerge")
+	if inst.sg and inst.sg:HasStateTag("adultpop") then
+		inst.AnimState:SetBank(onwater and "ox_water" or "ox")
+
+		return
 	end
+
+	local noanim = inst:GetTimeAlive() < 1
+	inst.sg:GoToState(onwater and "submerge" or "emerge", noanim)
 end
 
 local function OnPooped(inst, poop)

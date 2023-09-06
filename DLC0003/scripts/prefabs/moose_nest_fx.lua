@@ -17,7 +17,8 @@ local function fn()
 
 	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 
-	inst:AddTag("fx")
+    inst:AddTag("FX")
+    inst:AddTag("NOBLOCK")
 
 	inst.persists = false
 	inst:ListenForEvent("animover", inst.Remove)

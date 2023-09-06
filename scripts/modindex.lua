@@ -204,7 +204,14 @@ function ModIndex:LoadModInfo(modname)
 end
 
 function ModIndex:InitializeModInfo(modname)
-	local env = {}
+	local env = {
+		folder_name = modname,
+		locale = LOC.GetLocaleCode(),
+		ChooseTranslationTable = function(tbl)
+			local locale = LOC.GetLocaleCode()
+			return tbl[locale] or tbl[1]
+		end,
+	}
 	local fn = kleiloadlua("../mods/"..modname.."/modinfo.lua")
 	local modinfo_message = ""
 	if type(fn) == "string" then

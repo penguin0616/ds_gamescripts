@@ -11,7 +11,9 @@ local function fn()
     anim:SetBank("staff_fx")
     anim:SetBuild("staff")
     anim:PlayAnimation("staff")
-    inst:AddTag("fx")
+
+    inst:AddTag("FX")
+    inst:AddTag("NOBLOCK")
     
     inst.persists = false
 	inst:ListenForEvent("animover", inst.Remove)

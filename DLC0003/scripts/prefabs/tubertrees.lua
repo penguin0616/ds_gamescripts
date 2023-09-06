@@ -8,6 +8,8 @@ local assets =
 	Asset("SOUND", "sound/forest.fsb"),
 	--Asset("INV_IMAGE", "jungleTreeSeed"),
 	Asset("MINIMAP_IMAGE", "tuber_trees"),
+	Asset("MINIMAP_IMAGE", "tuber_trees_stump"),
+	Asset("MINIMAP_IMAGE", "tuber_trees_burnt"),
 }
 
 local prefabs =
@@ -103,6 +105,8 @@ local function set_stump(inst, push_anim)
 		inst.AnimState:PlayAnimation(inst.anims.stump)
 	end
 
+	inst.MiniMapEntity:SetIcon("tuber_trees_stump.png")
+
 	inst:AddTag("stump")
 	inst:RemoveTag("shelter")
 	inst:RemoveTag("gustable")
@@ -185,6 +189,7 @@ local function OnBurnt(inst, imm)
 		inst:DoTaskInTime( 0.5, changes)
 	end
 	inst.AnimState:PlayAnimation(inst.anims.burnt, true)
+	inst.MiniMapEntity:SetIcon("tuber_trees_burnt.png")
 	--inst.AnimState:SetRayTestOnBB(true);
 	inst:AddTag("burnt")
 
@@ -379,6 +384,7 @@ local function onload(inst, data)
 
 		if data.burnt then
 			inst:AddTag("fire") -- Add the fire tag here: OnEntityWake will handle it actually doing burnt logic
+			inst.MiniMapEntity:SetIcon("tuber_trees_burnt.png")
 
 		elseif data.stump then
 			set_stump(inst)
@@ -439,9 +445,11 @@ local function OnGustAnimDone(inst)
 		inst.AnimState:PlayAnimation(inst.anims["blown"..tostring(anim)], false)
 	else
 		inst:DoTaskInTime(math.random()/2, function(inst)
-			inst:RemoveEventCallback("animover", OnGustAnimDone)
-			inst.AnimState:PlayAnimation(inst.anims.blown_pst, false)
-			PushSway(inst)
+            if not inst:HasTag("stump") and not inst:HasTag("burnt") then
+                inst.AnimState:PlayAnimation(inst.anims.blown_pst, false)
+                PushSway(inst)
+            end
+            inst:RemoveEventCallback("animover", OnGustAnimDone)
 		end)
 	end
 end

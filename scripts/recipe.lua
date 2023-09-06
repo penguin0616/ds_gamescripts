@@ -5,8 +5,12 @@ Ingredient = Class(function(self, type, amount, atlas)
     self.type = type
     self.amount = amount
 	self.atlas = (atlas and resolvefilepath(atlas))
-					or resolvefilepath("images/inventoryimages.xml")
 end)
+
+function Ingredient:GetAtlas(imagename)
+	self.atlas = self.atlas or resolvefilepath(GetInventoryItemAtlas(imagename))
+	return self.atlas
+end
 
 local num = 0
 Recipes = {}
@@ -17,8 +21,6 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer, min_spacing
     self.ingredients   = ingredients
     self.product       = name
     self.tab           = tab
-
-    self.atlas         = resolvefilepath("images/inventoryimages.xml")
 
     self.image         = name .. ".tex"
     self.sortkey       = num
@@ -36,6 +38,11 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer, min_spacing
     num                = num + 1
     Recipes[name]      = self
 end)
+
+function Recipe:GetAtlas()
+	self.atlas = self.atlas or resolvefilepath(GetInventoryItemAtlas(self.image))
+	return self.atlas
+end
 
 function Recipe:GetLevel()
     return self.level

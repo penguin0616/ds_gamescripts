@@ -51,7 +51,7 @@ local function fn(Sim)
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
     inst.AnimState:SetSortOrder(3)
 
-    inst.persist = false      
+    inst.persists = false      
     
     inst.resetArt = resetArt
 

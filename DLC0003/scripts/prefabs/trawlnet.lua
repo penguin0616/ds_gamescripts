@@ -22,6 +22,7 @@ local loot_defs = require("prefabs/trawlnet_loot_defs")
 local loot = loot_defs.LOOT
 local hurricaneloot = loot_defs.HURRICANE_LOOT
 local dryloot = loot_defs.DRY_LOOT
+local porklandloot = loot_defs.LILYPOND_LOOT
 local uniqueItems = loot_defs.UNIQUE_ITEMS
 local specialCasePrefab = loot_defs.SPECIAL_CASE_PREFABS
 
@@ -107,7 +108,9 @@ end
 
 local function getLootList(inst)
     local loottable = loot
-    if GetWorld().components.seasonmanager:IsWetSeason() then
+    if SaveGameIndex:IsModePorkland() then
+        loottable = porklandloot
+    elseif GetWorld().components.seasonmanager:IsWetSeason() then
         loottable = hurricaneloot
     elseif GetWorld().components.seasonmanager:IsDrySeason() then
         loottable = dryloot

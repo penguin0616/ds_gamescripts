@@ -110,10 +110,10 @@ local SeasonManager = Class(function(self, inst)
 	self.greenlength = TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT
 	self.drylength = TUNING.SEASON_LENGTH_HARSH_DEFAULT
 
-	self.temperatelength = TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT/2
-	self.humidlength = TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT/2
-	self.lushlength = TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT/2
-	self.aporkalypse_length = TUNING.SEASON_LENGTH_FRIENDLY_DEFAULT/2
+	self.temperatelength = TUNING.PLATEAU_SEASON_LENGTH_DEFAULT
+	self.humidlength = TUNING.PLATEAU_SEASON_LENGTH_DEFAULT
+	self.lushlength = TUNING.PLATEAU_SEASON_LENGTH_DEFAULT
+	self.aporkalypse_length = TUNING.PLATEAU_SEASON_LENGTH_DEFAULT
 
 
 	self.incaves = false
@@ -731,19 +731,18 @@ function SeasonManager:UpdateSegs()
 	local clock = GetClock()
 
 	if self.aporkalypse_transition then
-
 		local aporkalypse = GetAporkalypse()
 
 		if aporkalypse and aporkalypse:IsActive() then
-
 			clock:SetSegsMidEra(segs.day, segs.dusk, segs.night, "night")			
 			clock.inst:PushEvent("nighttime", {day=clock.numcycles})
-			clock.previous_phase = clock.phase
 		else
 			local phase = clock:GetPhaseByNormEraTime(clock:GetNormEraTime(), segs.day, segs.dusk, segs.night)
 			clock:SetSegsMidEra(segs.day, segs.dusk, segs.night, phase, true)
 			clock.inst:PushEvent(phase .. "time", {day=clock.numcycles})
 		end
+		
+		self.inst:DoTaskInTime(0, function() clock:updateAmibentColor() end)
 
 		self.aporkalypse_transition = false
 	else

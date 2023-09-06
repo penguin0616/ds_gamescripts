@@ -241,6 +241,12 @@ local function onload(inst, data)
 	if data and data.burnt then
         inst.components.burnable.onburnt(inst)
     end
+
+	-- For old saves (before adding the savedrotation component)
+	if data and data.rotation then
+		inst.Transform:SetRotation(data.rotation)
+	end
+
 	inst:DoTaskInTime(0,function() setfertilityfn(inst, inst.components.grower and inst.components.grower:GetFertilePercent() or 0) end)
 end
 
@@ -400,7 +406,8 @@ local function placerdecor(level)
 end
 
 return
-       Prefab( "common/objects/slow_farmplot", plot(2), assets, prefabs ),
-       Prefab( "common/objects/fast_farmplot", plot(3), assets, prefabs ),
-	   MakePlacer( "common/slow_farmplot_placer", "farmplot", "farmplot", "full", true, nil, nil, nil, nil, 90, nil, nil, nil, PlaceTestFn, nil, placerdecor(2)),
-	   MakePlacer( "common/fast_farmplot_placer", "farmplot", "farmplot", "full", true, nil, nil, nil, nil, 90, nil, nil, nil, PlaceTestFn, nil, placerdecor(3)) 
+       Prefab( "common/objects/slow_farmplot",          plot(2      ), assets, prefabs ),
+       Prefab( "common/objects/fast_farmplot",          plot(3      ), assets, prefabs ),
+       Prefab( "common/objects/fast_farmplot_planted",  plot(3, true), assets, prefabs ),
+       MakePlacer( "common/slow_farmplot_placer", "farmplot", "farmplot", "full", true, nil, nil, nil, nil, 90, nil, nil, nil, PlaceTestFn, nil, placerdecor(2)),
+       MakePlacer( "common/fast_farmplot_placer", "farmplot", "farmplot", "full", true, nil, nil, nil, nil, 90, nil, nil, nil, PlaceTestFn, nil, placerdecor(3)) 

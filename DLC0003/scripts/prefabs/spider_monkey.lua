@@ -198,8 +198,8 @@ local function fn()
 
 	--inst.Transform:SetScale(2.2, 2.2, 2.2)
 	MakeCharacterPhysics(inst, 40, 1.5)
-    MakeMediumBurnableCharacter(inst)
-    MakeMediumFreezableCharacter(inst)
+    MakeLargeBurnableCharacter(inst, "body")
+    MakeLargeFreezableCharacter(inst, "body")
 
     anim:SetBank("spiderape")
 	anim:SetBuild("SpiderApe_build")
@@ -223,6 +223,7 @@ local function fn()
     inst.components.locomotor.runspeed = TUNING.SPIDER_MONKEY_SPEED_AGITATED    
 
     inst:AddComponent("combat")
+    inst.components.combat.hiteffectsymbol = "body"
     inst.components.combat:SetAttackPeriod(TUNING.SPIDER_MONKEY_ATTACK_PERIOD)
     inst.components.combat:SetRange(TUNING.SPIDER_MONKEY_MELEE_RANGE)
     inst.components.combat:SetRetargetFunction(1, retargetfn)
